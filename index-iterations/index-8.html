@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DSDEV Dashboard</title>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -59,7 +59,6 @@
             /* Semantic Colors */
             --color-success-500: #17b26a;
             --color-error-500: #f04438;
-            --color-error-600: #d92d20;
             --color-warning-500: #eaaa08;
             
             /* Typography */
@@ -71,7 +70,6 @@
             --shadow-md: 0px 2px 4px -2px rgba(10, 13, 18, 0.06), 0px 4px 6px -1px rgba(10, 13, 18, 0.1);
             --shadow-lg: 0px 2px 2px -1px rgba(10, 13, 18, 0.04), 0px 4px 6px -2px rgba(10, 13, 18, 0.03), 0px 12px 16px -4px rgba(10, 13, 18, 0.08);
             --shadow-xl: 0px 3px 3px -1.5px rgba(10, 13, 18, 0.04), 0px 8px 8px -4px rgba(10, 13, 18, 0.03), 0px 20px 24px -4px rgba(10, 13, 18, 0.08);
-            --shadow-2xl: 0px 4px 4px -2px rgba(10, 13, 18, 0.04), 0px 24px 48px -12px rgba(10, 13, 18, 0.18);
             
             /* Spacing */
             --spacing-1: 4px;
@@ -82,10 +80,6 @@
             --spacing-6: 24px;
             --spacing-8: 32px;
             --spacing-10: 40px;
-            
-            /* Mobile-specific variables */
-            --mobile-header-height: 60px;
-            --mobile-safe-area-padding: env(safe-area-inset-bottom, 20px);
         }
 
         /* Dark Mode Variables */
@@ -133,9 +127,6 @@
             transition: background-color 0.3s ease;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
-            overflow-x: hidden;
-            min-height: 100vh;
-            min-height: -webkit-fill-available;
         }
 
         /* Header */
@@ -164,7 +155,6 @@
             color: var(--color-orange-500);
             text-decoration: none;
             letter-spacing: -0.02em;
-            flex-shrink: 0;
         }
 
         .header-left {
@@ -178,14 +168,12 @@
             display: flex;
             align-items: center;
             gap: var(--spacing-3);
-            flex-shrink: 0;
         }
 
         /* Search Bar */
         .search-container {
             position: relative;
             flex: 1;
-            max-width: 600px;
         }
 
         .search-bar {
@@ -236,7 +224,6 @@
             max-height: 500px;
             overflow-y: auto;
             display: none;
-            z-index: 101;
         }
 
         .search-autocomplete.active {
@@ -366,12 +353,10 @@
             transition: all 0.2s ease;
             display: inline-flex;
             align-items: center;
-            justify-content: center;
             gap: var(--spacing-2);
             white-space: nowrap;
             position: relative;
             overflow: hidden;
-            min-height: 36px;
         }
 
         .btn::before {
@@ -417,8 +402,6 @@
             color: var(--text-secondary);
             position: relative;
             border-radius: 8px;
-            min-width: 36px;
-            min-height: 36px;
         }
 
         .btn-icon:hover {
@@ -445,6 +428,10 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
+        }
+
+        #alertsToggle {
+            margin-left: auto;
         }
 
         #alertsToggle.active {
@@ -597,8 +584,6 @@
         .main-container {
             display: flex;
             height: calc(100vh - 60px);
-            min-height: calc(100vh - 60px);
-            position: relative;
         }
 
         .content-area {
@@ -606,7 +591,6 @@
             padding: var(--spacing-6);
             overflow-y: auto;
             background-color: var(--bg-primary);
-            -webkit-overflow-scrolling: touch;
         }
 
         /* Camera Grid */
@@ -695,7 +679,6 @@
             height: 100%;
             object-fit: cover;
             display: block;
-            cursor: move;
         }
 
         .camera-video {
@@ -703,7 +686,7 @@
             height: 100%;
             object-fit: cover;
             display: block;
-            cursor: move;
+            cursor: pointer;
         }
 
         .camera-loading {
@@ -748,17 +731,6 @@
             opacity: 1;
         }
 
-        /* Show controls on mobile without hover */
-        @media (hover: none) and (pointer: coarse) {
-            .video-controls {
-                opacity: 1;
-            }
-        }
-
-        .camera-card.fullscreen .video-controls {
-            display: none;
-        }
-
         .video-control-btn {
             width: 32px;
             height: 32px;
@@ -785,283 +757,6 @@
             border-color: var(--color-orange-500);
         }
 
-        /* Camera Remove Button */
-        .camera-remove-btn {
-            position: absolute;
-            top: var(--spacing-2);
-            left: var(--spacing-2);
-            width: 28px;
-            height: 28px;
-            background-color: rgba(240, 68, 56, 0.9);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            color: var(--color-white);
-            opacity: 0;
-            transform: scale(0.8);
-            z-index: 5;
-        }
-
-        .camera-card:hover .camera-remove-btn {
-            opacity: 1;
-            transform: scale(1);
-        }
-
-        .camera-remove-btn:hover {
-            background-color: var(--color-error-600);
-            transform: scale(1.1);
-        }
-
-        /* Add Camera Button */
-        .add-camera-card {
-            background-color: var(--card-bg);
-            border: 2px dashed var(--border-color);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-            gap: var(--spacing-3);
-            cursor: pointer;
-            transition: all 0.3s ease;
-            min-height: 200px;
-            color: var(--text-tertiary);
-        }
-
-        .add-camera-card:hover {
-            border-color: var(--color-orange-500);
-            background-color: var(--hover-bg);
-            color: var(--color-orange-500);
-            transform: translateY(-2px);
-        }
-
-        .add-camera-icon {
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            background-color: var(--bg-tertiary);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
-        }
-
-        .add-camera-card:hover .add-camera-icon {
-            background-color: rgba(247, 152, 55, 0.1);
-            transform: scale(1.1);
-        }
-
-        /* Camera Selection Modal */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(4px);
-            -webkit-backdrop-filter: blur(4px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s ease;
-            padding: var(--spacing-4);
-        }
-
-        .modal-overlay.active {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .camera-selection-modal {
-            background-color: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            width: 100%;
-            max-width: 800px;
-            max-height: 80vh;
-            overflow: hidden;
-            transform: translateY(-20px);
-            transition: transform 0.3s ease;
-            box-shadow: var(--shadow-2xl);
-            display: flex;
-            flex-direction: column;
-        }
-
-        .modal-overlay.active .camera-selection-modal {
-            transform: translateY(0);
-        }
-
-        .modal-header {
-            padding: var(--spacing-6);
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-shrink: 0;
-        }
-
-        .modal-title {
-            font-size: 20px;
-            font-weight: 600;
-            letter-spacing: -0.01em;
-        }
-
-        .modal-close {
-            width: 32px;
-            height: 32px;
-            background-color: transparent;
-            border: none;
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            color: var(--text-secondary);
-        }
-
-        .modal-close:hover {
-            background-color: var(--hover-bg);
-            color: var(--text-primary);
-        }
-
-        .modal-content {
-            display: flex;
-            flex: 1;
-            overflow: hidden;
-            min-height: 0;
-        }
-
-        .projects-sidebar {
-            width: 240px;
-            background-color: var(--bg-tertiary);
-            border-right: 1px solid var(--border-color);
-            overflow-y: auto;
-            flex-shrink: 0;
-        }
-
-        .project-item {
-            padding: var(--spacing-4);
-            border-bottom: 1px solid var(--border-color);
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .project-item:hover {
-            background-color: var(--hover-bg);
-        }
-
-        .project-item.active {
-            background-color: rgba(247, 152, 55, 0.1);
-            border-right: 3px solid var(--color-orange-500);
-            color: var(--color-orange-500);
-        }
-
-        .project-name {
-            font-weight: 600;
-            margin-bottom: 4px;
-        }
-
-        .project-cameras-count {
-            font-size: 12px;
-            color: var(--text-tertiary);
-        }
-
-        .cameras-grid-container {
-            flex: 1;
-            padding: var(--spacing-6);
-            overflow-y: auto;
-            min-width: 0;
-        }
-
-        .cameras-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: var(--spacing-4);
-        }
-
-        .camera-option {
-            background-color: var(--bg-secondary);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: var(--spacing-4);
-            cursor: pointer;
-            transition: all 0.2s ease;
-            text-align: center;
-        }
-
-        .camera-option:hover {
-            border-color: var(--color-orange-500);
-            background-color: var(--hover-bg);
-        }
-
-        .camera-option.selected {
-            border-color: var(--color-orange-500);
-            background-color: rgba(247, 152, 55, 0.1);
-        }
-
-        .camera-option.disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            background-color: var(--bg-tertiary);
-        }
-
-        .camera-option.disabled:hover {
-            border-color: var(--border-color);
-            background-color: var(--bg-tertiary);
-        }
-
-        .camera-option-icon {
-            width: 48px;
-            height: 48px;
-            margin: 0 auto var(--spacing-2);
-            background-color: var(--bg-tertiary);
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--text-secondary);
-        }
-
-        .camera-option.selected .camera-option-icon {
-            background-color: rgba(247, 152, 55, 0.2);
-            color: var(--color-orange-500);
-        }
-
-        .camera-option-name {
-            font-weight: 600;
-            margin-bottom: 4px;
-        }
-
-        .camera-option-status {
-            font-size: 12px;
-            color: var(--text-tertiary);
-        }
-
-        .camera-option.disabled .camera-option-name,
-        .camera-option.disabled .camera-option-status {
-            color: var(--text-tertiary);
-        }
-
-        .modal-footer {
-            padding: var(--spacing-6);
-            border-top: 1px solid var(--border-color);
-            display: flex;
-            justify-content: flex-end;
-            gap: var(--spacing-3);
-            flex-shrink: 0;
-        }
-
         /* Fullscreen Controls */
         .fullscreen-controls {
             position: absolute;
@@ -1074,27 +769,6 @@
 
         .camera-card.fullscreen .fullscreen-controls {
             display: flex;
-        }
-
-        .fullscreen-control-btn {
-            width: 48px;
-            height: 48px;
-            background-color: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            color: var(--color-white);
-        }
-
-        .fullscreen-control-btn:hover {
-            background-color: rgba(0, 0, 0, 0.9);
-            transform: scale(1.05);
         }
 
         .camera-card.fullscreen .camera-feed {
@@ -1177,17 +851,12 @@
             border-radius: 3px;
             position: relative;
             overflow: hidden;
-            box-sizing: border-box;
         }
 
         .battery-level {
-            position: absolute;
-            top: 1.5px;
-            left: 1.5px;
-            bottom: 1.5px;
+            height: 100%;
             background-color: currentColor;
             transition: width 0.3s ease;
-            border-radius: 1px;
         }
 
         .battery-cap {
@@ -1198,7 +867,6 @@
             height: 6px;
             background-color: currentColor;
             border-radius: 0 1px 1px 0;
-            z-index: 1;
         }
 
         /* Alerts Panel */
@@ -1381,361 +1049,53 @@
             stroke-width: 1.5;
         }
 
-        /* Mobile text shortening for buttons */
-        .btn-text {
-            display: inline;
+        /* Autocomplete icon styling */
+        .autocomplete-icon .icon {
+            width: 16px;
+            height: 16px;
         }
 
-        /* Responsive - Tablet */
+        /* Responsive */
         @media (max-width: 1024px) {
             .camera-grid.grid-2x2,
             .camera-grid.grid-3x3,
             .camera-grid.grid-4x4 {
                 grid-template-columns: repeat(2, 1fr);
             }
-            
-            .alerts-panel {
-                width: 320px;
-            }
-            
-            .alerts-panel.collapsed {
-                margin-right: -320px;
-            }
         }
 
-        /* Responsive - Mobile (768px and below) */
         @media (max-width: 768px) {
-            :root {
-                --mobile-header-height: 64px;
-            }
-            
-            .header {
-                padding: var(--spacing-2) var(--spacing-4);
-                position: fixed;
-                width: 100%;
-                height: var(--mobile-header-height);
-            }
-            
             .header-content {
-                gap: var(--spacing-2);
+                flex-wrap: wrap;
+                gap: var(--spacing-3);
             }
-            
-            .logo {
-                font-size: 18px;
-            }
-            
+
             .header-left {
-                gap: var(--spacing-2);
+                flex-basis: 100%;
             }
-            
-            .header-controls {
-                gap: var(--spacing-2);
+
+            .search-container {
+                max-width: none;
+                flex: 1;
             }
-            
-            .main-container {
-                padding-top: var(--mobile-header-height);
-                height: 100vh;
-                min-height: 100vh;
-            }
-            
-            .content-area {
-                padding: var(--spacing-4);
-                height: calc(100vh - var(--mobile-header-height));
-                padding-bottom: calc(var(--spacing-4) + var(--mobile-safe-area-padding));
-            }
-            
+
             .camera-grid {
                 grid-template-columns: 1fr !important;
-                gap: var(--spacing-4);
             }
-            
-            /* Mobile Alerts Panel */
+
             .alerts-panel {
                 position: fixed;
                 right: 0;
-                top: var(--mobile-header-height);
+                top: 60px;
                 bottom: 0;
-                width: 100%;
-                max-width: 100%;
                 z-index: 99;
-                transform: translateX(0);
-                transition: transform 0.3s ease;
-                box-shadow: -2px 0 8px rgba(0, 0, 0, 0.1);
-            }
-            
-            .alerts-panel.collapsed {
-                transform: translateX(100%);
-                margin-right: 0;
-            }
-            
-            /* Mobile Modal */
-            .modal-overlay {
-                padding: 0;
-                align-items: flex-end;
-            }
-            
-            .camera-selection-modal {
                 width: 100%;
-                max-width: 100%;
-                max-height: 90vh;
-                height: 90vh;
-                border-radius: 16px 16px 0 0;
-                margin: 0;
+                max-width: 380px;
+                box-shadow: -4px 0 24px rgba(0, 0, 0, 0.1);
             }
-            
-            .modal-header {
-                padding: var(--spacing-4);
-                position: sticky;
-                top: 0;
-                background-color: var(--card-bg);
-                z-index: 10;
-            }
-            
-            .modal-content {
-                flex-direction: column;
-                height: calc(90vh - 140px);
-            }
-            
-            .projects-sidebar {
-                width: 100%;
-                max-height: 120px;
-                overflow-x: auto;
-                overflow-y: hidden;
-                display: flex;
-                border-right: none;
-                border-bottom: 1px solid var(--border-color);
-                padding: var(--spacing-2) 0;
-            }
-            
-            .project-item {
-                flex-shrink: 0;
-                width: 140px;
-                padding: var(--spacing-3);
-                border-bottom: none;
-                border-right: 1px solid var(--border-color);
-                text-align: center;
-            }
-            
-            .project-item:last-child {
-                border-right: none;
-            }
-            
-            .project-item.active {
-                border-right: 1px solid var(--border-color);
-                border-bottom: 3px solid var(--color-orange-500);
-            }
-            
-            .cameras-grid-container {
-                padding: var(--spacing-4);
-                flex: 1;
-                overflow-y: auto;
-                -webkit-overflow-scrolling: touch;
-            }
-            
-            .cameras-grid {
-                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-                gap: var(--spacing-3);
-            }
-            
-            .camera-option {
-                padding: var(--spacing-3);
-            }
-            
-            .modal-footer {
-                padding: var(--spacing-4);
-                gap: var(--spacing-2);
-                position: sticky;
-                bottom: 0;
-                background-color: var(--card-bg);
-                box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
-            }
-            
-            /* Mobile Dropdown */
-            .dropdown-menu {
-                position: fixed;
-                left: var(--spacing-2);
-                right: var(--spacing-2);
-                top: auto;
-                bottom: var(--spacing-2);
-                max-width: none;
-                max-height: 70vh;
-                overflow-y: auto;
-                margin: 0;
-                transform: translateY(20px);
-            }
-            
-            .dropdown.active .dropdown-menu {
-                transform: translateY(0);
-            }
-            
-            /* Mobile Search */
-            .search-container {
-                max-width: none;
-            }
-            
-            .search-autocomplete {
-                max-height: 60vh;
-                position: fixed;
-                left: var(--spacing-2);
-                right: var(--spacing-2);
-                top: calc(var(--mobile-header-height) + var(--spacing-2));
-            }
-            
-            /* Touch-optimized controls */
-            .camera-remove-btn,
-            .video-control-btn {
-                opacity: 0.8;
-                transform: scale(1);
-                width: 36px;
-                height: 36px;
-            }
-            
-            .camera-card:hover .camera-remove-btn,
-            .camera-card:hover .video-controls {
-                opacity: 0.8;
-                transform: scale(1);
-            }
-        }
 
-        /* Responsive - iPhone 12 Pro (390px) */
-        @media (max-width: 430px) {
-            :root {
-                --mobile-header-height: 56px;
-            }
-            
-            .header {
-                padding: var(--spacing-2) var(--spacing-3);
-                height: var(--mobile-header-height);
-            }
-            
-            .header-content {
-                gap: var(--spacing-2);
-            }
-            
-            .logo {
-                font-size: 16px;
-            }
-            
-            .btn {
-                padding: var(--spacing-2) var(--spacing-3);
-                font-size: 13px;
-                min-height: 40px;
-            }
-            
-            .btn-icon {
-                min-width: 40px;
-                min-height: 40px;
-            }
-            
-            /* Hide button text on mobile, show icons only */
-            .btn-text {
-                display: none;
-            }
-            
-            .btn-primary .btn-text {
-                display: inline;
-            }
-            
-            .search-bar {
-                padding: var(--spacing-2) var(--spacing-3);
-                padding-left: 36px;
-                font-size: 16px; /* Prevents zoom on iOS */
-            }
-            
-            .main-container {
-                padding-top: var(--mobile-header-height);
-                height: 100vh;
-            }
-            
             .content-area {
-                padding: var(--spacing-3);
-                height: calc(100vh - var(--mobile-header-height));
-            }
-            
-            /* Camera grid for mobile */
-            .camera-grid {
-                gap: var(--spacing-3);
-            }
-            
-            .add-camera-card {
-                min-height: 160px;
-            }
-            
-            /* Fullscreen mobile optimizations */
-            .camera-card.fullscreen .fullscreen-controls {
-                top: env(safe-area-inset-top, var(--spacing-3));
-                right: var(--spacing-3);
-                gap: var(--spacing-2);
-            }
-            
-            .fullscreen-control-btn {
-                width: 44px;
-                height: 44px;
-            }
-            
-            .camera-card.fullscreen .camera-overlay {
-                padding: var(--spacing-3);
-                padding-bottom: calc(var(--spacing-3) + env(safe-area-inset-bottom, 0px));
-            }
-            
-            /* Modal adjustments for iPhone 12 */
-            .camera-selection-modal {
-                height: 85vh;
-                max-height: 85vh;
-            }
-            
-            .modal-content {
-                height: calc(85vh - 120px);
-            }
-            
-            .cameras-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            
-            .project-item {
-                width: 120px;
-            }
-        }
-
-        /* Very small screens (360px and below) */
-        @media (max-width: 360px) {
-            .header-controls {
-                flex-wrap: wrap;
-                justify-content: space-between;
-                width: 100%;
-            }
-            
-            .btn-primary {
-                flex: 1;
-                min-width: 100px;
-            }
-            
-            .search-container {
-                order: -1;
-                width: 100%;
-                margin-bottom: var(--spacing-2);
-            }
-            
-            .cameras-grid {
-                grid-template-columns: repeat(2, 1fr);
-                gap: var(--spacing-2);
-            }
-            
-            .camera-option {
-                padding: var(--spacing-2);
-            }
-            
-            .camera-option-icon {
-                width: 36px;
-                height: 36px;
-            }
-            
-            .camera-option-name {
-                font-size: 13px;
-            }
-            
-            .camera-option-status {
-                font-size: 11px;
+                padding: var(--spacing-4);
             }
         }
 
@@ -1754,58 +1114,6 @@
 
         .btn-primary.streaming {
             animation: pulse 2s infinite;
-        }
-
-        /* Touch-friendly hover states */
-        @media (hover: none) and (pointer: coarse) {
-            .camera-card:hover {
-                transform: none;
-                box-shadow: none;
-            }
-            
-            .video-control-btn:hover,
-            .camera-remove-btn:hover,
-            .fullscreen-control-btn:hover {
-                transform: none;
-            }
-            
-            .btn:hover::before {
-                opacity: 0;
-            }
-        }
-
-        /* Prevent text selection on mobile */
-        @media (max-width: 768px) {
-            * {
-                -webkit-user-select: none;
-                -moz-user-select: none;
-                -ms-user-select: none;
-                user-select: none;
-            }
-            
-            input,
-            textarea {
-                -webkit-user-select: text;
-                -moz-user-select: text;
-                -ms-user-select: text;
-                user-select: text;
-            }
-        }
-
-        /* iOS specific fixes */
-        @supports (-webkit-touch-callout: none) {
-            /* iOS specific styles */
-            .modal-overlay {
-                -webkit-backdrop-filter: blur(4px);
-            }
-            
-            .search-bar {
-                font-size: 16px; /* Prevent zoom on focus */
-            }
-            
-            .main-container {
-                min-height: -webkit-fill-available;
-            }
         }
     </style>
 </head>
@@ -1832,7 +1140,7 @@
                         <svg class="icon icon-sm" viewBox="0 0 20 20">
                             <path d="M4 5H16M6 10H14M8 15H12" />
                         </svg>
-                        <span class="btn-text">Filters</span>
+                        Filters
                     </button>
                     <div class="dropdown-menu">
                         <div class="dropdown-section">
@@ -1924,19 +1232,6 @@
                                 <label class="filter-label">Industrial Park B</label>
                             </div>
                         </div>
-                        <!-- Fullscreen controls -->
-                        <div class="fullscreen-controls">
-                            <button class="fullscreen-control-btn" data-action="startLiveView" title="Start Live View">
-                                <svg class="icon" viewBox="0 0 20 20">
-                                    <polygon points="7,5 7,15 15,10" fill="currentColor" stroke="none" />
-                                </svg>
-                            </button>
-                            <button class="fullscreen-control-btn" data-action="exitFullscreen" title="Exit Fullscreen">
-                                <svg class="icon" viewBox="0 0 20 20">
-                                    <path d="M6 3V6H3M3 14V17H6M14 17H17V14M17 6V3H14" />
-                                </svg>
-                            </button>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -1947,16 +1242,13 @@
                     <svg class="icon icon-sm" viewBox="0 0 20 20" id="streamIcon">
                         <polygon points="7,5 7,15 15,10" fill="currentColor" stroke="none" />
                     </svg>
-                    <span class="btn-text" id="streamText">Start All Streams</span>
+                    <span id="streamText">Start All Streams</span>
                 </button>
                 
                 <!-- Display Options Dropdown -->
                 <div class="dropdown" id="configDropdown">
                     <button class="btn btn-secondary" onclick="toggleDropdown('configDropdown')">
-                        <svg class="icon icon-sm" viewBox="0 0 20 20">
-                            <path d="M4 6h2v2H4zM10 6h6M4 12h2v2H4zM10 12h6M4 18h2v2H4zM10 18h6" />
-                        </svg>
-                        <span class="btn-text">Display</span>
+                        Display Options
                     </button>
                     <div class="dropdown-menu">
                         <div class="dropdown-section">
@@ -2012,10 +1304,7 @@
 
                 <!-- Alerts Toggle -->
                 <button class="btn btn-secondary" id="alertsToggle" onclick="toggleAlertsPanel()">
-                    <svg class="icon icon-sm" viewBox="0 0 20 20">
-                        <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 003 13.414V14a1 1 0 001 1h12a1 1 0 001-1v-.586a1 1 0 00-.293-.707L16 12V8a6 6 0 00-6-6zM12 18a2 2 0 11-4 0" />
-                    </svg>
-                    <span class="btn-text">Alerts</span>
+                    <span>Alerts</span>
                     <span class="alert-count">6</span>
                 </button>
             </div>
@@ -2029,17 +1318,10 @@
             <!-- Camera Grid -->
             <div class="camera-grid grid-2x2" id="cameraGrid">
                 <!-- Camera Card 1 - Online with Video -->
-                <div class="camera-card" draggable="true" data-camera-id="1" data-project="downtown-tower" data-camera-name="North Entrance">
+                <div class="camera-card" draggable="true" data-camera-id="1">
                     <div class="camera-feed">
-                        <!-- Remove Button -->
-                        <button class="camera-remove-btn" data-action="removeCamera" title="Remove Camera">
-                            <svg class="icon icon-sm" viewBox="0 0 20 20" stroke-width="2.5">
-                                <path d="M6 6L14 14M6 14L14 6" />
-                            </svg>
-                        </button>
-                        
                         <!-- Video for live feed -->
-                        <video class="camera-video" muted loop playsinline>
+                        <video class="camera-video" autoplay muted loop playsinline>
                             <source src="https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/360/Big_Buck_Bunny_360_10s_1MB.mp4" type="video/mp4">
                         </video>
                         
@@ -2050,12 +1332,7 @@
                         
                         <!-- Video Controls -->
                         <div class="video-controls">
-                            <button class="video-control-btn" data-action="startLiveView" title="Start Live View">
-                                <svg class="icon icon-sm" viewBox="0 0 20 20">
-                                    <polygon points="7,5 7,15 15,10" fill="currentColor" stroke="none" />
-                                </svg>
-                            </button>
-                            <button class="video-control-btn" data-action="toggleFullscreen" title="Fullscreen">
+                            <button class="video-control-btn" onclick="toggleFullscreen(this)" title="Fullscreen">
                                 <svg class="icon icon-sm" viewBox="0 0 20 20">
                                     <path d="M3 6V3H6M14 3H17V6M17 14V17H14M6 17H3V14" />
                                 </svg>
@@ -2072,11 +1349,11 @@
                                 <div class="camera-status">
                                     <div class="status-row">
                                         <div class="status-indicator"></div>
-                                        <span>Snapshot</span>
+                                        <span>Live</span>
                                     </div>
                                     <div class="battery-indicator">
                                         <div class="battery-bar">
-                                            <div class="battery-level" style="width: 24.7px;"></div>
+                                            <div class="battery-level" style="width: 85%;"></div>
                                             <div class="battery-cap"></div>
                                         </div>
                                         <span>85%</span>
@@ -2087,13 +1364,8 @@
                         
                         <!-- Fullscreen controls -->
                         <div class="fullscreen-controls">
-                            <button class="fullscreen-control-btn" onclick="startLiveView(this)" title="Start Live View">
-                                <svg class="icon" viewBox="0 0 20 20">
-                                    <polygon points="7,5 7,15 15,10" fill="currentColor" stroke="none" />
-                                </svg>
-                            </button>
-                            <button class="fullscreen-control-btn" onclick="exitFullscreen(this)" title="Exit Fullscreen">
-                                <svg class="icon" viewBox="0 0 20 20">
+                            <button class="video-control-btn" onclick="exitFullscreen(this)" title="Exit Fullscreen">
+                                <svg class="icon icon-sm" viewBox="0 0 20 20">
                                     <path d="M6 3V6H3M3 14V17H6M14 17H17V14M17 6V3H14" />
                                 </svg>
                             </button>
@@ -2102,15 +1374,8 @@
                 </div>
 
                 <!-- Camera Card 2 - Online with Static Image -->
-                <div class="camera-card" draggable="true" data-camera-id="2" data-project="downtown-tower" data-camera-name="Loading Dock">
+                <div class="camera-card" draggable="true" data-camera-id="2">
                     <div class="camera-feed">
-                        <!-- Remove Button -->
-                        <button class="camera-remove-btn" data-action="removeCamera" title="Remove Camera">
-                            <svg class="icon icon-sm" viewBox="0 0 20 20" stroke-width="2.5">
-                                <path d="M6 6L14 14M6 14L14 6" />
-                            </svg>
-                        </button>
-                        
                         <!-- Static image for paused/snapshot view -->
                         <img class="camera-media" src="https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?w=800&h=450&fit=crop" alt="Loading Dock - Construction Site View">
                         
@@ -2121,12 +1386,12 @@
                         
                         <!-- Video Controls -->
                         <div class="video-controls">
-                            <button class="video-control-btn" data-action="startLiveView" title="Start Live View">
+                            <button class="video-control-btn" onclick="startLiveView(this)" title="Start Live View">
                                 <svg class="icon icon-sm" viewBox="0 0 20 20">
                                     <polygon points="7,5 7,15 15,10" fill="currentColor" stroke="none" />
                                 </svg>
                             </button>
-                            <button class="video-control-btn" data-action="toggleFullscreen" title="Fullscreen">
+                            <button class="video-control-btn" onclick="toggleFullscreen(this)" title="Fullscreen">
                                 <svg class="icon icon-sm" viewBox="0 0 20 20">
                                     <path d="M3 6V3H6M14 3H17V6M17 14V17H14M6 17H3V14" />
                                 </svg>
@@ -2147,7 +1412,7 @@
                                     </div>
                                     <div class="battery-indicator">
                                         <div class="battery-bar">
-                                            <div class="battery-level" style="width: 26.7px;"></div>
+                                            <div class="battery-level" style="width: 92%;"></div>
                                             <div class="battery-cap"></div>
                                         </div>
                                         <span>92%</span>
@@ -2158,13 +1423,8 @@
                         
                         <!-- Fullscreen controls -->
                         <div class="fullscreen-controls">
-                            <button class="fullscreen-control-btn" onclick="startLiveView(this)" title="Start Live View">
-                                <svg class="icon" viewBox="0 0 20 20">
-                                    <polygon points="7,5 7,15 15,10" fill="currentColor" stroke="none" />
-                                </svg>
-                            </button>
-                            <button class="fullscreen-control-btn" onclick="exitFullscreen(this)" title="Exit Fullscreen">
-                                <svg class="icon" viewBox="0 0 20 20">
+                            <button class="video-control-btn" onclick="exitFullscreen(this)" title="Exit Fullscreen">
+                                <svg class="icon icon-sm" viewBox="0 0 20 20">
                                     <path d="M6 3V6H3M3 14V17H6M14 17H17V14M17 6V3H14" />
                                 </svg>
                             </button>
@@ -2173,15 +1433,8 @@
                 </div>
 
                 <!-- Camera Card 3 - Offline -->
-                <div class="camera-card" draggable="true" data-camera-id="3" data-project="downtown-tower" data-camera-name="East Perimeter">
+                <div class="camera-card" draggable="true" data-camera-id="3">
                     <div class="camera-feed">
-                        <!-- Remove Button -->
-                        <button class="camera-remove-btn" data-action="removeCamera" title="Remove Camera">
-                            <svg class="icon icon-sm" viewBox="0 0 20 20" stroke-width="2.5">
-                                <path d="M6 6L14 14M6 14L14 6" />
-                            </svg>
-                        </button>
-                        
                         <!-- Offline state with last known image -->
                         <img class="camera-media" src="https://images.unsplash.com/photo-1541888946425-d81bb19240f5?w=800&h=450&fit=crop" alt="East Perimeter - Last Known Image" style="opacity: 0.5; filter: grayscale(100%);">
                         
@@ -2207,7 +1460,7 @@
                                     </div>
                                     <div class="battery-indicator" style="color: var(--color-error-500);">
                                         <div class="battery-bar" style="border-color: var(--color-error-500);">
-                                            <div class="battery-level" style="width: 3.5px; background-color: var(--color-error-500);"></div>
+                                            <div class="battery-level" style="width: 12%; background-color: var(--color-error-500);"></div>
                                             <div class="battery-cap" style="background-color: var(--color-error-500);"></div>
                                         </div>
                                         <span>12%</span>
@@ -2219,17 +1472,10 @@
                 </div>
 
                 <!-- Camera Card 4 - Online with Video -->
-                <div class="camera-card" draggable="true" data-camera-id="4" data-project="riverside-complex" data-camera-name="Crane Platform">
+                <div class="camera-card" draggable="true" data-camera-id="4">
                     <div class="camera-feed">
-                        <!-- Remove Button -->
-                        <button class="camera-remove-btn" data-action="removeCamera" title="Remove Camera">
-                            <svg class="icon icon-sm" viewBox="0 0 20 20" stroke-width="2.5">
-                                <path d="M6 6L14 14M6 14L14 6" />
-                            </svg>
-                        </button>
-                        
                         <!-- Different video for variety -->
-                        <video class="camera-video" muted loop playsinline>
+                        <video class="camera-video" autoplay muted loop playsinline>
                             <source src="https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/360/Big_Buck_Bunny_360_10s_2MB.mp4" type="video/mp4">
                         </video>
                         
@@ -2240,12 +1486,7 @@
                         
                         <!-- Video Controls -->
                         <div class="video-controls">
-                            <button class="video-control-btn" data-action="startLiveView" title="Start Live View">
-                                <svg class="icon icon-sm" viewBox="0 0 20 20">
-                                    <polygon points="7,5 7,15 15,10" fill="currentColor" stroke="none" />
-                                </svg>
-                            </button>
-                            <button class="video-control-btn" data-action="toggleFullscreen" title="Fullscreen">
+                            <button class="video-control-btn" onclick="toggleFullscreen(this)" title="Fullscreen">
                                 <svg class="icon icon-sm" viewBox="0 0 20 20">
                                     <path d="M3 6V3H6M14 3H17V6M17 14V17H14M6 17H3V14" />
                                 </svg>
@@ -2262,11 +1503,11 @@
                                 <div class="camera-status">
                                     <div class="status-row">
                                         <div class="status-indicator"></div>
-                                        <span>Snapshot</span>
+                                        <span>Live</span>
                                     </div>
                                     <div class="battery-indicator">
                                         <div class="battery-bar">
-                                            <div class="battery-level" style="width: 19.4px;"></div>
+                                            <div class="battery-level" style="width: 67%;"></div>
                                             <div class="battery-cap"></div>
                                         </div>
                                         <span>67%</span>
@@ -2277,28 +1518,13 @@
                         
                         <!-- Fullscreen controls -->
                         <div class="fullscreen-controls">
-                            <button class="fullscreen-control-btn" data-action="startLiveView" title="Start Live View">
-                                <svg class="icon" viewBox="0 0 20 20">
-                                    <polygon points="7,5 7,15 15,10" fill="currentColor" stroke="none" />
-                                </svg>
-                            </button>
-                            <button class="fullscreen-control-btn" data-action="exitFullscreen" title="Exit Fullscreen">
-                                <svg class="icon" viewBox="0 0 20 20">
+                            <button class="video-control-btn" onclick="exitFullscreen(this)" title="Exit Fullscreen">
+                                <svg class="icon icon-sm" viewBox="0 0 20 20">
                                     <path d="M6 3V6H3M3 14V17H6M14 17H17V14M17 6V3H14" />
                                 </svg>
                             </button>
                         </div>
                     </div>
-                </div>
-
-                <!-- Add Camera Card -->
-                <div class="add-camera-card" onclick="openCameraSelection()">
-                    <div class="add-camera-icon">
-                        <svg class="icon" viewBox="0 0 20 20" stroke-width="2">
-                            <path d="M10 5V15M5 10H15" />
-                        </svg>
-                    </div>
-                    <span>Add Camera</span>
                 </div>
             </div>
         </main>
@@ -2367,361 +1593,7 @@
         </aside>
     </div>
 
-    <!-- Camera Selection Modal -->
-    <div class="modal-overlay" id="cameraSelectionModal">
-        <div class="camera-selection-modal">
-            <div class="modal-header">
-                <h2 class="modal-title">Add Camera Feed</h2>
-                <button class="modal-close" onclick="closeCameraSelection()">
-                    <svg class="icon icon-sm" viewBox="0 0 20 20">
-                        <path d="M6 6L14 14M6 14L14 6" />
-                    </svg>
-                </button>
-            </div>
-            
-            <div class="modal-content">
-                <div class="projects-sidebar">
-                    <div class="project-item active" data-project="downtown-tower">
-                        <div class="project-name">Downtown Tower</div>
-                        <div class="project-cameras-count">8 cameras</div>
-                    </div>
-                    <div class="project-item" data-project="riverside-complex">
-                        <div class="project-name">Riverside Complex</div>
-                        <div class="project-cameras-count">12 cameras</div>
-                    </div>
-                    <div class="project-item" data-project="industrial-park-b">
-                        <div class="project-name">Industrial Park B</div>
-                        <div class="project-cameras-count">15 cameras</div>
-                    </div>
-                    <div class="project-item" data-project="metro-station">
-                        <div class="project-name">Metro Station</div>
-                        <div class="project-cameras-count">6 cameras</div>
-                    </div>
-                    <div class="project-item" data-project="harbor-development">
-                        <div class="project-name">Harbor Development</div>
-                        <div class="project-cameras-count">10 cameras</div>
-                    </div>
-                </div>
-                
-                <div class="cameras-grid-container">
-                    <div class="cameras-grid" id="availableCamerasGrid">
-                        <!-- Cameras will be populated here -->
-                    </div>
-                </div>
-            </div>
-            
-            <div class="modal-footer">
-                <button class="btn btn-secondary" onclick="closeCameraSelection()">Cancel</button>
-                <button class="btn btn-primary" onclick="addSelectedCameras()" id="addCamerasBtn" disabled>Add Selected</button>
-            </div>
-        </div>
-    </div>
-
     <script>
-        // Projects and Camera Data
-        const projectsData = {
-            'downtown-tower': {
-                name: 'Downtown Tower',
-                cameras: [
-                    { id: 'dt-001', name: 'North Entrance', status: 'online', battery: 85, type: 'video' },
-                    { id: 'dt-002', name: 'Loading Dock', status: 'online', battery: 92, type: 'image' },
-                    { id: 'dt-003', name: 'East Perimeter', status: 'offline', battery: 12, type: 'image' },
-                    { id: 'dt-004', name: 'South Gate', status: 'online', battery: 78, type: 'video' },
-                    { id: 'dt-005', name: 'Parking Area', status: 'online', battery: 65, type: 'image' },
-                    { id: 'dt-006', name: 'Main Lobby', status: 'online', battery: 88, type: 'video' },
-                    { id: 'dt-007', name: 'Elevator Bank', status: 'maintenance', battery: 45, type: 'image' },
-                    { id: 'dt-008', name: 'Roof Access', status: 'online', battery: 72, type: 'video' }
-                ]
-            },
-            'riverside-complex': {
-                name: 'Riverside Complex',
-                cameras: [
-                    { id: 'rc-001', name: 'Crane Platform', status: 'online', battery: 67, type: 'video' },
-                    { id: 'rc-002', name: 'Foundation Area', status: 'online', battery: 89, type: 'image' },
-                    { id: 'rc-003', name: 'Material Storage', status: 'online', battery: 56, type: 'video' },
-                    { id: 'rc-004', name: 'River View', status: 'offline', battery: 23, type: 'image' },
-                    { id: 'rc-005', name: 'Access Road', status: 'online', battery: 91, type: 'video' },
-                    { id: 'rc-006', name: 'Worker Entrance', status: 'online', battery: 74, type: 'image' },
-                    { id: 'rc-007', name: 'Concrete Plant', status: 'online', battery: 82, type: 'video' },
-                    { id: 'rc-008', name: 'Dock Area', status: 'maintenance', battery: 34, type: 'image' },
-                    { id: 'rc-009', name: 'Security Gate', status: 'online', battery: 95, type: 'video' },
-                    { id: 'rc-010', name: 'Equipment Yard', status: 'online', battery: 61, type: 'image' },
-                    { id: 'rc-011', name: 'Building A Site', status: 'online', battery: 79, type: 'video' },
-                    { id: 'rc-012', name: 'Building B Site', status: 'online', battery: 86, type: 'image' }
-                ]
-            },
-            'industrial-park-b': {
-                name: 'Industrial Park B',
-                cameras: [
-                    { id: 'ipb-001', name: 'Main Entrance', status: 'online', battery: 93, type: 'video' },
-                    { id: 'ipb-002', name: 'Warehouse 1', status: 'online', battery: 77, type: 'image' },
-                    { id: 'ipb-003', name: 'Warehouse 2', status: 'online', battery: 84, type: 'video' },
-                    { id: 'ipb-004', name: 'Loading Bay A', status: 'offline', battery: 18, type: 'image' },
-                    { id: 'ipb-005', name: 'Loading Bay B', status: 'online', battery: 69, type: 'video' },
-                    { id: 'ipb-006', name: 'Admin Building', status: 'online', battery: 91, type: 'image' },
-                    { id: 'ipb-007', name: 'Parking Lot 1', status: 'online', battery: 58, type: 'video' },
-                    { id: 'ipb-008', name: 'Parking Lot 2', status: 'maintenance', battery: 42, type: 'image' },
-                    { id: 'ipb-009', name: 'Security Office', status: 'online', battery: 87, type: 'video' },
-                    { id: 'ipb-010', name: 'Fire Station', status: 'online', battery: 76, type: 'image' },
-                    { id: 'ipb-011', name: 'Power Substation', status: 'online', battery: 94, type: 'video' },
-                    { id: 'ipb-012', name: 'Water Treatment', status: 'online', battery: 83, type: 'image' },
-                    { id: 'ipb-013', name: 'Waste Management', status: 'offline', battery: 15, type: 'video' },
-                    { id: 'ipb-014', name: 'Perimeter North', status: 'online', battery: 70, type: 'image' },
-                    { id: 'ipb-015', name: 'Perimeter South', status: 'online', battery: 62, type: 'video' }
-                ]
-            },
-            'metro-station': {
-                name: 'Metro Station',
-                cameras: [
-                    { id: 'ms-001', name: 'Platform A', status: 'online', battery: 89, type: 'video' },
-                    { id: 'ms-002', name: 'Platform B', status: 'online', battery: 76, type: 'video' },
-                    { id: 'ms-003', name: 'Concourse', status: 'online', battery: 92, type: 'image' },
-                    { id: 'ms-004', name: 'Escalator Area', status: 'maintenance', battery: 38, type: 'video' },
-                    { id: 'ms-005', name: 'Ticket Hall', status: 'online', battery: 85, type: 'image' },
-                    { id: 'ms-006', name: 'Emergency Exit', status: 'online', battery: 71, type: 'video' }
-                ]
-            },
-            'harbor-development': {
-                name: 'Harbor Development',
-                cameras: [
-                    { id: 'hd-001', name: 'Pier 1', status: 'online', battery: 81, type: 'video' },
-                    { id: 'hd-002', name: 'Pier 2', status: 'online', battery: 74, type: 'image' },
-                    { id: 'hd-003', name: 'Marina Office', status: 'online', battery: 96, type: 'video' },
-                    { id: 'hd-004', name: 'Fuel Station', status: 'offline', battery: 27, type: 'image' },
-                    { id: 'hd-005', name: 'Boat Ramp', status: 'online', battery: 63, type: 'video' },
-                    { id: 'hd-006', name: 'Parking Area', status: 'online', battery: 88, type: 'image' },
-                    { id: 'hd-007', name: 'Restaurant Deck', status: 'online', battery: 79, type: 'video' },
-                    { id: 'hd-008', name: 'Lighthouse', status: 'maintenance', battery: 51, type: 'image' },
-                    { id: 'hd-009', name: 'Breakwater', status: 'online', battery: 67, type: 'video' },
-                    { id: 'hd-010', name: 'Harbor Master', status: 'online', battery: 90, type: 'image' }
-                ]
-            }
-        };
-
-        let selectedCameras = [];
-        let currentProject = 'downtown-tower';
-
-        // Camera Management Functions
-        function openCameraSelection() {
-            const modal = document.getElementById('cameraSelectionModal');
-            modal.classList.add('active');
-            selectedCameras = [];
-            populateCamerasGrid(currentProject);
-            updateAddButton();
-            document.body.style.overflow = 'hidden';
-        }
-
-        function closeCameraSelection() {
-            const modal = document.getElementById('cameraSelectionModal');
-            modal.classList.remove('active');
-            selectedCameras = [];
-            document.body.style.overflow = '';
-        }
-
-        function populateCamerasGrid(projectId) {
-            const grid = document.getElementById('availableCamerasGrid');
-            const project = projectsData[projectId];
-            
-            if (!project) return;
-            
-            // Get currently added camera IDs
-            const addedCameraIds = Array.from(document.querySelectorAll('.camera-card')).map(card => 
-                card.dataset.cameraId
-            );
-            
-            grid.innerHTML = '';
-            
-            project.cameras.forEach(camera => {
-                const isAdded = addedCameraIds.includes(camera.id);
-                const isDisabled = camera.status === 'maintenance' || camera.status === 'offline';
-                
-                const cameraOption = document.createElement('div');
-                cameraOption.className = `camera-option ${isAdded ? 'disabled' : ''} ${isDisabled ? 'disabled' : ''}`;
-                cameraOption.dataset.cameraId = camera.id;
-                
-                if (!isAdded && !isDisabled) {
-                    cameraOption.addEventListener('click', () => toggleCameraSelection(camera));
-                }
-                
-                cameraOption.innerHTML = `
-                    <div class="camera-option-icon">
-                        <svg class="icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2">
-                            ${camera.type === 'video' ? 
-                                '<path d="M23 7L16 12L23 17V7Z"/><rect x="1" y="5" width="15" height="14" rx="2"/>' :
-                                '<rect x="3" y="3" width="14" height="14" rx="2"/><circle cx="10" cy="10" r="3"/><path d="M21 15L15.5 9.5L10 15"/>'
-                            }
-                        </svg>
-                    </div>
-                    <div class="camera-option-name">${camera.name}</div>
-                    <div class="camera-option-status">
-                        ${isAdded ? 'Already added' : camera.status === 'online' ? 'Online' : camera.status.charAt(0).toUpperCase() + camera.status.slice(1)}
-                        ${camera.status === 'online' ? ` • ${camera.battery}%` : ''}
-                    </div>
-                `;
-                
-                grid.appendChild(cameraOption);
-            });
-        }
-
-        function toggleCameraSelection(camera) {
-            const index = selectedCameras.findIndex(c => c.id === camera.id);
-            const cameraOption = document.querySelector(`[data-camera-id="${camera.id}"]`);
-            
-            if (index > -1) {
-                selectedCameras.splice(index, 1);
-                cameraOption.classList.remove('selected');
-            } else {
-                selectedCameras.push(camera);
-                cameraOption.classList.add('selected');
-            }
-            
-            updateAddButton();
-        }
-
-        function updateAddButton() {
-            const addBtn = document.getElementById('addCamerasBtn');
-            addBtn.disabled = selectedCameras.length === 0;
-            addBtn.textContent = selectedCameras.length === 0 ? 'Add Selected' : 
-                                selectedCameras.length === 1 ? 'Add 1 Camera' : 
-                                `Add ${selectedCameras.length} Cameras`;
-        }
-
-        function addSelectedCameras() {
-            const grid = document.getElementById('cameraGrid');
-            const addCard = grid.querySelector('.add-camera-card');
-            
-            selectedCameras.forEach(camera => {
-                const cameraCard = createCameraCard(camera);
-                grid.insertBefore(cameraCard, addCard);
-            });
-            
-            // Re-initialize drag and drop for new cards
-            initializeDragAndDrop();
-            saveCameraOrder();
-            closeCameraSelection();
-        }
-
-        function createCameraCard(camera) {
-            const project = Object.values(projectsData).find(p => 
-                p.cameras.some(c => c.id === camera.id)
-            );
-            
-            const card = document.createElement('div');
-            card.className = 'camera-card';
-            card.draggable = true;
-            card.dataset.cameraId = camera.id;
-            card.dataset.project = Object.keys(projectsData).find(key => projectsData[key] === project);
-            card.dataset.cameraName = camera.name;
-            
-            const mediaElement = camera.type === 'video' ? 
-                `<video class="camera-video" muted loop playsinline>
-                    <source src="https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/360/Big_Buck_Bunny_360_10s_1MB.mp4" type="video/mp4">
-                </video>` :
-                `<img class="camera-media" src="https://images.unsplash.com/photo-${Math.floor(Math.random() * 1000000000)}?w=800&h=450&fit=crop" alt="${camera.name}">`;
-            
-            const statusIndicatorClass = camera.status === 'online' ? '' : 'offline';
-            const statusText = camera.status === 'online' ? 'Snapshot' : 'Offline';
-            const batteryColor = camera.battery < 30 ? 'var(--color-error-500)' : 'inherit';
-            const batteryWidth = (camera.battery / 100) * 29; // 29px is inner width (32px - 3px for borders)
-            
-            card.innerHTML = `
-                <div class="camera-feed">
-                    <button class="camera-remove-btn" data-action="removeCamera" title="Remove Camera">
-                        <svg class="icon icon-sm" viewBox="0 0 20 20" stroke-width="2.5">
-                            <path d="M6 6L14 14M6 14L14 6" />
-                        </svg>
-                    </button>
-                    
-                    ${mediaElement}
-                    
-                    <div class="camera-loading">
-                        <div class="loading-spinner"></div>
-                    </div>
-                    
-                    <div class="video-controls">
-                        <button class="video-control-btn" data-action="startLiveView" title="Start Live View">
-                            <svg class="icon icon-sm" viewBox="0 0 20 20">
-                                <polygon points="7,5 7,15 15,10" fill="currentColor" stroke="none" />
-                            </svg>
-                        </button>
-                        <button class="video-control-btn" data-action="toggleFullscreen" title="Fullscreen">
-                            <svg class="icon icon-sm" viewBox="0 0 20 20">
-                                <path d="M3 6V3H6M14 3H17V6M17 14V17H14M6 17H3V14" />
-                            </svg>
-                        </button>
-                    </div>
-                    
-                    <div class="camera-overlay">
-                        <div class="camera-info">
-                            <div class="camera-details">
-                                <h3>${camera.name}</h3>
-                                <p>${project.name}</p>
-                                <p style="font-size: 12px; opacity: 0.7;">2024-01-15 14:32:18</p>
-                            </div>
-                            <div class="camera-status">
-                                <div class="status-row">
-                                    <div class="status-indicator ${statusIndicatorClass}"></div>
-                                    <span>${statusText}</span>
-                                </div>
-                                <div class="battery-indicator" style="color: ${batteryColor};">
-                                    <div class="battery-bar" style="border-color: ${batteryColor};">
-                                        <div class="battery-level" style="width: ${batteryWidth}px; background-color: ${batteryColor};"></div>
-                                        <div class="battery-cap" style="background-color: ${batteryColor};"></div>
-                                    </div>
-                                    <span>${camera.battery}%</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="fullscreen-controls">
-                        ${camera.status === 'online' ? 
-                            `<button class="fullscreen-control-btn" data-action="startLiveView" title="Start Live View">
-                                <svg class="icon" viewBox="0 0 20 20">
-                                    <polygon points="7,5 7,15 15,10" fill="currentColor" stroke="none" />
-                                </svg>
-                            </button>` : ''
-                        }
-                        <button class="fullscreen-control-btn" data-action="exitFullscreen" title="Exit Fullscreen">
-                            <svg class="icon" viewBox="0 0 20 20">
-                                <path d="M6 3V6H3M3 14V17H6M14 17H17V14M17 6V3H14" />
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-            `;
-            
-            return card;
-        }
-
-        function removeCamera(button) {
-            const card = button.closest('.camera-card');
-            card.remove();
-            saveCameraOrder();
-        }
-
-        // Project Selection
-        document.querySelectorAll('.project-item').forEach(item => {
-            item.addEventListener('click', function() {
-                // Update active state
-                document.querySelectorAll('.project-item').forEach(p => p.classList.remove('active'));
-                this.classList.add('active');
-                
-                // Update current project and populate cameras
-                currentProject = this.dataset.project;
-                selectedCameras = [];
-                populateCamerasGrid(currentProject);
-                updateAddButton();
-            });
-        });
-
-        // Close modal when clicking outside
-        document.getElementById('cameraSelectionModal').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeCameraSelection();
-            }
-        });
-
         // Theme Toggle
         function toggleDarkMode(element) {
             const body = document.body;
@@ -3032,119 +1904,46 @@
             card.setAttribute('draggable', 'true');
         }
 
-        // Updated startLiveView function
+        // Start live view for static images
         function startLiveView(button) {
             const feed = button.closest('.camera-feed');
-            const video = feed.querySelector('.camera-video');
             const img = feed.querySelector('.camera-media');
             const statusText = feed.querySelector('.camera-status span');
             
-            // Get both regular and fullscreen control buttons
-            const regularControlBtn = feed.querySelector('.video-controls button');
-            const fullscreenControlBtn = feed.querySelector('.fullscreen-controls button');
+            // Show loading
+            const loading = feed.querySelector('.camera-loading');
+            loading.classList.add('active');
             
-            if (video) {
-                // For video elements, just start playing
-                const loading = feed.querySelector('.camera-loading');
+            // Create video element
+            const video = document.createElement('video');
+            video.className = 'camera-video';
+            video.autoplay = true;
+            video.muted = true;
+            video.loop = true;
+            video.playsInline = true;
+            
+            // Use a different video source for variety
+            video.innerHTML = '<source src="https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/360/Big_Buck_Bunny_360_10s_1MB.mp4" type="video/mp4">';
+            
+            video.onloadeddata = function() {
+                // Replace image with video
+                img.style.display = 'none';
+                feed.insertBefore(video, img);
+                loading.classList.remove('active');
                 
-                // Check if video is already loaded
-                if (video.readyState >= 3) { // HAVE_FUTURE_DATA or higher
-                    // Video is already loaded, start immediately
-                    statusText.textContent = 'Live';
-                    
-                    // Update both control buttons
-                    [regularControlBtn, fullscreenControlBtn].forEach(btn => {
-                        if (btn && btn.getAttribute('data-action') !== 'exitFullscreen' && btn.getAttribute('data-action') !== 'toggleFullscreen') {
-                            const iconSize = btn.classList.contains('fullscreen-control-btn') ? '' : 'icon-sm';
-                            btn.innerHTML = `
-                                <svg class="icon ${iconSize}" viewBox="0 0 20 20">
-                                    <rect x="6" y="5" width="3" height="10" fill="currentColor" stroke="none" />
-                                    <rect x="11" y="5" width="3" height="10" fill="currentColor" stroke="none" />
-                                </svg>
-                            `;
-                            btn.setAttribute('data-action', 'pauseLiveView');
-                            btn.setAttribute('title', 'Pause Live View');
-                        }
-                    });
-                    
-                    video.play();
-                } else {
-                    // Video not loaded yet, show loading spinner
-                    loading.classList.add('active');
-                    
-                    const handleVideoReady = function() {
-                        loading.classList.remove('active');
-                        statusText.textContent = 'Live';
-                        
-                        // Update both control buttons
-                        [regularControlBtn, fullscreenControlBtn].forEach(btn => {
-                            if (btn && btn.getAttribute('data-action') !== 'exitFullscreen' && btn.getAttribute('data-action') !== 'toggleFullscreen') {
-                                const iconSize = btn.classList.contains('fullscreen-control-btn') ? '' : 'icon-sm';
-                                btn.innerHTML = `
-                                    <svg class="icon ${iconSize}" viewBox="0 0 20 20">
-                                        <rect x="6" y="5" width="3" height="10" fill="currentColor" stroke="none" />
-                                        <rect x="11" y="5" width="3" height="10" fill="currentColor" stroke="none" />
-                                    </svg>
-                                `;
-                                btn.setAttribute('data-action', 'pauseLiveView');
-                                btn.setAttribute('title', 'Pause Live View');
-                            }
-                        });
-                        
-                        // Remove event listeners
-                        video.removeEventListener('loadeddata', handleVideoReady);
-                        video.removeEventListener('canplay', handleVideoReady);
-                    };
-                    
-                    video.addEventListener('loadeddata', handleVideoReady);
-                    video.addEventListener('canplay', handleVideoReady);
-                    video.play();
-                }
-            } else if (img) {
-                // For image elements, create video and replace
-                const loading = feed.querySelector('.camera-loading');
-                loading.classList.add('active');
+                // Update status
+                statusText.textContent = 'Live';
                 
-                // Create video element
-                const newVideo = document.createElement('video');
-                newVideo.className = 'camera-video';
-                newVideo.muted = true;
-                newVideo.loop = true;
-                newVideo.playsInline = true;
-                
-                // Use a different video source for variety
-                newVideo.innerHTML = '<source src="https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/360/Big_Buck_Bunny_360_10s_1MB.mp4" type="video/mp4">';
-                
-                newVideo.onloadeddata = function() {
-                    // Replace image with video
-                    img.style.display = 'none';
-                    feed.insertBefore(newVideo, img);
-                    loading.classList.remove('active');
-                    
-                    // Update status
-                    statusText.textContent = 'Live';
-                    
-                    // Update both control buttons
-                    const regularControlBtn = feed.querySelector('.video-controls button');
-                    const fullscreenControlBtn = feed.querySelector('.fullscreen-controls button');
-                    
-                    [regularControlBtn, fullscreenControlBtn].forEach(btn => {
-                        if (btn && btn.getAttribute('data-action') !== 'exitFullscreen' && btn.getAttribute('data-action') !== 'toggleFullscreen') {
-                            const iconSize = btn.classList.contains('fullscreen-control-btn') ? '' : 'icon-sm';
-                            btn.innerHTML = `
-                                <svg class="icon ${iconSize}" viewBox="0 0 20 20">
-                                    <rect x="6" y="5" width="3" height="10" fill="currentColor" stroke="none" />
-                                    <rect x="11" y="5" width="3" height="10" fill="currentColor" stroke="none" />
-                                </svg>
-                            `;
-                            btn.setAttribute('data-action', 'pauseLiveView');
-                            btn.setAttribute('title', 'Pause Live View');
-                        }
-                    });
-                };
-                
-                newVideo.play();
-            }
+                // Change button to pause
+                button.innerHTML = `
+                    <svg class="icon icon-sm" viewBox="0 0 20 20">
+                        <rect x="6" y="5" width="3" height="10" fill="currentColor" stroke="none" />
+                        <rect x="11" y="5" width="3" height="10" fill="currentColor" stroke="none" />
+                    </svg>
+                `;
+                button.setAttribute('onclick', 'pauseLiveView(this)');
+                button.setAttribute('title', 'Pause Live View');
+            };
         }
 
         function pauseLiveView(button) {
@@ -3153,58 +1952,37 @@
             const img = feed.querySelector('.camera-media');
             const statusText = feed.querySelector('.camera-status span');
             
-            if (video) {
-                video.pause();
-                
-                // Get both regular and fullscreen control buttons
-                const regularControlBtn = feed.querySelector('.video-controls button');
-                const fullscreenControlBtn = feed.querySelector('.fullscreen-controls button');
-                
-                // If there's an image, show it and hide video
-                if (img) {
-                    video.remove();
-                    img.style.display = 'block';
-                    statusText.textContent = 'Snapshot';
-                } else {
-                    statusText.textContent = 'Paused';
-                }
-                
-                // Update both control buttons
-                [regularControlBtn, fullscreenControlBtn].forEach(btn => {
-                    if (btn && btn.getAttribute('data-action') !== 'exitFullscreen' && btn.getAttribute('data-action') !== 'toggleFullscreen') {
-                        const iconSize = btn.classList.contains('fullscreen-control-btn') ? '' : 'icon-sm';
-                        btn.innerHTML = `
-                            <svg class="icon ${iconSize}" viewBox="0 0 20 20">
-                                <polygon points="7,5 7,15 15,10" fill="currentColor" stroke="none" />
-                            </svg>
-                        `;
-                        btn.setAttribute('data-action', 'startLiveView');
-                        btn.setAttribute('title', 'Start Live View');
-                    }
-                });
-            }
+            // Remove video and show image
+            video.remove();
+            img.style.display = 'block';
+            
+            // Update status
+            statusText.textContent = 'Snapshot';
+            
+            // Change button back to play
+            button.innerHTML = `
+                <svg class="icon icon-sm" viewBox="0 0 20 20">
+                    <polygon points="7,5 7,15 15,10" fill="currentColor" stroke="none" />
+                </svg>
+            `;
+            button.setAttribute('onclick', 'startLiveView(this)');
+            button.setAttribute('title', 'Start Live View');
         }
 
-        // Handle video and image loading states with event delegation
-        document.addEventListener('loadstart', function(e) {
-            if (e.target.classList.contains('camera-video')) {
-                const loading = e.target.parentElement.querySelector('.camera-loading');
-                if (loading) loading.classList.add('active');
-            }
-        }, true);
-        
-        document.addEventListener('loadeddata', function(e) {
-            if (e.target.classList.contains('camera-video')) {
-                const loading = e.target.parentElement.querySelector('.camera-loading');
-                if (loading) loading.classList.remove('active');
-            }
-        }, true);
-        
-        document.addEventListener('error', function(e) {
-            if (e.target.classList.contains('camera-video')) {
-                const loading = e.target.parentElement.querySelector('.camera-loading');
-                if (loading) loading.classList.remove('active');
-                
+        // Handle video loading states
+        document.querySelectorAll('.camera-video').forEach(video => {
+            const loading = video.parentElement.querySelector('.camera-loading');
+            
+            video.addEventListener('loadstart', () => {
+                loading.classList.add('active');
+            });
+            
+            video.addEventListener('loadeddata', () => {
+                loading.classList.remove('active');
+            });
+            
+            video.addEventListener('error', () => {
+                loading.classList.remove('active');
                 // Show error state
                 const placeholder = document.createElement('div');
                 placeholder.className = 'camera-placeholder';
@@ -3217,67 +1995,43 @@
                         <p>Failed to load video</p>
                     </div>
                 `;
-                e.target.style.display = 'none';
-                e.target.parentElement.appendChild(placeholder);
-            } else if (e.target.classList.contains('camera-media')) {
-                const loading = e.target.parentElement.querySelector('.camera-loading');
-                if (loading) loading.classList.remove('active');
-                
-                e.target.style.display = 'none';
-                
-                // Show error placeholder
-                const placeholder = document.createElement('div');
-                placeholder.className = 'camera-placeholder';
-                placeholder.innerHTML = `
-                    <svg class="icon icon-lg" style="opacity: 0.15;" viewBox="0 0 24 24">
-                        <path d="M23 7L16 12L23 17V7Z" />
-                        <rect x="1" y="5" width="15" height="14" rx="2" />
-                    </svg>
-                `;
-                e.target.parentElement.appendChild(placeholder);
-            }
-        }, true);
-        
-        document.addEventListener('load', function(e) {
-            if (e.target.classList.contains('camera-media')) {
-                const loading = e.target.parentElement.querySelector('.camera-loading');
-                if (loading) loading.classList.remove('active');
-            }
-        }, true);
+                video.style.display = 'none';
+                video.parentElement.appendChild(placeholder);
+            });
+        });
 
-        // Event delegation for video controls
-        document.addEventListener('click', function(e) {
-            // Handle fullscreen toggle
-            if (e.target.closest('[data-action="toggleFullscreen"]')) {
-                e.preventDefault();
-                toggleFullscreen(e.target);
-            }
+        // Handle image loading states
+        document.querySelectorAll('.camera-media').forEach(img => {
+            const loading = img.parentElement.querySelector('.camera-loading');
             
-            // Handle exit fullscreen
-            if (e.target.closest('[data-action="exitFullscreen"]')) {
-                e.preventDefault();
-                exitFullscreen(e.target);
-            }
-            
-            // Handle start live view
-            if (e.target.closest('[data-action="startLiveView"]')) {
-                e.preventDefault();
-                startLiveView(e.target);
-            }
-            
-            // Handle pause live view
-            if (e.target.closest('[data-action="pauseLiveView"]')) {
-                e.preventDefault();
-                pauseLiveView(e.target);
-            }
-            
-            // Handle remove camera
-            if (e.target.closest('[data-action="removeCamera"]')) {
-                e.preventDefault();
-                removeCamera(e.target);
+            if (loading) {
+                img.addEventListener('loadstart', () => {
+                    loading.classList.add('active');
+                });
+                
+                img.addEventListener('load', () => {
+                    loading.classList.remove('active');
+                });
+                
+                img.addEventListener('error', () => {
+                    loading.classList.remove('active');
+                    img.style.display = 'none';
+                    
+                    // Show error placeholder
+                    const placeholder = document.createElement('div');
+                    placeholder.className = 'camera-placeholder';
+                    placeholder.innerHTML = `
+                        <svg class="icon icon-lg" style="opacity: 0.15;" viewBox="0 0 24 24">
+                            <path d="M23 7L16 12L23 17V7Z" />
+                            <rect x="1" y="5" width="15" height="14" rx="2" />
+                        </svg>
+                    `;
+                    img.parentElement.appendChild(placeholder);
+                });
             }
         });
-        
+
+        // ESC key to exit fullscreen
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
                 const fullscreenCard = document.querySelector('.camera-card.fullscreen');
@@ -3289,7 +2043,7 @@
             }
         });
 
-        // Updated streaming toggle to handle videos without autoplay
+        // Updated streaming toggle to handle videos
         function toggleStreaming() {
             const btn = document.getElementById('streamToggle');
             const btnText = document.getElementById('streamText');
@@ -3303,73 +2057,26 @@
                 btnIcon.innerHTML = '<rect x="5" y="5" width="10" height="10" fill="currentColor" stroke="none" rx="2" />';
                 btn.classList.add('streaming');
                 
-                // Play all videos and update their control buttons
+                // Play all videos
                 videos.forEach(video => {
                     video.play();
-                    const controlBtn = video.parentElement.querySelector('.video-controls button');
-                    const fullscreenControlBtn = video.parentElement.querySelector('.fullscreen-controls button');
-                    
-                    [controlBtn, fullscreenControlBtn].forEach(btn => {
-                        if (btn && btn.getAttribute('data-action') !== 'exitFullscreen' && btn.getAttribute('data-action') !== 'toggleFullscreen') {
-                            const iconSize = btn.classList.contains('fullscreen-control-btn') ? '' : 'icon-sm';
-                            btn.innerHTML = `
-                                <svg class="icon ${iconSize}" viewBox="0 0 20 20">
-                                    <rect x="6" y="5" width="3" height="10" fill="currentColor" stroke="none" />
-                                    <rect x="11" y="5" width="3" height="10" fill="currentColor" stroke="none" />
-                                </svg>
-                            `;
-                            btn.setAttribute('data-action', 'pauseLiveView');
-                            btn.setAttribute('title', 'Pause Live View');
-                        }
-                    });
-                    
-                    // Update status to Live
-                    const statusText = video.parentElement.querySelector('.camera-status span');
-                    if (statusText) statusText.textContent = 'Live';
                 });
             } else {
                 btnText.textContent = 'Start All Streams';
                 btnIcon.innerHTML = '<polygon points="7,5 7,15 15,10" fill="currentColor" stroke="none" />';
                 btn.classList.remove('streaming');
                 
-                // Pause all videos and update their control buttons
+                // Pause all videos
                 videos.forEach(video => {
                     video.pause();
-                    const controlBtn = video.parentElement.querySelector('.video-controls button');
-                    const fullscreenControlBtn = video.parentElement.querySelector('.fullscreen-controls button');
-                    
-                    [controlBtn, fullscreenControlBtn].forEach(btn => {
-                        if (btn && btn.getAttribute('data-action') !== 'exitFullscreen' && btn.getAttribute('data-action') !== 'toggleFullscreen') {
-                            const iconSize = btn.classList.contains('fullscreen-control-btn') ? '' : 'icon-sm';
-                            btn.innerHTML = `
-                                <svg class="icon ${iconSize}" viewBox="0 0 20 20">
-                                    <polygon points="7,5 7,15 15,10" fill="currentColor" stroke="none" />
-                                </svg>
-                            `;
-                            btn.setAttribute('data-action', 'startLiveView');
-                            btn.setAttribute('title', 'Start Live View');
-                        }
-                    });
-                    
-                    // Update status to Snapshot
-                    const statusText = video.parentElement.querySelector('.camera-status span');
-                    if (statusText) statusText.textContent = 'Snapshot';
                 });
             }
         }
 
-        // Updated Drag and Drop for Camera Cards
+        // Drag and Drop for Camera Cards
         let draggedElement = null;
 
         function initializeDragAndDrop() {
-            // Remove existing event listeners to avoid duplicates
-            document.querySelectorAll('.camera-card').forEach(card => {
-                // Clone the node to remove all event listeners
-                const newCard = card.cloneNode(true);
-                card.parentNode.replaceChild(newCard, card);
-            });
-            
-            // Add event listeners to all camera cards
             document.querySelectorAll('.camera-card').forEach(card => {
                 card.addEventListener('dragstart', function(e) {
                     // Don't allow dragging in fullscreen mode
@@ -3436,101 +2143,41 @@
             });
         }
 
-        // Updated save camera configuration
+        // Save camera order to localStorage
         function saveCameraOrder() {
             const cards = document.querySelectorAll('.camera-card');
-            const cameras = Array.from(cards).map(card => ({
-                id: card.dataset.cameraId,
-                project: card.dataset.project,
-                name: card.dataset.cameraName
-            }));
-            localStorage.setItem('activeCameras', JSON.stringify(cameras));
+            const order = Array.from(cards).map(card => card.dataset.cameraId);
+            localStorage.setItem('cameraOrder', JSON.stringify(order));
         }
 
-        // Updated restore camera configuration
+        // Restore camera order from localStorage
         function restoreCameraOrder() {
-            const savedCameras = localStorage.getItem('activeCameras');
-            if (savedCameras) {
-                const cameras = JSON.parse(savedCameras);
+            const savedOrder = localStorage.getItem('cameraOrder');
+            if (savedOrder) {
+                const order = JSON.parse(savedOrder);
                 const grid = document.getElementById('cameraGrid');
-                const addCard = grid.querySelector('.add-camera-card');
+                const cards = Array.from(grid.querySelectorAll('.camera-card'));
                 
-                // Remove existing camera cards (keep add card)
-                grid.querySelectorAll('.camera-card').forEach(card => card.remove());
-                
-                // Add cameras from saved configuration
-                cameras.forEach(savedCamera => {
-                    // Find camera data
-                    let cameraData = null;
-                    for (const [projectKey, project] of Object.entries(projectsData)) {
-                        const camera = project.cameras.find(c => c.id === savedCamera.id);
-                        if (camera) {
-                            cameraData = camera;
-                            break;
-                        }
-                    }
-                    
-                    if (cameraData) {
-                        const cameraCard = createCameraCard(cameraData);
-                        grid.insertBefore(cameraCard, addCard);
+                // Sort cards based on saved order
+                order.forEach(id => {
+                    const card = cards.find(c => c.dataset.cameraId === id);
+                    if (card) {
+                        grid.appendChild(card);
                     }
                 });
-                
-                // Re-initialize drag and drop
-                initializeDragAndDrop();
             }
         }
 
-        // Initialize everything
-        document.addEventListener('DOMContentLoaded', function() {
-            // Initialize drag and drop
-            initializeDragAndDrop();
-            
-            // Restore camera configuration
-            restoreCameraOrder();
-            
-            // Set initial alerts button state
-            const alertsPanel = document.getElementById('alertsPanel');
-            const alertsToggle = document.getElementById('alertsToggle');
-            if (!alertsPanel.classList.contains('collapsed')) {
-                alertsToggle.classList.add('active');
-            }
-            
-            // Update the initial video control buttons to show play state
-            document.querySelectorAll('.camera-video').forEach(video => {
-                const controlBtn = video.parentElement.querySelector('.video-controls button');
-                const fullscreenControlBtn = video.parentElement.querySelector('.fullscreen-controls button');
-                
-                [controlBtn, fullscreenControlBtn].forEach(btn => {
-                    if (btn && btn.getAttribute('data-action') !== 'toggleFullscreen' && btn.getAttribute('data-action') !== 'exitFullscreen') {
-                        const iconSize = btn.classList.contains('fullscreen-control-btn') ? '' : 'icon-sm';
-                        btn.innerHTML = `
-                            <svg class="icon ${iconSize}" viewBox="0 0 20 20">
-                                <polygon points="7,5 7,15 15,10" fill="currentColor" stroke="none" />
-                            </svg>
-                        `;
-                        btn.setAttribute('data-action', 'startLiveView');
-                        btn.setAttribute('title', 'Start Live View');
-                    }
-                });
-                
-                // Update status to indicate not live
-                const statusText = video.parentElement.querySelector('.camera-status span');
-                if (statusText && statusText.textContent === 'Live') {
-                    statusText.textContent = 'Snapshot';
-                }
-            });
-            
-            // Collapse alerts panel on mobile by default
-            if (window.innerWidth <= 768) {
-                alertsPanel.classList.add('collapsed');
-                alertsToggle.classList.remove('active');
-            }
-        });
-
-        // Initialize on page load
+        // Initialize drag and drop
         initializeDragAndDrop();
         restoreCameraOrder();
+        
+        // Set initial alerts button state
+        const alertsPanel = document.getElementById('alertsPanel');
+        const alertsToggle = document.getElementById('alertsToggle');
+        if (!alertsPanel.classList.contains('collapsed')) {
+            alertsToggle.classList.add('active');
+        }
     </script>
 </body>
 </html>

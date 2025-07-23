@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DSDEV Dashboard</title>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -82,10 +82,6 @@
             --spacing-6: 24px;
             --spacing-8: 32px;
             --spacing-10: 40px;
-            
-            /* Mobile-specific variables */
-            --mobile-header-height: 60px;
-            --mobile-safe-area-padding: env(safe-area-inset-bottom, 20px);
         }
 
         /* Dark Mode Variables */
@@ -133,9 +129,6 @@
             transition: background-color 0.3s ease;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
-            overflow-x: hidden;
-            min-height: 100vh;
-            min-height: -webkit-fill-available;
         }
 
         /* Header */
@@ -164,7 +157,6 @@
             color: var(--color-orange-500);
             text-decoration: none;
             letter-spacing: -0.02em;
-            flex-shrink: 0;
         }
 
         .header-left {
@@ -178,14 +170,12 @@
             display: flex;
             align-items: center;
             gap: var(--spacing-3);
-            flex-shrink: 0;
         }
 
         /* Search Bar */
         .search-container {
             position: relative;
             flex: 1;
-            max-width: 600px;
         }
 
         .search-bar {
@@ -236,7 +226,6 @@
             max-height: 500px;
             overflow-y: auto;
             display: none;
-            z-index: 101;
         }
 
         .search-autocomplete.active {
@@ -366,12 +355,10 @@
             transition: all 0.2s ease;
             display: inline-flex;
             align-items: center;
-            justify-content: center;
             gap: var(--spacing-2);
             white-space: nowrap;
             position: relative;
             overflow: hidden;
-            min-height: 36px;
         }
 
         .btn::before {
@@ -417,8 +404,6 @@
             color: var(--text-secondary);
             position: relative;
             border-radius: 8px;
-            min-width: 36px;
-            min-height: 36px;
         }
 
         .btn-icon:hover {
@@ -445,6 +430,10 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
+        }
+
+        #alertsToggle {
+            margin-left: auto;
         }
 
         #alertsToggle.active {
@@ -597,8 +586,6 @@
         .main-container {
             display: flex;
             height: calc(100vh - 60px);
-            min-height: calc(100vh - 60px);
-            position: relative;
         }
 
         .content-area {
@@ -606,7 +593,6 @@
             padding: var(--spacing-6);
             overflow-y: auto;
             background-color: var(--bg-primary);
-            -webkit-overflow-scrolling: touch;
         }
 
         /* Camera Grid */
@@ -748,13 +734,6 @@
             opacity: 1;
         }
 
-        /* Show controls on mobile without hover */
-        @media (hover: none) and (pointer: coarse) {
-            .video-controls {
-                opacity: 1;
-            }
-        }
-
         .camera-card.fullscreen .video-controls {
             display: none;
         }
@@ -874,7 +853,6 @@
             opacity: 0;
             visibility: hidden;
             transition: all 0.3s ease;
-            padding: var(--spacing-4);
         }
 
         .modal-overlay.active {
@@ -886,15 +864,13 @@
             background-color: var(--card-bg);
             border: 1px solid var(--border-color);
             border-radius: 16px;
-            width: 100%;
+            width: 90%;
             max-width: 800px;
             max-height: 80vh;
             overflow: hidden;
             transform: translateY(-20px);
             transition: transform 0.3s ease;
             box-shadow: var(--shadow-2xl);
-            display: flex;
-            flex-direction: column;
         }
 
         .modal-overlay.active .camera-selection-modal {
@@ -907,7 +883,6 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            flex-shrink: 0;
         }
 
         .modal-title {
@@ -937,9 +912,7 @@
 
         .modal-content {
             display: flex;
-            flex: 1;
-            overflow: hidden;
-            min-height: 0;
+            height: 500px;
         }
 
         .projects-sidebar {
@@ -947,7 +920,6 @@
             background-color: var(--bg-tertiary);
             border-right: 1px solid var(--border-color);
             overflow-y: auto;
-            flex-shrink: 0;
         }
 
         .project-item {
@@ -981,7 +953,6 @@
             flex: 1;
             padding: var(--spacing-6);
             overflow-y: auto;
-            min-width: 0;
         }
 
         .cameras-grid {
@@ -1059,7 +1030,6 @@
             display: flex;
             justify-content: flex-end;
             gap: var(--spacing-3);
-            flex-shrink: 0;
         }
 
         /* Fullscreen Controls */
@@ -1381,361 +1351,53 @@
             stroke-width: 1.5;
         }
 
-        /* Mobile text shortening for buttons */
-        .btn-text {
-            display: inline;
+        /* Autocomplete icon styling */
+        .autocomplete-icon .icon {
+            width: 16px;
+            height: 16px;
         }
 
-        /* Responsive - Tablet */
+        /* Responsive */
         @media (max-width: 1024px) {
             .camera-grid.grid-2x2,
             .camera-grid.grid-3x3,
             .camera-grid.grid-4x4 {
                 grid-template-columns: repeat(2, 1fr);
             }
-            
-            .alerts-panel {
-                width: 320px;
-            }
-            
-            .alerts-panel.collapsed {
-                margin-right: -320px;
-            }
         }
 
-        /* Responsive - Mobile (768px and below) */
         @media (max-width: 768px) {
-            :root {
-                --mobile-header-height: 64px;
-            }
-            
-            .header {
-                padding: var(--spacing-2) var(--spacing-4);
-                position: fixed;
-                width: 100%;
-                height: var(--mobile-header-height);
-            }
-            
             .header-content {
-                gap: var(--spacing-2);
+                flex-wrap: wrap;
+                gap: var(--spacing-3);
             }
-            
-            .logo {
-                font-size: 18px;
-            }
-            
+
             .header-left {
-                gap: var(--spacing-2);
+                flex-basis: 100%;
             }
-            
-            .header-controls {
-                gap: var(--spacing-2);
+
+            .search-container {
+                max-width: none;
+                flex: 1;
             }
-            
-            .main-container {
-                padding-top: var(--mobile-header-height);
-                height: 100vh;
-                min-height: 100vh;
-            }
-            
-            .content-area {
-                padding: var(--spacing-4);
-                height: calc(100vh - var(--mobile-header-height));
-                padding-bottom: calc(var(--spacing-4) + var(--mobile-safe-area-padding));
-            }
-            
+
             .camera-grid {
                 grid-template-columns: 1fr !important;
-                gap: var(--spacing-4);
             }
-            
-            /* Mobile Alerts Panel */
+
             .alerts-panel {
                 position: fixed;
                 right: 0;
-                top: var(--mobile-header-height);
+                top: 60px;
                 bottom: 0;
-                width: 100%;
-                max-width: 100%;
                 z-index: 99;
-                transform: translateX(0);
-                transition: transform 0.3s ease;
-                box-shadow: -2px 0 8px rgba(0, 0, 0, 0.1);
-            }
-            
-            .alerts-panel.collapsed {
-                transform: translateX(100%);
-                margin-right: 0;
-            }
-            
-            /* Mobile Modal */
-            .modal-overlay {
-                padding: 0;
-                align-items: flex-end;
-            }
-            
-            .camera-selection-modal {
                 width: 100%;
-                max-width: 100%;
-                max-height: 90vh;
-                height: 90vh;
-                border-radius: 16px 16px 0 0;
-                margin: 0;
+                max-width: 380px;
+                box-shadow: -4px 0 24px rgba(0, 0, 0, 0.1);
             }
-            
-            .modal-header {
-                padding: var(--spacing-4);
-                position: sticky;
-                top: 0;
-                background-color: var(--card-bg);
-                z-index: 10;
-            }
-            
-            .modal-content {
-                flex-direction: column;
-                height: calc(90vh - 140px);
-            }
-            
-            .projects-sidebar {
-                width: 100%;
-                max-height: 120px;
-                overflow-x: auto;
-                overflow-y: hidden;
-                display: flex;
-                border-right: none;
-                border-bottom: 1px solid var(--border-color);
-                padding: var(--spacing-2) 0;
-            }
-            
-            .project-item {
-                flex-shrink: 0;
-                width: 140px;
-                padding: var(--spacing-3);
-                border-bottom: none;
-                border-right: 1px solid var(--border-color);
-                text-align: center;
-            }
-            
-            .project-item:last-child {
-                border-right: none;
-            }
-            
-            .project-item.active {
-                border-right: 1px solid var(--border-color);
-                border-bottom: 3px solid var(--color-orange-500);
-            }
-            
-            .cameras-grid-container {
-                padding: var(--spacing-4);
-                flex: 1;
-                overflow-y: auto;
-                -webkit-overflow-scrolling: touch;
-            }
-            
-            .cameras-grid {
-                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-                gap: var(--spacing-3);
-            }
-            
-            .camera-option {
-                padding: var(--spacing-3);
-            }
-            
-            .modal-footer {
-                padding: var(--spacing-4);
-                gap: var(--spacing-2);
-                position: sticky;
-                bottom: 0;
-                background-color: var(--card-bg);
-                box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
-            }
-            
-            /* Mobile Dropdown */
-            .dropdown-menu {
-                position: fixed;
-                left: var(--spacing-2);
-                right: var(--spacing-2);
-                top: auto;
-                bottom: var(--spacing-2);
-                max-width: none;
-                max-height: 70vh;
-                overflow-y: auto;
-                margin: 0;
-                transform: translateY(20px);
-            }
-            
-            .dropdown.active .dropdown-menu {
-                transform: translateY(0);
-            }
-            
-            /* Mobile Search */
-            .search-container {
-                max-width: none;
-            }
-            
-            .search-autocomplete {
-                max-height: 60vh;
-                position: fixed;
-                left: var(--spacing-2);
-                right: var(--spacing-2);
-                top: calc(var(--mobile-header-height) + var(--spacing-2));
-            }
-            
-            /* Touch-optimized controls */
-            .camera-remove-btn,
-            .video-control-btn {
-                opacity: 0.8;
-                transform: scale(1);
-                width: 36px;
-                height: 36px;
-            }
-            
-            .camera-card:hover .camera-remove-btn,
-            .camera-card:hover .video-controls {
-                opacity: 0.8;
-                transform: scale(1);
-            }
-        }
 
-        /* Responsive - iPhone 12 Pro (390px) */
-        @media (max-width: 430px) {
-            :root {
-                --mobile-header-height: 56px;
-            }
-            
-            .header {
-                padding: var(--spacing-2) var(--spacing-3);
-                height: var(--mobile-header-height);
-            }
-            
-            .header-content {
-                gap: var(--spacing-2);
-            }
-            
-            .logo {
-                font-size: 16px;
-            }
-            
-            .btn {
-                padding: var(--spacing-2) var(--spacing-3);
-                font-size: 13px;
-                min-height: 40px;
-            }
-            
-            .btn-icon {
-                min-width: 40px;
-                min-height: 40px;
-            }
-            
-            /* Hide button text on mobile, show icons only */
-            .btn-text {
-                display: none;
-            }
-            
-            .btn-primary .btn-text {
-                display: inline;
-            }
-            
-            .search-bar {
-                padding: var(--spacing-2) var(--spacing-3);
-                padding-left: 36px;
-                font-size: 16px; /* Prevents zoom on iOS */
-            }
-            
-            .main-container {
-                padding-top: var(--mobile-header-height);
-                height: 100vh;
-            }
-            
             .content-area {
-                padding: var(--spacing-3);
-                height: calc(100vh - var(--mobile-header-height));
-            }
-            
-            /* Camera grid for mobile */
-            .camera-grid {
-                gap: var(--spacing-3);
-            }
-            
-            .add-camera-card {
-                min-height: 160px;
-            }
-            
-            /* Fullscreen mobile optimizations */
-            .camera-card.fullscreen .fullscreen-controls {
-                top: env(safe-area-inset-top, var(--spacing-3));
-                right: var(--spacing-3);
-                gap: var(--spacing-2);
-            }
-            
-            .fullscreen-control-btn {
-                width: 44px;
-                height: 44px;
-            }
-            
-            .camera-card.fullscreen .camera-overlay {
-                padding: var(--spacing-3);
-                padding-bottom: calc(var(--spacing-3) + env(safe-area-inset-bottom, 0px));
-            }
-            
-            /* Modal adjustments for iPhone 12 */
-            .camera-selection-modal {
-                height: 85vh;
-                max-height: 85vh;
-            }
-            
-            .modal-content {
-                height: calc(85vh - 120px);
-            }
-            
-            .cameras-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            
-            .project-item {
-                width: 120px;
-            }
-        }
-
-        /* Very small screens (360px and below) */
-        @media (max-width: 360px) {
-            .header-controls {
-                flex-wrap: wrap;
-                justify-content: space-between;
-                width: 100%;
-            }
-            
-            .btn-primary {
-                flex: 1;
-                min-width: 100px;
-            }
-            
-            .search-container {
-                order: -1;
-                width: 100%;
-                margin-bottom: var(--spacing-2);
-            }
-            
-            .cameras-grid {
-                grid-template-columns: repeat(2, 1fr);
-                gap: var(--spacing-2);
-            }
-            
-            .camera-option {
-                padding: var(--spacing-2);
-            }
-            
-            .camera-option-icon {
-                width: 36px;
-                height: 36px;
-            }
-            
-            .camera-option-name {
-                font-size: 13px;
-            }
-            
-            .camera-option-status {
-                font-size: 11px;
+                padding: var(--spacing-4);
             }
         }
 
@@ -1754,58 +1416,6 @@
 
         .btn-primary.streaming {
             animation: pulse 2s infinite;
-        }
-
-        /* Touch-friendly hover states */
-        @media (hover: none) and (pointer: coarse) {
-            .camera-card:hover {
-                transform: none;
-                box-shadow: none;
-            }
-            
-            .video-control-btn:hover,
-            .camera-remove-btn:hover,
-            .fullscreen-control-btn:hover {
-                transform: none;
-            }
-            
-            .btn:hover::before {
-                opacity: 0;
-            }
-        }
-
-        /* Prevent text selection on mobile */
-        @media (max-width: 768px) {
-            * {
-                -webkit-user-select: none;
-                -moz-user-select: none;
-                -ms-user-select: none;
-                user-select: none;
-            }
-            
-            input,
-            textarea {
-                -webkit-user-select: text;
-                -moz-user-select: text;
-                -ms-user-select: text;
-                user-select: text;
-            }
-        }
-
-        /* iOS specific fixes */
-        @supports (-webkit-touch-callout: none) {
-            /* iOS specific styles */
-            .modal-overlay {
-                -webkit-backdrop-filter: blur(4px);
-            }
-            
-            .search-bar {
-                font-size: 16px; /* Prevent zoom on focus */
-            }
-            
-            .main-container {
-                min-height: -webkit-fill-available;
-            }
         }
     </style>
 </head>
@@ -1832,7 +1442,7 @@
                         <svg class="icon icon-sm" viewBox="0 0 20 20">
                             <path d="M4 5H16M6 10H14M8 15H12" />
                         </svg>
-                        <span class="btn-text">Filters</span>
+                        Filters
                     </button>
                     <div class="dropdown-menu">
                         <div class="dropdown-section">
@@ -1947,16 +1557,13 @@
                     <svg class="icon icon-sm" viewBox="0 0 20 20" id="streamIcon">
                         <polygon points="7,5 7,15 15,10" fill="currentColor" stroke="none" />
                     </svg>
-                    <span class="btn-text" id="streamText">Start All Streams</span>
+                    <span id="streamText">Start All Streams</span>
                 </button>
                 
                 <!-- Display Options Dropdown -->
                 <div class="dropdown" id="configDropdown">
                     <button class="btn btn-secondary" onclick="toggleDropdown('configDropdown')">
-                        <svg class="icon icon-sm" viewBox="0 0 20 20">
-                            <path d="M4 6h2v2H4zM10 6h6M4 12h2v2H4zM10 12h6M4 18h2v2H4zM10 18h6" />
-                        </svg>
-                        <span class="btn-text">Display</span>
+                        Display Options
                     </button>
                     <div class="dropdown-menu">
                         <div class="dropdown-section">
@@ -2012,10 +1619,7 @@
 
                 <!-- Alerts Toggle -->
                 <button class="btn btn-secondary" id="alertsToggle" onclick="toggleAlertsPanel()">
-                    <svg class="icon icon-sm" viewBox="0 0 20 20">
-                        <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 003 13.414V14a1 1 0 001 1h12a1 1 0 001-1v-.586a1 1 0 00-.293-.707L16 12V8a6 6 0 00-6-6zM12 18a2 2 0 11-4 0" />
-                    </svg>
-                    <span class="btn-text">Alerts</span>
+                    <span>Alerts</span>
                     <span class="alert-count">6</span>
                 </button>
             </div>
@@ -2383,23 +1987,23 @@
                 <div class="projects-sidebar">
                     <div class="project-item active" data-project="downtown-tower">
                         <div class="project-name">Downtown Tower</div>
-                        <div class="project-cameras-count">8 cameras</div>
+                        <div class="project-cameras-count">8 cameras available</div>
                     </div>
                     <div class="project-item" data-project="riverside-complex">
                         <div class="project-name">Riverside Complex</div>
-                        <div class="project-cameras-count">12 cameras</div>
+                        <div class="project-cameras-count">12 cameras available</div>
                     </div>
                     <div class="project-item" data-project="industrial-park-b">
                         <div class="project-name">Industrial Park B</div>
-                        <div class="project-cameras-count">15 cameras</div>
+                        <div class="project-cameras-count">15 cameras available</div>
                     </div>
                     <div class="project-item" data-project="metro-station">
                         <div class="project-name">Metro Station</div>
-                        <div class="project-cameras-count">6 cameras</div>
+                        <div class="project-cameras-count">6 cameras available</div>
                     </div>
                     <div class="project-item" data-project="harbor-development">
                         <div class="project-name">Harbor Development</div>
-                        <div class="project-cameras-count">10 cameras</div>
+                        <div class="project-cameras-count">10 cameras available</div>
                     </div>
                 </div>
                 
@@ -3277,7 +2881,6 @@
                 removeCamera(e.target);
             }
         });
-        
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
                 const fullscreenCard = document.querySelector('.camera-card.fullscreen');
@@ -3520,12 +3123,6 @@
                     statusText.textContent = 'Snapshot';
                 }
             });
-            
-            // Collapse alerts panel on mobile by default
-            if (window.innerWidth <= 768) {
-                alertsPanel.classList.add('collapsed');
-                alertsToggle.classList.remove('active');
-            }
         });
 
         // Initialize on page load
