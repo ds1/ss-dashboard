@@ -25,11 +25,19 @@ A modern, responsive construction site monitoring dashboard for managing securit
 - **Alert Panel**: Collapsible side panel with chronological alert feed
 - **Visual Indicators**: Badge counts and status indicators
 
+### Fit to Screen Mode
+- **Auto-fit Layout**: Dynamically adjusts camera grid to display all feeds without vertical scrolling
+- **Smart Grid Selection**: Automatically optimizes grid layout (1x1, 2x2, 3x3, or 4x4) based on camera count
+- **Aspect Ratio Preservation**: Maintains 16:9 video aspect ratio with letterboxing/pillarboxing
+- **Seamless Integration**: Works with drag-and-drop, adding/removing cameras, and all viewing modes
+- **Responsive Degradation**: Automatically disabled on mobile for better touch experience
+
 ### Design & Accessibility
 - **Dark/Light Mode**: Toggle between themes with persistent preference
 - **Fully Responsive**: Optimized for desktop, tablet, and mobile (including iPhone 12)
 - **Touch-optimized**: Enhanced controls for mobile devices
 - **WCAG Compliant**: Proper contrast ratios and semantic markup
+- **Fit to Screen**: Automatically resize all camera feeds to fit within viewport without scrolling
 
 ## 🛠️ Technology Stack
 
@@ -98,6 +106,24 @@ php -S localhost:8000
 - **Reorder**: Drag and drop camera cards to rearrange
 - **Remove**: Hover over a camera and click the × button
 
+### Fit to Screen Mode
+
+1. Click the "Display" button in the header controls
+2. Toggle "Fit to Screen" to enable/disable the feature
+3. When enabled:
+   - All camera feeds resize to fit within your screen
+   - No vertical scrolling required
+   - Grid layout automatically adjusts based on camera count
+   - Video aspect ratios are preserved with black bars as needed
+4. The setting persists across page reloads
+5. Works best on desktop and tablet displays
+
+**Automatic Grid Optimization:**
+- 1 camera: Full screen view
+- 2-4 cameras: 2×2 grid
+- 5-9 cameras: 3×3 grid
+- 10-16 cameras: 4×4 grid
+
 ### Search Functionality
 
 The search bar supports intelligent filtering for:
@@ -145,6 +171,15 @@ Based on 4px grid:
 - `spacing-6`: 24px
 - `spacing-8`: 32px
 - `spacing-10`: 40px
+
+### Responsive Grid System
+
+The dashboard features an intelligent grid system that adapts to different viewing modes:
+
+- **Standard Mode**: Fixed aspect ratio (16:9) with vertical scrolling
+- **Fit to Screen Mode**: Dynamic sizing to eliminate scrolling
+- **Adaptive Layouts**: 1×1, 2×2, 3×3, and 4×4 grid configurations
+- **Gap Optimization**: Reduced spacing in fit-to-screen mode for maximum viewing area
 
 ## 📱 Mobile Support
 
@@ -194,6 +229,21 @@ Modify CSS variables in `:root` or theme-specific selectors:
   --bg-primary: #your-background;
   /* ... other variables */
 }
+```
+
+### Fit to Screen Configuration
+
+The fit-to-screen feature can be programmatically controlled:
+
+```javascript
+// Enable fit-to-screen mode
+document.getElementById('fitToScreenToggle').click();
+
+// Check current state
+const isFitToScreen = localStorage.getItem('fitToScreen') === 'true';
+
+// Manually adjust grid for fit-to-screen
+adjustGridForFitToScreen();
 ```
 
 ## 🤝 Contributing
