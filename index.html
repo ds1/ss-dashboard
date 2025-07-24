@@ -632,6 +632,67 @@
             grid-template-columns: 1fr;
         }
 
+        /* Fit to Screen Mode */
+        .content-area.fit-to-screen {
+            padding-bottom: var(--spacing-4);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .content-area.fit-to-screen .camera-grid {
+            flex: 1;
+            margin-bottom: 0;
+            display: grid;
+            height: 100%;
+            min-height: 0;
+            gap: var(--spacing-3);
+        }
+
+        .content-area.fit-to-screen .camera-grid.grid-2x2 {
+            grid-template-rows: repeat(2, 1fr);
+        }
+
+        .content-area.fit-to-screen .camera-grid.grid-3x3 {
+            grid-template-rows: repeat(3, 1fr);
+        }
+
+        .content-area.fit-to-screen .camera-grid.grid-4x4 {
+            grid-template-rows: repeat(4, 1fr);
+        }
+
+        /* Ensure feeds maintain aspect ratio in fit mode */
+        .content-area.fit-to-screen .camera-feed {
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #000;
+        }
+
+        [data-theme="light"] .content-area.fit-to-screen .camera-feed {
+            background-color: #f5f5f5;
+        }
+
+        .content-area.fit-to-screen .camera-video,
+        .content-area.fit-to-screen .camera-media {
+            max-width: 100%;
+            max-height: 100%;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+        }
+
+        .content-area.fit-to-screen .add-camera-card {
+            min-height: 0;
+            height: 100%;
+        }
+
+        .content-area.fit-to-screen .camera-card {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
         .camera-card {
             background-color: var(--card-bg);
             border: 1px solid var(--border-color);
@@ -1394,6 +1455,13 @@
                 grid-template-columns: repeat(2, 1fr);
             }
             
+            /* Adjust fit-to-screen for tablet */
+            .content-area.fit-to-screen .camera-grid.grid-2x2,
+            .content-area.fit-to-screen .camera-grid.grid-3x3,
+            .content-area.fit-to-screen .camera-grid.grid-4x4 {
+                grid-template-rows: repeat(auto-fit, minmax(200px, 1fr));
+            }
+            
             .alerts-panel {
                 width: 320px;
             }
@@ -1447,6 +1515,28 @@
             .camera-grid {
                 grid-template-columns: 1fr !important;
                 gap: var(--spacing-4);
+            }
+            
+            /* Disable fit-to-screen on mobile for better UX */
+            .content-area.fit-to-screen {
+                display: block;
+            }
+            
+            .content-area.fit-to-screen .camera-grid {
+                height: auto;
+                grid-template-rows: none;
+            }
+            
+            .content-area.fit-to-screen .camera-feed {
+                aspect-ratio: 16/9;
+                height: auto;
+            }
+            
+            .content-area.fit-to-screen .camera-video,
+            .content-area.fit-to-screen .camera-media {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
             }
             
             /* Mobile Alerts Panel */
@@ -2001,6 +2091,12 @@
                                 </div>
                             </div>
                             <div class="dropdown-item">
+                                <span>Fit to Screen</span>
+                                <div class="toggle-switch" id="fitToScreenToggle" onclick="toggleFitToScreen(this)">
+                                    <div class="toggle-slider"></div>
+                                </div>
+                            </div>
+                            <div class="dropdown-item">
                                 <span>Dark Mode</span>
                                 <div class="toggle-switch active" id="darkModeToggle" onclick="toggleDarkMode(this)">
                                     <div class="toggle-slider"></div>
@@ -2087,12 +2183,12 @@
                         
                         <!-- Fullscreen controls -->
                         <div class="fullscreen-controls">
-                            <button class="fullscreen-control-btn" onclick="startLiveView(this)" title="Start Live View">
+                            <button class="fullscreen-control-btn" data-action="startLiveView" title="Start Live View">
                                 <svg class="icon" viewBox="0 0 20 20">
                                     <polygon points="7,5 7,15 15,10" fill="currentColor" stroke="none" />
                                 </svg>
                             </button>
-                            <button class="fullscreen-control-btn" onclick="exitFullscreen(this)" title="Exit Fullscreen">
+                            <button class="fullscreen-control-btn" data-action="exitFullscreen" title="Exit Fullscreen">
                                 <svg class="icon" viewBox="0 0 20 20">
                                     <path d="M6 3V6H3M3 14V17H6M14 17H17V14M17 6V3H14" />
                                 </svg>
@@ -2158,12 +2254,12 @@
                         
                         <!-- Fullscreen controls -->
                         <div class="fullscreen-controls">
-                            <button class="fullscreen-control-btn" onclick="startLiveView(this)" title="Start Live View">
+                            <button class="fullscreen-control-btn" data-action="startLiveView" title="Start Live View">
                                 <svg class="icon" viewBox="0 0 20 20">
                                     <polygon points="7,5 7,15 15,10" fill="currentColor" stroke="none" />
                                 </svg>
                             </button>
-                            <button class="fullscreen-control-btn" onclick="exitFullscreen(this)" title="Exit Fullscreen">
+                            <button class="fullscreen-control-btn" data-action="exitFullscreen" title="Exit Fullscreen">
                                 <svg class="icon" viewBox="0 0 20 20">
                                     <path d="M6 3V6H3M3 14V17H6M14 17H17V14M17 6V3H14" />
                                 </svg>
@@ -2598,6 +2694,13 @@
             // Re-initialize drag and drop for new cards
             initializeDragAndDrop();
             saveCameraOrder();
+            
+            // Adjust grid if fit-to-screen is active
+            const fitToScreenToggle = document.getElementById('fitToScreenToggle');
+            if (fitToScreenToggle && fitToScreenToggle.classList.contains('active')) {
+                adjustGridForFitToScreen();
+            }
+            
             closeCameraSelection();
         }
 
@@ -2698,6 +2801,12 @@
             const card = button.closest('.camera-card');
             card.remove();
             saveCameraOrder();
+            
+            // Adjust grid if fit-to-screen is active
+            const fitToScreenToggle = document.getElementById('fitToScreenToggle');
+            if (fitToScreenToggle && fitToScreenToggle.classList.contains('active')) {
+                adjustGridForFitToScreen();
+            }
         }
 
         // Project Selection
@@ -2760,6 +2869,50 @@
             }
         }
 
+        // Toggle Fit to Screen
+        function toggleFitToScreen(element) {
+            const contentArea = document.querySelector('.content-area');
+            const isActive = element.classList.contains('active');
+            
+            if (!isActive) {
+                element.classList.add('active');
+                contentArea.classList.add('fit-to-screen');
+                localStorage.setItem('fitToScreen', 'true');
+                
+                // Adjust grid based on total number of cameras
+                adjustGridForFitToScreen();
+            } else {
+                element.classList.remove('active');
+                contentArea.classList.remove('fit-to-screen');
+                localStorage.setItem('fitToScreen', 'false');
+            }
+        }
+
+        // Adjust grid layout for fit-to-screen mode
+        function adjustGridForFitToScreen() {
+            const grid = document.getElementById('cameraGrid');
+            const cameraCount = grid.querySelectorAll('.camera-card, .add-camera-card').length;
+            
+            // Remove all grid classes
+            grid.classList.remove('grid-1x1', 'grid-2x2', 'grid-3x3', 'grid-4x4');
+            
+            // Apply optimal grid based on camera count
+            if (cameraCount <= 1) {
+                grid.classList.add('grid-1x1');
+            } else if (cameraCount <= 4) {
+                grid.classList.add('grid-2x2');
+            } else if (cameraCount <= 9) {
+                grid.classList.add('grid-3x3');
+            } else {
+                grid.classList.add('grid-4x4');
+            }
+            
+            // Update the radio button to match
+            const gridClass = Array.from(grid.classList).find(c => c.startsWith('grid-'));
+            const radio = document.querySelector(`input[value="${gridClass}"]`);
+            if (radio) radio.checked = true;
+        }
+
         // Toggle Dropdown
         function toggleDropdown(dropdownId) {
             const dropdown = document.getElementById(dropdownId);
@@ -2801,6 +2954,12 @@
             radio.addEventListener('change', function() {
                 const grid = document.getElementById('cameraGrid');
                 grid.className = 'camera-grid ' + this.value;
+                
+                // If fit-to-screen is active, adjust the grid rows
+                const fitToScreenToggle = document.getElementById('fitToScreenToggle');
+                if (fitToScreenToggle && fitToScreenToggle.classList.contains('active')) {
+                    adjustGridForFitToScreen();
+                }
             });
         });
 
@@ -3478,6 +3637,12 @@
                 
                 // Re-initialize drag and drop
                 initializeDragAndDrop();
+                
+                // Check if fit-to-screen should be applied
+                const savedFitToScreen = localStorage.getItem('fitToScreen');
+                if (savedFitToScreen === 'true') {
+                    adjustGridForFitToScreen();
+                }
             }
         }
 
@@ -3488,6 +3653,17 @@
             
             // Restore camera configuration
             restoreCameraOrder();
+            
+            // Restore fit-to-screen state
+            const savedFitToScreen = localStorage.getItem('fitToScreen');
+            if (savedFitToScreen === 'true') {
+                const fitToggle = document.getElementById('fitToScreenToggle');
+                if (fitToggle) {
+                    fitToggle.classList.add('active');
+                    document.querySelector('.content-area').classList.add('fit-to-screen');
+                    adjustGridForFitToScreen();
+                }
+            }
             
             // Set initial alerts button state
             const alertsPanel = document.getElementById('alertsPanel');
