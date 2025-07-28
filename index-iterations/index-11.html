@@ -2085,6 +2085,12 @@
                                 </div>
                             </div>
                             <div class="dropdown-item">
+                                <span>Auto-rotate Views</span>
+                                <div class="toggle-switch" onclick="toggleSwitch(this)">
+                                    <div class="toggle-slider"></div>
+                                </div>
+                            </div>
+                            <div class="dropdown-item">
                                 <span>Fit to Screen</span>
                                 <div class="toggle-switch" id="fitToScreenToggle" onclick="toggleFitToScreen(this)">
                                     <div class="toggle-slider"></div>
@@ -2143,13 +2149,6 @@
                             <button class="video-control-btn" data-action="startLiveView" title="Start Live View">
                                 <svg class="icon icon-sm" viewBox="0 0 20 20">
                                     <polygon points="7,5 7,15 15,10" fill="currentColor" stroke="none" />
-                                </svg>
-                            </button>
-                            <button class="video-control-btn" data-action="openCameraView" title="Open Camera View Page">
-                                <svg class="icon icon-sm" viewBox="0 0 20 20">
-                                    <path d="M11 3H3C2.44772 3 2 3.44772 2 4V16C2 16.5523 2.44772 17 3 17H15C15.5523 17 16 16.5523 16 16V8" />
-                                    <path d="M9 11L17 3" />
-                                    <path d="M17 3H12M17 3V8" />
                                 </svg>
                             </button>
                             <button class="video-control-btn" data-action="toggleFullscreen" title="Fullscreen">
@@ -2221,13 +2220,6 @@
                             <button class="video-control-btn" data-action="startLiveView" title="Start Live View">
                                 <svg class="icon icon-sm" viewBox="0 0 20 20">
                                     <polygon points="7,5 7,15 15,10" fill="currentColor" stroke="none" />
-                                </svg>
-                            </button>
-                            <button class="video-control-btn" data-action="openCameraView" title="Open Camera View Page">
-                                <svg class="icon icon-sm" viewBox="0 0 20 20">
-                                    <path d="M11 3H3C2.44772 3 2 3.44772 2 4V16C2 16.5523 2.44772 17 3 17H15C15.5523 17 16 16.5523 16 16V8" />
-                                    <path d="M9 11L17 3" />
-                                    <path d="M17 3H12M17 3V8" />
                                 </svg>
                             </button>
                             <button class="video-control-btn" data-action="toggleFullscreen" title="Fullscreen">
@@ -2347,13 +2339,6 @@
                             <button class="video-control-btn" data-action="startLiveView" title="Start Live View">
                                 <svg class="icon icon-sm" viewBox="0 0 20 20">
                                     <polygon points="7,5 7,15 15,10" fill="currentColor" stroke="none" />
-                                </svg>
-                            </button>
-                            <button class="video-control-btn" data-action="openCameraView" title="Open Camera View Page">
-                                <svg class="icon icon-sm" viewBox="0 0 20 20">
-                                    <path d="M11 3H3C2.44772 3 2 3.44772 2 4V16C2 16.5523 2.44772 17 3 17H15C15.5523 17 16 16.5523 16 16V8" />
-                                    <path d="M9 11L17 3" />
-                                    <path d="M17 3H12M17 3V8" />
                                 </svg>
                             </button>
                             <button class="video-control-btn" data-action="toggleFullscreen" title="Fullscreen">
@@ -2762,13 +2747,6 @@
                                 <polygon points="7,5 7,15 15,10" fill="currentColor" stroke="none" />
                             </svg>
                         </button>
-                        <button class="video-control-btn" data-action="openCameraView" title="Open Camera View Page">
-                            <svg class="icon icon-sm" viewBox="0 0 20 20">
-                                <path d="M11 3H3C2.44772 3 2 3.44772 2 4V16C2 16.5523 2.44772 17 3 17H15C15.5523 17 16 16.5523 16 16V8" />
-                                <path d="M9 11L17 3" />
-                                <path d="M17 3H12M17 3V8" />
-                            </svg>
-                        </button>
                         <button class="video-control-btn" data-action="toggleFullscreen" title="Fullscreen">
                             <svg class="icon icon-sm" viewBox="0 0 20 20">
                                 <path d="M3 6V3H6M14 3H17V6M17 14V17H14M6 17H3V14" />
@@ -3040,6 +3018,14 @@
             activities: {
                 label: 'Activities',
                 items: [
+                    { icon: 'activities', text: 'Concrete Pour' },
+                    { icon: 'activities', text: 'Excavation' },
+                    { icon: 'activities', text: 'Grading' },
+                    { icon: 'activities', text: 'Loading' },
+                    { icon: 'activities', text: 'Crane Operation' },
+                    { icon: 'activities', text: 'Material Delivery' },
+                    { icon: 'activities', text: 'Demolition' },
+                    { icon: 'activities', text: 'Foundation Work' },
                     { icon: 'activities', text: 'Steel Installation' },
                     { icon: 'activities', text: 'Equipment Movement' }
                 ]
@@ -3448,17 +3434,6 @@
             if (e.target.closest('[data-action="removeCamera"]')) {
                 e.preventDefault();
                 removeCamera(e.target);
-            }
-            
-            // Handle open camera view
-            if (e.target.closest('[data-action="openCameraView"]')) {
-                e.preventDefault();
-                const button = e.target.closest('[data-action="openCameraView"]');
-                const cameraCard = button.closest('.camera-card');
-                const cameraId = cameraCard.dataset.cameraId;
-                const cameraName = cameraCard.dataset.cameraName;
-                // Open URL in new tab - you can customize the URL pattern as needed
-                window.open(`/camera/${cameraId}`, '_blank');
             }
         });
         
