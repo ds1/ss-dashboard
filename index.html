@@ -153,6 +153,7 @@
         .header-content {
             display: flex;
             align-items: center;
+            justify-content: space-between;
             gap: var(--spacing-4);
             max-width: 1920px;
             margin: 0 auto;
@@ -167,191 +168,12 @@
             flex-shrink: 0;
         }
 
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-3);
-            flex: 1;
-        }
-
+        /* Header Controls */
         .header-controls {
             display: flex;
             align-items: center;
             gap: var(--spacing-3);
             flex-shrink: 0;
-        }
-
-        /* Search Bar */
-        .search-container {
-            position: relative;
-            flex: 1;
-            max-width: 600px;
-        }
-
-        .search-bar {
-            width: 100%;
-            padding: var(--spacing-2) var(--spacing-4);
-            padding-left: 40px;
-            background-color: var(--input-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            font-family: var(--font-family);
-            font-size: 14px;
-            color: var(--text-primary);
-            transition: all 0.2s ease;
-        }
-
-        .search-bar:focus {
-            outline: none;
-            border-color: var(--color-orange-500);
-            box-shadow: 0 0 0 3px rgba(247, 152, 55, 0.1);
-        }
-
-        .search-bar::placeholder {
-            color: var(--text-tertiary);
-        }
-
-        .search-icon {
-            position: absolute;
-            left: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--text-tertiary);
-            pointer-events: none;
-        }
-
-        /* Search Autocomplete */
-        .search-autocomplete {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            right: 0;
-            margin-top: var(--spacing-1);
-            background-color: var(--dropdown-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            box-shadow: var(--shadow-xl);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            max-height: 500px;
-            overflow-y: auto;
-            display: none;
-            z-index: 101;
-        }
-
-        .search-autocomplete.active {
-            display: block;
-        }
-
-        .autocomplete-category {
-            padding: var(--spacing-3) var(--spacing-4) var(--spacing-2);
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .autocomplete-category:last-child {
-            border-bottom: none;
-        }
-
-        .category-header {
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-2);
-            margin-bottom: var(--spacing-2);
-        }
-
-        .category-badge {
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-size: 11px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .category-badge.people {
-            background-color: rgba(23, 178, 106, 0.2);
-            color: var(--color-success-500);
-        }
-
-        .category-badge.vehicles {
-            background-color: rgba(0, 168, 173, 0.2);
-            color: var(--color-aqua-500);
-        }
-
-        .category-badge.heavy-equipment {
-            background-color: rgba(247, 152, 55, 0.2);
-            color: var(--color-orange-500);
-        }
-
-        .category-badge.materials-other {
-            background-color: rgba(147, 149, 152, 0.2);
-            color: var(--color-gray-500);
-        }
-
-        .category-badge.activities {
-            background-color: rgba(234, 170, 8, 0.2);
-            color: var(--color-warning-500);
-        }
-
-        .autocomplete-item {
-            padding: var(--spacing-2) var(--spacing-4);
-            margin-left: var(--spacing-6);
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-2);
-            cursor: pointer;
-            transition: background-color 0.15s ease;
-            border-radius: 6px;
-        }
-
-        .autocomplete-item:hover {
-            background-color: var(--hover-bg);
-        }
-
-        .autocomplete-icon {
-            flex-shrink: 0;
-            width: 28px;
-            height: 28px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 6px;
-            position: relative;
-        }
-
-        .autocomplete-icon.people {
-            background-color: rgba(23, 178, 106, 0.1);
-            color: var(--color-success-500);
-        }
-
-        .autocomplete-icon.vehicles {
-            background-color: rgba(0, 168, 173, 0.1);
-            color: var(--color-aqua-500);
-        }
-
-        .autocomplete-icon.heavy-equipment {
-            background-color: rgba(247, 152, 55, 0.1);
-            color: var(--color-orange-500);
-        }
-
-        .autocomplete-icon.materials {
-            background-color: rgba(147, 149, 152, 0.1);
-            color: var(--color-gray-500);
-        }
-
-        .autocomplete-icon.activities {
-            background-color: rgba(234, 170, 8, 0.1);
-            color: var(--color-warning-500);
-        }
-
-        .autocomplete-text {
-            flex: 1;
-            font-size: 14px;
-        }
-
-        .autocomplete-highlight {
-            color: var(--color-orange-500);
-            font-weight: 500;
         }
 
         /* Buttons */
@@ -429,42 +251,6 @@
         .btn-icon.active {
             color: var(--color-orange-500);
             background-color: var(--hover-bg);
-        }
-
-        /* Alert Count Badge */
-        .alert-count {
-            color: var(--color-white);
-            background-color: var(--color-error-500);
-            padding: 0 5px;
-            border-radius: 50%;
-            font-size: 12px;
-            font-weight: 600;
-            margin-left: var(--spacing-2);
-            min-width: 20px;
-            height: 20px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        #alertsToggle.active {
-            background-color: var(--color-orange-50);
-            border-color: var(--color-orange-500);
-            color: var(--color-orange-600);
-        }
-
-        #alertsToggle.active .alert-count {
-            background-color: var(--color-orange-600);
-        }
-
-        [data-theme="dark"] #alertsToggle.active {
-            background-color: rgba(247, 152, 55, 0.1);
-            color: var(--color-orange-500);
-            border-color: var(--color-orange-500);
-        }
-
-        [data-theme="dark"] #alertsToggle.active .alert-count {
-            background-color: var(--color-orange-500);
         }
 
         /* Dropdown */
@@ -1262,164 +1048,6 @@
             z-index: 1;
         }
 
-        /* Alerts Panel */
-        .alerts-panel {
-            width: 380px;
-            background-color: var(--bg-secondary);
-            border-left: 1px solid var(--border-color);
-            overflow-y: auto;
-            transition: margin-right 0.3s ease;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .alerts-panel.collapsed {
-            margin-right: -380px;
-        }
-
-        .alerts-header {
-            padding: var(--spacing-5) var(--spacing-6);
-            border-bottom: 1px solid var(--border-color);
-            background-color: var(--bg-secondary);
-            position: sticky;
-            top: 0;
-            z-index: 10;
-        }
-
-        .alerts-title {
-            font-size: 18px;
-            font-weight: 600;
-            letter-spacing: -0.01em;
-        }
-
-        .alerts-list {
-            padding: var(--spacing-4);
-            flex: 1;
-        }
-
-        .alert-item {
-            background-color: var(--bg-tertiary);
-            border: 1px solid var(--border-color);
-            border-radius: 10px;
-            padding: var(--spacing-4);
-            margin-bottom: var(--spacing-3);
-            transition: all 0.2s ease;
-            cursor: pointer;
-        }
-
-        .alert-item:hover {
-            background-color: var(--hover-bg);
-            box-shadow: var(--shadow-sm);
-            border-color: var(--color-orange-500);
-        }
-
-        .alert-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: var(--spacing-2);
-        }
-
-        .alert-type {
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--text-primary);
-        }
-
-        .alert-time {
-            font-size: 12px;
-            color: var(--text-tertiary);
-        }
-
-        .alert-description {
-            font-size: 13px;
-            color: var(--text-secondary);
-            line-height: 1.5;
-        }
-
-        .alert-camera {
-            font-size: 12px;
-            color: var(--color-orange-500);
-            margin-top: var(--spacing-2);
-            font-weight: 500;
-        }
-
-        /* Filter Checkbox */
-        .filter-item {
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-2);
-            padding: var(--spacing-2) var(--spacing-3);
-            margin: 0 calc(var(--spacing-3) * -1);
-            border-radius: 6px;
-            cursor: pointer;
-            transition: background-color 0.2s ease;
-        }
-
-        .filter-item:hover {
-            background-color: var(--hover-bg);
-        }
-
-        .filter-checkbox {
-            width: 18px;
-            height: 18px;
-            position: relative;
-            pointer-events: none;
-        }
-
-        .filter-checkbox input {
-            position: absolute;
-            opacity: 0;
-            cursor: pointer;
-            width: 100%;
-            height: 100%;
-            margin: 0;
-            pointer-events: none;
-        }
-
-        .checkbox-bg {
-            position: absolute;
-            inset: 0;
-            border: 2px solid var(--border-color);
-            border-radius: 5px;
-            transition: all 0.2s ease;
-            background-color: transparent;
-        }
-
-        .filter-checkbox input:checked ~ .checkbox-bg {
-            background-color: var(--color-orange-500);
-            border-color: var(--color-orange-500);
-        }
-
-        .checkmark {
-            position: absolute;
-            top: 2px;
-            left: 2px;
-            width: 12px;
-            height: 12px;
-            opacity: 0;
-            transition: opacity 0.2s ease;
-            pointer-events: none;
-        }
-
-        .filter-checkbox input:checked ~ .checkmark {
-            opacity: 1;
-        }
-
-        .checkmark path {
-            fill: none;
-            stroke: white;
-            stroke-width: 2.5;
-            stroke-linecap: round;
-            stroke-linejoin: round;
-        }
-
-        .filter-label {
-            font-size: 14px;
-            user-select: none;
-            flex: 1;
-        }
-
         /* Icons */
         .icon {
             width: 20px;
@@ -1461,14 +1089,6 @@
             .content-area.fit-to-screen .camera-grid.grid-4x4 {
                 grid-template-rows: repeat(auto-fit, minmax(200px, 1fr));
             }
-            
-            .alerts-panel {
-                width: 320px;
-            }
-            
-            .alerts-panel.collapsed {
-                margin-right: -320px;
-            }
         }
 
         /* Responsive - Mobile (768px and below) */
@@ -1490,10 +1110,6 @@
             
             .logo {
                 font-size: 18px;
-            }
-            
-            .header-left {
-                gap: var(--spacing-2);
             }
             
             .header-controls {
@@ -1537,25 +1153,6 @@
                 width: 100%;
                 height: 100%;
                 object-fit: cover;
-            }
-            
-            /* Mobile Alerts Panel */
-            .alerts-panel {
-                position: fixed;
-                right: 0;
-                top: var(--mobile-header-height);
-                bottom: 0;
-                width: 100%;
-                max-width: 100%;
-                z-index: 99;
-                transform: translateX(0);
-                transition: transform 0.3s ease;
-                box-shadow: -2px 0 8px rgba(0, 0, 0, 0.1);
-            }
-            
-            .alerts-panel.collapsed {
-                transform: translateX(100%);
-                margin-right: 0;
             }
             
             /* Mobile Modal */
@@ -1658,19 +1255,6 @@
                 transform: translateY(0);
             }
             
-            /* Mobile Search */
-            .search-container {
-                max-width: none;
-            }
-            
-            .search-autocomplete {
-                max-height: 60vh;
-                position: fixed;
-                left: var(--spacing-2);
-                right: var(--spacing-2);
-                top: calc(var(--mobile-header-height) + var(--spacing-2));
-            }
-            
             /* Touch-optimized controls */
             .camera-remove-btn,
             .video-control-btn {
@@ -1724,12 +1308,6 @@
             
             .btn-primary .btn-text {
                 display: inline;
-            }
-            
-            .search-bar {
-                padding: var(--spacing-2) var(--spacing-3);
-                padding-left: 36px;
-                font-size: 16px; /* Prevents zoom on iOS */
             }
             
             .main-container {
@@ -1798,12 +1376,6 @@
             .btn-primary {
                 flex: 1;
                 min-width: 100px;
-            }
-            
-            .search-container {
-                order: -1;
-                width: 100%;
-                margin-bottom: var(--spacing-2);
             }
             
             .cameras-grid {
@@ -1889,10 +1461,6 @@
                 -webkit-backdrop-filter: blur(4px);
             }
             
-            .search-bar {
-                font-size: 16px; /* Prevent zoom on focus */
-            }
-            
             .main-container {
                 min-height: -webkit-fill-available;
             }
@@ -1904,132 +1472,6 @@
     <header class="header">
         <div class="header-content">
             <a href="#" class="logo">DSDEV</a>
-            
-            <div class="header-left">
-                <!-- Search Bar -->
-                <div class="search-container">
-                    <svg class="icon icon-sm search-icon" viewBox="0 0 20 20">
-                        <circle cx="9" cy="9" r="7" />
-                        <path d="M15 15L19 19" />
-                    </svg>
-                    <input type="text" class="search-bar" id="searchBar" placeholder="Search for objects, activities, or events..." autocomplete="off">
-                    <div class="search-autocomplete" id="searchAutocomplete"></div>
-                </div>
-                
-                <!-- Filters Dropdown -->
-                <div class="dropdown" id="filtersDropdown">
-                    <button class="btn btn-secondary" onclick="toggleDropdown('filtersDropdown')">
-                        <svg class="icon icon-sm" viewBox="0 0 20 20">
-                            <path d="M4 5H16M6 10H14M8 15H12" />
-                        </svg>
-                        <span class="btn-text">Filters</span>
-                    </button>
-                    <div class="dropdown-menu">
-                        <div class="dropdown-section">
-                            <div class="dropdown-label">Camera Status</div>
-                            <div class="filter-item" onclick="toggleFilterCheckbox(this)">
-                                <label class="filter-checkbox">
-                                    <input type="checkbox" checked>
-                                    <span class="checkbox-bg"></span>
-                                    <svg class="checkmark" viewBox="0 0 14 14">
-                                        <path d="M3 7L6 10L11 4" />
-                                    </svg>
-                                </label>
-                                <label class="filter-label">Online Cameras</label>
-                            </div>
-                            <div class="filter-item" onclick="toggleFilterCheckbox(this)">
-                                <label class="filter-checkbox">
-                                    <input type="checkbox" checked>
-                                    <span class="checkbox-bg"></span>
-                                    <svg class="checkmark" viewBox="0 0 14 14">
-                                        <path d="M3 7L6 10L11 4" />
-                                    </svg>
-                                </label>
-                                <label class="filter-label">Offline Cameras</label>
-                            </div>
-                        </div>
-                        <div class="dropdown-section">
-                            <div class="dropdown-label">Alert Types</div>
-                            <div class="filter-item" onclick="toggleFilterCheckbox(this)">
-                                <label class="filter-checkbox">
-                                    <input type="checkbox" checked>
-                                    <span class="checkbox-bg"></span>
-                                    <svg class="checkmark" viewBox="0 0 14 14">
-                                        <path d="M3 7L6 10L11 4" />
-                                    </svg>
-                                </label>
-                                <label class="filter-label">Motion Detection</label>
-                            </div>
-                            <div class="filter-item" onclick="toggleFilterCheckbox(this)">
-                                <label class="filter-checkbox">
-                                    <input type="checkbox" checked>
-                                    <span class="checkbox-bg"></span>
-                                    <svg class="checkmark" viewBox="0 0 14 14">
-                                        <path d="M3 7L6 10L11 4" />
-                                    </svg>
-                                </label>
-                                <label class="filter-label">Low Battery</label>
-                            </div>
-                            <div class="filter-item" onclick="toggleFilterCheckbox(this)">
-                                <label class="filter-checkbox">
-                                    <input type="checkbox" checked>
-                                    <span class="checkbox-bg"></span>
-                                    <svg class="checkmark" viewBox="0 0 14 14">
-                                        <path d="M3 7L6 10L11 4" />
-                                    </svg>
-                                </label>
-                                <label class="filter-label">Equipment Alerts</label>
-                            </div>
-                        </div>
-                        <div class="dropdown-section">
-                            <div class="dropdown-label">Projects</div>
-                            <div class="filter-item" onclick="toggleFilterCheckbox(this)">
-                                <label class="filter-checkbox">
-                                    <input type="checkbox" checked>
-                                    <span class="checkbox-bg"></span>
-                                    <svg class="checkmark" viewBox="0 0 14 14">
-                                        <path d="M3 7L6 10L11 4" />
-                                    </svg>
-                                </label>
-                                <label class="filter-label">Downtown Tower</label>
-                            </div>
-                            <div class="filter-item" onclick="toggleFilterCheckbox(this)">
-                                <label class="filter-checkbox">
-                                    <input type="checkbox" checked>
-                                    <span class="checkbox-bg"></span>
-                                    <svg class="checkmark" viewBox="0 0 14 14">
-                                        <path d="M3 7L6 10L11 4" />
-                                    </svg>
-                                </label>
-                                <label class="filter-label">Riverside Complex</label>
-                            </div>
-                            <div class="filter-item" onclick="toggleFilterCheckbox(this)">
-                                <label class="filter-checkbox">
-                                    <input type="checkbox" checked>
-                                    <span class="checkbox-bg"></span>
-                                    <svg class="checkmark" viewBox="0 0 14 14">
-                                        <path d="M3 7L6 10L11 4" />
-                                    </svg>
-                                </label>
-                                <label class="filter-label">Industrial Park B</label>
-                            </div>
-                        </div>
-                        <!-- Fullscreen controls -->
-                        <div class="fullscreen-controls">
-                            <button class="fullscreen-control-btn" data-action="startLiveView" title="Start Live View">
-                                <svg class="icon" viewBox="0 0 20 20">
-                                    <polygon points="7,5 7,15 15,10" fill="currentColor" stroke="none" />
-                                </svg>
-                            </button>
-                            <button class="fullscreen-control-btn" data-action="exitFullscreen" title="Exit Fullscreen">
-                                <svg class="icon" viewBox="0 0 20 20">
-                                    <path d="M6 3V6H3M3 14V17H6M14 17H17V14M17 6V3H14" />
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
             
             <!-- Header Controls -->
             <div class="header-controls">
@@ -2099,15 +1541,6 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- Alerts Toggle -->
-                <button class="btn btn-secondary" id="alertsToggle" onclick="toggleAlertsPanel()">
-                    <svg class="icon icon-sm" viewBox="0 0 20 20">
-                        <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 003 13.414V14a1 1 0 001 1h12a1 1 0 001-1v-.586a1 1 0 00-.293-.707L16 12V8a6 6 0 00-6-6zM12 18a2 2 0 11-4 0" />
-                    </svg>
-                    <span class="btn-text">Alerts</span>
-                    <span class="alert-count">6</span>
-                </button>
             </div>
         </div>
     </header>
@@ -2413,69 +1846,6 @@
                 </div>
             </div>
         </main>
-
-        <!-- Alerts Panel -->
-        <aside class="alerts-panel" id="alertsPanel">
-            <div class="alerts-header">
-                <h2 class="alerts-title">Recent Alerts</h2>
-            </div>
-
-            <div class="alerts-list">
-                <div class="alert-item">
-                    <div class="alert-header">
-                        <div class="alert-type">Motion Detected</div>
-                        <div class="alert-time">2 min ago</div>
-                    </div>
-                    <div class="alert-description">Vehicle entered restricted area during non-operational hours</div>
-                    <div class="alert-camera">North Entrance</div>
-                </div>
-
-                <div class="alert-item">
-                    <div class="alert-header">
-                        <div class="alert-type">Low Battery Warning</div>
-                        <div class="alert-time">15 min ago</div>
-                    </div>
-                    <div class="alert-description">Camera battery level critically low (12%)</div>
-                    <div class="alert-camera">East Perimeter</div>
-                </div>
-
-                <div class="alert-item">
-                    <div class="alert-header">
-                        <div class="alert-type">Person Detected</div>
-                        <div class="alert-time">1 hour ago</div>
-                    </div>
-                    <div class="alert-description">Unauthorized person detected in restricted zone</div>
-                    <div class="alert-camera">Loading Dock</div>
-                </div>
-
-                <div class="alert-item">
-                    <div class="alert-header">
-                        <div class="alert-type">Equipment Alert</div>
-                        <div class="alert-time">2 hours ago</div>
-                    </div>
-                    <div class="alert-description">Crane movement detected outside scheduled operating hours</div>
-                    <div class="alert-camera">Crane Platform</div>
-                </div>
-
-                <div class="alert-item">
-                    <div class="alert-header">
-                        <div class="alert-type">Connection Lost</div>
-                        <div class="alert-time">3 hours ago</div>
-                    </div>
-                    <div class="alert-description">Camera went offline - possible power or network issue</div>
-                    <div class="alert-camera">East Perimeter</div>
-                </div>
-
-                <div class="alert-item">
-                    <div class="alert-header">
-                        <div class="alert-type">Motion Detected</div>
-                        <div class="alert-time">4 hours ago</div>
-                    </div>
-                    <div class="alert-description">Multiple people detected near storage area</div>
-                    <div class="alert-camera">Storage Area A</div>
-                </div>
-            </div>
-        </aside>
     </div>
 
     <!-- Camera Selection Modal -->
@@ -2877,20 +2247,6 @@
             document.getElementById('darkModeToggle').classList.remove('active');
         }
 
-        // Toggle Alerts Panel
-        function toggleAlertsPanel() {
-            const panel = document.getElementById('alertsPanel');
-            const toggle = document.getElementById('alertsToggle');
-            panel.classList.toggle('collapsed');
-            
-            // Fix the active state logic
-            if (panel.classList.contains('collapsed')) {
-                toggle.classList.remove('active');
-            } else {
-                toggle.classList.add('active');
-            }
-        }
-
         // Toggle Fit to Screen
         function toggleFitToScreen(element) {
             const contentArea = document.querySelector('.content-area');
@@ -2965,12 +2321,6 @@
             element.classList.toggle('active');
         }
 
-        // Toggle Filter Checkbox
-        function toggleFilterCheckbox(element) {
-            const checkbox = element.querySelector('input[type="checkbox"]');
-            checkbox.checked = !checkbox.checked;
-        }
-
         // Grid Layout Change
         document.querySelectorAll('input[name="gridLayout"]').forEach(radio => {
             radio.addEventListener('change', function() {
@@ -2987,189 +2337,6 @@
 
         // Streaming Toggle
         let isStreaming = false;
-
-        // Search Autocomplete
-        const searchBar = document.getElementById('searchBar');
-        const searchAutocomplete = document.getElementById('searchAutocomplete');
-        
-        const searchSuggestions = {
-            people: {
-                label: 'People',
-                items: [
-                    { icon: 'people', text: 'Person' },
-                    { icon: 'people', text: 'Hard Hat' },
-                    { icon: 'people', text: 'Safety Vest' }
-                ]
-            },
-            vehicles: {
-                label: 'Vehicles',
-                items: [
-                    { icon: 'vehicles', text: 'Car' },
-                    { icon: 'vehicles', text: 'Pickup Truck' },
-                    { icon: 'vehicles', text: 'Truck' }
-                ]
-            },
-            heavyEquipment: {
-                label: 'Heavy Equipment',
-                items: [
-                    { icon: 'heavy-equipment', text: 'Bulldozer' },
-                    { icon: 'heavy-equipment', text: 'Cement Truck' },
-                    { icon: 'heavy-equipment', text: 'Compactor' },
-                    { icon: 'heavy-equipment', text: 'Dump Truck' },
-                    { icon: 'heavy-equipment', text: 'Excavator' },
-                    { icon: 'heavy-equipment', text: 'Grader' },
-                    { icon: 'heavy-equipment', text: 'Loader' },
-                    { icon: 'heavy-equipment', text: 'Mobile Crane' },
-                    { icon: 'heavy-equipment', text: 'Telehandler' },
-                    { icon: 'heavy-equipment', text: 'Tower Crane' },
-                    { icon: 'heavy-equipment', text: 'Tractor' }
-                ]
-            },
-            materials: {
-                label: 'Materials & Other',
-                items: [
-                    { icon: 'materials', text: 'Conex' },
-                    { icon: 'materials', text: 'Portable Toilet' },
-                    { icon: 'materials', text: 'Rebar' },
-                    { icon: 'materials', text: 'Scaffolding' },
-                    { icon: 'materials', text: 'Silo' },
-                    { icon: 'materials', text: 'Traffic Cone' },
-                    { icon: 'materials', text: 'Trash Can' }
-                ]
-            },
-            activities: {
-                label: 'Activities',
-                items: [
-                    { icon: 'activities', text: 'Steel Installation' },
-                    { icon: 'activities', text: 'Equipment Movement' }
-                ]
-            }
-        };
-
-        function createAutocompleteItem(suggestion, query) {
-            const item = document.createElement('div');
-            item.className = 'autocomplete-item';
-            
-            // Icon container
-            const iconContainer = document.createElement('div');
-            iconContainer.className = `autocomplete-icon ${suggestion.icon}`;
-            
-            // Create icon HTML directly
-            let iconHTML = '';
-            switch(suggestion.icon) {
-                case 'people':
-                    iconHTML = '<svg class="icon icon-sm" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="7" r="3"/><path d="M15 19c0-2.76-2.24-5-5-5s-5 2.24-5 5"/></svg>';
-                    break;
-                case 'vehicles':
-                    iconHTML = '<svg class="icon icon-sm" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="10" height="6" rx="1"/><rect x="13" y="9" width="4" height="4"/><circle cx="6" cy="16" r="1.5"/><circle cx="14" cy="16" r="1.5"/></svg>';
-                    break;
-                case 'heavy-equipment':
-                    iconHTML = '<svg class="icon icon-sm" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4v10h10V7L12 4H5z"/><path d="M3 14h14v2H3z"/><circle cx="6" cy="17" r="1"/><circle cx="14" cy="17" r="1"/></svg>';
-                    break;
-                case 'materials':
-                    iconHTML = '<svg class="icon icon-sm" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="12" height="12" rx="1"/><line x1="8" y1="8" x2="12" y2="8"/><line x1="8" y1="12" x2="10" y2="12"/></svg>';
-                    break;
-                case 'activities':
-                    iconHTML = '<svg class="icon icon-sm" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="7"/><polyline points="10 7 10 10 13 12"/></svg>';
-                    break;
-            }
-            
-            iconContainer.innerHTML = iconHTML;
-            
-            // Text with highlighting
-            const text = document.createElement('div');
-            text.className = 'autocomplete-text';
-            
-            if (query) {
-                const regex = new RegExp(`(${query})`, 'gi');
-                text.innerHTML = suggestion.text.replace(regex, '<span class="autocomplete-highlight">$1</span>');
-            } else {
-                text.textContent = suggestion.text;
-            }
-            
-            item.appendChild(iconContainer);
-            item.appendChild(text);
-            
-            item.addEventListener('click', function() {
-                searchBar.value = suggestion.text;
-                searchAutocomplete.classList.remove('active');
-                searchBar.focus();
-            });
-            
-            return item;
-        }
-
-        function createCategorySection(category, items, query) {
-            const section = document.createElement('div');
-            section.className = 'autocomplete-category';
-            
-            // Category header
-            const header = document.createElement('div');
-            header.className = 'category-header';
-            
-            const badge = document.createElement('span');
-            badge.className = `category-badge ${category.toLowerCase().replace(' & ', '-').replace(' ', '-')}`;
-            badge.textContent = category;
-            
-            header.appendChild(badge);
-            section.appendChild(header);
-            
-            // Add items
-            items.forEach(item => {
-                section.appendChild(createAutocompleteItem(item, query));
-            });
-            
-            return section;
-        }
-
-        searchBar.addEventListener('input', function(e) {
-            const query = e.target.value.toLowerCase();
-            searchAutocomplete.innerHTML = '';
-            
-            if (query.length > 0) {
-                let hasResults = false;
-                
-                Object.entries(searchSuggestions).forEach(([key, category]) => {
-                    const filtered = category.items.filter(item => 
-                        item.text.toLowerCase().includes(query)
-                    );
-                    
-                    if (filtered.length > 0) {
-                        hasResults = true;
-                        searchAutocomplete.appendChild(
-                            createCategorySection(category.label, filtered, query)
-                        );
-                    }
-                });
-                
-                if (hasResults) {
-                    searchAutocomplete.classList.add('active');
-                } else {
-                    searchAutocomplete.classList.remove('active');
-                }
-            } else {
-                searchAutocomplete.classList.remove('active');
-            }
-        });
-
-        searchBar.addEventListener('focus', function() {
-            if (this.value.length === 0) {
-                searchAutocomplete.innerHTML = '';
-                // Show all categories with all items
-                Object.entries(searchSuggestions).forEach(([key, category]) => {
-                    searchAutocomplete.appendChild(
-                        createCategorySection(category.label, category.items, '')
-                    );
-                });
-                searchAutocomplete.classList.add('active');
-            }
-        });
-
-        searchBar.addEventListener('blur', function() {
-            setTimeout(() => {
-                searchAutocomplete.classList.remove('active');
-            }, 200);
-        });
 
         // Update timestamps
         function updateTimestamps() {
@@ -3690,13 +2857,6 @@
                 }
             }
             
-            // Set initial alerts button state
-            const alertsPanel = document.getElementById('alertsPanel');
-            const alertsToggle = document.getElementById('alertsToggle');
-            if (!alertsPanel.classList.contains('collapsed')) {
-                alertsToggle.classList.add('active');
-            }
-            
             // Update the initial video control buttons to show play state
             document.querySelectorAll('.camera-video').forEach(video => {
                 const controlBtn = video.parentElement.querySelector('.video-controls button');
@@ -3721,12 +2881,6 @@
                     statusText.textContent = 'Snapshot';
                 }
             });
-            
-            // Collapse alerts panel on mobile by default
-            if (window.innerWidth <= 768) {
-                alertsPanel.classList.add('collapsed');
-                alertsToggle.classList.remove('active');
-            }
         });
 
         // Initialize on page load
