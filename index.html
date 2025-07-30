@@ -2992,433 +2992,549 @@
             if (e.key === 'Escape') {
                 // Close fullscreen
                 const fullscreenCard = document.querySelector('.camera-card.fullscreen');
-                if (fullscreenCard) {exitFullscreen(fullscreenCard);
-                }
-                
-                // Close modal
-                const modal = document.querySelector('.modal-overlay.active');
-                if (modal) {
-                    closeCameraSelection();
+                if (fullscreenCard) {
+                    fullscreenCard.classList.remove('fullscreen');
+                    document.body.style.overflow = '';
+                    // Re-enable drag functionality
+                    fullscreenCard.setAttribute('draggable', 'true');
                 }
                 
                 // Close dropdowns
-                document.querySelectorAll('.dropdown.active').forEach(dropdown => {
-                    dropdown.classList.remove('active');
+                document.querySelectorAll('.dropdown').forEach(d => {
+                    d.classList.remove('active');
                 });
                 const backdrop = document.querySelector('.dropdown-backdrop');
                 if (backdrop) {
                     backdrop.remove();
                 }
+                
+                // Close modal
+                const modal = document.getElementById('cameraSelectionModal');
+                if (modal.classList.contains('active')) {
+                    closeCameraSelection();
+                }
             }
         });
 
-        // Global streaming toggle
+        // Updated streaming toggle to handle videos without autoplay
         function toggleStreaming() {
-            const button = document.getElementById('streamToggle');
-            const icon = document.getElementById('streamIcon');
-            const text = document.getElementById('streamText');
+            const btn = document.getElementById('streamToggle');
+            const btnText = document.getElementById('streamText');
+            const btnIcon = document.getElementById('streamIcon');
+            const videos = document.querySelectorAll('.camera-video');
             
             isStreaming = !isStreaming;
             
             if (isStreaming) {
-                // Start all streams
-                document.querySelectorAll('.camera-video').forEach(video => {
-                    const feed = video.closest('.camera-feed');
-                    const statusText = feed.querySelector('.camera-status span');
-                    const playBtn = feed.querySelector('.video-controls button[data-action="startLiveView"]');
+                btnText.textContent = 'Stop All Streams';
+                btnIcon.innerHTML = '<rect x="5" y="5" width="10" height="10" fill="currentColor" stroke="none" rx="2" />';
+                btn.classList.add('streaming');
+                
+                // Play all videos and update their control buttons
+                videos.forEach(video => {
+                    const loading = video.parentElement.querySelector('.camera-loading');
+                    if (loading) loading.classList.add('active');
+
+                    video.play().then(() => {
+                        if (loading) loading.classList.remove('active');
+                    }).catch(err => {
+                        if (loading) loading.classList.remove('active');
+                        console.error('Failed to play video:', err);
+                    });
+
+                    const controlBtn = video.parentElement.querySelector('.video-controls button[data-action="startLiveView"]');
+                    const fullscreenControlBtn = video.parentElement.querySelector('.fullscreen-controls button[data-action="startLiveView"]');
                     
-                    if (playBtn) {
-                        startLiveView(playBtn);
+                    [controlBtn, fullscreenControlBtn].forEach(btn => {
+                        if (btn) {
+                            const iconSize = btn.classList.contains('fullscreen-control-btn') ? '' : 'icon-sm';
+                            btn.innerHTML = `
+                                <svg class="icon ${iconSize}" viewBox="0 0 20 20">
+                                    <rect x="6" y="5" width="3" height="10" fill="currentColor" stroke="none" />
+                                    <rect x="11" y="5" width="3" height="10" fill="currentColor" stroke="none" />
+                                </svg>
+                            `;
+                            btn.setAttribute('data-action', 'pauseLiveView');
+                            btn.setAttribute('title', 'Pause Live View');
+                        }
+                    });
+                    
+                    // Update status to Live
+                    const statusText = video.parentElement.querySelector('.camera-status span');
+                    if (statusText && statusText.textContent.includes('Video')) {
+                        statusText.textContent = 'Video • Live';
                     }
                 });
-                
-                // Update button state
-                button.classList.add('streaming');
-                icon.innerHTML = '<rect x="6" y="5" width="3" height="10" fill="currentColor" stroke="none" /><rect x="11" y="5" width="3" height="10" fill="currentColor" stroke="none" />';
-                text.textContent = 'Stop All Streams';
             } else {
-                // Stop all streams
-                document.querySelectorAll('.camera-video').forEach(video => {
-                    const feed = video.closest('.camera-feed');
-                    const pauseBtn = feed.querySelector('.video-controls button[data-action="pauseLiveView"]');
+                btnText.textContent = 'Start All Streams';
+                btnIcon.innerHTML = '<polygon points="7,5 7,15 15,10" fill="currentColor" stroke="none" />';
+                btn.classList.remove('streaming');
+                
+                // Pause all videos and update their control buttons
+                videos.forEach(video => {
+                    video.pause();
+                    const controlBtn = video.parentElement.querySelector('.video-controls button[data-action="pauseLiveView"]');
+                    const fullscreenControlBtn = video.parentElement.querySelector('.fullscreen-controls button[data-action="pauseLiveView"]');
                     
-                    if (pauseBtn) {
-                        pauseLiveView(pauseBtn);
+                    [controlBtn, fullscreenControlBtn].forEach(btn => {
+                        if (btn) {
+                            const iconSize = btn.classList.contains('fullscreen-control-btn') ? '' : 'icon-sm';
+                            btn.innerHTML = `
+                                <svg class="icon ${iconSize}" viewBox="0 0 20 20">
+                                    <polygon points="7,5 7,15 15,10" fill="currentColor" stroke="none" />
+                                </svg>
+                            `;
+                            btn.setAttribute('data-action', 'startLiveView');
+                            btn.setAttribute('title', 'Start Live View');
+                        }
+                    });
+                    
+                    // Update status to Paused
+                    const statusText = video.parentElement.querySelector('.camera-status span');
+                    if (statusText && statusText.textContent.includes('Video')) {
+                        statusText.textContent = 'Video • Paused';
                     }
                 });
-                
-                // Update button state
-                button.classList.remove('streaming');
-                icon.innerHTML = '<polygon points="7,5 7,15 15,10" fill="currentColor" stroke="none" />';
-                text.textContent = 'Start All Streams';
             }
         }
 
-        // Drag and Drop Implementation
+        // Updated Drag and Drop for Camera Cards
         let draggedElement = null;
-        let longPressTimer = null;
-        let isDragMode = false;
-        let startPos = { x: 0, y: 0 };
-        let hasMoved = false;
+        let touchTimeout = null;
+        let touchStartX = 0;
+        let touchStartY = 0;
+        let isDraggingTouch = false;
 
         function initializeDragAndDrop() {
-            const grid = document.getElementById('cameraGrid');
-            const cards = grid.querySelectorAll('.camera-card');
+            // Remove existing event listeners to avoid duplicates
+            document.querySelectorAll('.camera-card').forEach(card => {
+                // Clone the node to remove all event listeners
+                const newCard = card.cloneNode(true);
+                card.parentNode.replaceChild(newCard, card);
+            });
             
-            cards.forEach(card => {
-                // Desktop drag and drop
+            // Add event listeners to all camera cards
+            document.querySelectorAll('.camera-card').forEach(card => {
+                // Desktop drag events
                 card.addEventListener('dragstart', handleDragStart);
                 card.addEventListener('dragend', handleDragEnd);
+                card.addEventListener('dragover', handleDragOver);
+                card.addEventListener('dragleave', handleDragLeave);
+                card.addEventListener('drop', handleDrop);
                 
                 // Mobile touch events
                 card.addEventListener('touchstart', handleTouchStart, { passive: false });
                 card.addEventListener('touchmove', handleTouchMove, { passive: false });
-                card.addEventListener('touchend', handleTouchEnd, { passive: false });
-            });
-            
-            // Drop zones
-            const dropZones = grid.querySelectorAll('.camera-card, .add-camera-card');
-            dropZones.forEach(zone => {
-                zone.addEventListener('dragover', handleDragOver);
-                zone.addEventListener('drop', handleDrop);
+                card.addEventListener('touchend', handleTouchEnd);
+                card.addEventListener('touchcancel', handleTouchCancel);
             });
         }
 
         // Desktop drag handlers
         function handleDragStart(e) {
+            // Don't allow dragging in fullscreen mode
+            if (this.classList.contains('fullscreen')) {
+                e.preventDefault();
+                return;
+            }
+            
+            // Don't start drag if clicking a control button
+            const target = e.target;
+            if (target.closest('.camera-remove-btn') || 
+                target.closest('.video-control-btn') || 
+                target.closest('.fullscreen-control-btn')) {
+                e.preventDefault();
+                return;
+            }
+            
             draggedElement = this;
-            this.classList.add('dragging');
+            this.style.opacity = '0.5';
             e.dataTransfer.effectAllowed = 'move';
-            e.dataTransfer.setData('text/html', this.outerHTML);
+            e.dataTransfer.setData('text/html', this.innerHTML);
         }
 
         function handleDragEnd(e) {
-            this.classList.remove('dragging');
-            draggedElement = null;
+            this.style.opacity = '';
         }
 
         function handleDragOver(e) {
-            e.preventDefault();
+            if (e.preventDefault) {
+                e.preventDefault();
+            }
             e.dataTransfer.dropEffect = 'move';
+            
+            // Add visual feedback
+            if (draggedElement !== this && !this.classList.contains('drag-over')) {
+                this.style.transform = 'scale(0.95)';
+                this.classList.add('drag-over');
+            }
+            
+            return false;
+        }
+
+        function handleDragLeave(e) {
+            this.style.transform = '';
+            this.classList.remove('drag-over');
         }
 
         function handleDrop(e) {
-            e.preventDefault();
-            
-            if (!draggedElement || draggedElement === this) return;
-            
-            const grid = document.getElementById('cameraGrid');
-            const cards = Array.from(grid.children);
-            const draggedIndex = cards.indexOf(draggedElement);
-            const targetIndex = cards.indexOf(this);
-            
-            if (draggedIndex < targetIndex) {
-                this.parentNode.insertBefore(draggedElement, this.nextSibling);
-            } else {
-                this.parentNode.insertBefore(draggedElement, this);
+            if (e.stopPropagation) {
+                e.stopPropagation();
             }
             
-            saveCameraOrder();
+            this.style.transform = '';
+            this.classList.remove('drag-over');
+            
+            if (draggedElement !== this) {
+                swapElements(draggedElement, this);
+            }
+            
+            return false;
         }
 
         // Mobile touch handlers
         function handleTouchStart(e) {
-            if (isDragMode) return;
+            const card = this;
             
-            const touch = e.touches[0];
-            startPos = { x: touch.clientX, y: touch.clientY };
-            hasMoved = false;
+            // Don't allow dragging in fullscreen mode
+            if (card.classList.contains('fullscreen')) {
+                return;
+            }
             
-            longPressTimer = setTimeout(() => {
-                if (!hasMoved) {
-                    e.preventDefault();
-                    enterDragMode(this);
+            // Don't start drag if touching a control button
+            const target = e.target;
+            if (target.closest('.camera-remove-btn') || 
+                target.closest('.video-control-btn') || 
+                target.closest('.fullscreen-control-btn')) {
+                return;
+            }
+            
+            // Store initial touch position
+            touchStartX = e.touches[0].clientX;
+            touchStartY = e.touches[0].clientY;
+            
+            // Clear any existing timeout
+            if (touchTimeout) {
+                clearTimeout(touchTimeout);
+            }
+            
+            // Set up long press detection
+            touchTimeout = setTimeout(() => {
+                // Check if user hasn't moved too much (allow small movements)
+                if (!isDraggingTouch) {
+                    startTouchDrag(card, e);
                 }
-            }, 500);
+            }, 500); // 500ms long press
         }
 
         function handleTouchMove(e) {
-            if (!longPressTimer && !isDragMode) return;
+            const card = this;
             
-            const touch = e.touches[0];
-            const deltaX = Math.abs(touch.clientX - startPos.x);
-            const deltaY = Math.abs(touch.clientY - startPos.y);
+            // Calculate movement distance
+            const moveX = Math.abs(e.touches[0].clientX - touchStartX);
+            const moveY = Math.abs(e.touches[0].clientY - touchStartY);
             
-            if (deltaX > 10 || deltaY > 10) {
-                hasMoved = true;
-                if (longPressTimer) {
-                    clearTimeout(longPressTimer);
-                    longPressTimer = null;
+            // If user moves more than 10px, cancel long press
+            if ((moveX > 10 || moveY > 10) && !isDraggingTouch) {
+                if (touchTimeout) {
+                    clearTimeout(touchTimeout);
+                    touchTimeout = null;
                 }
             }
             
-            if (isDragMode && this.classList.contains('dragging')) {
-                e.preventDefault();
+            // Handle active dragging
+            if (isDraggingTouch && draggedElement) {
+                e.preventDefault(); // Prevent scrolling while dragging
                 
-                // Visual feedback during drag
-                this.style.transform = `translate(${touch.clientX - startPos.x}px, ${touch.clientY - startPos.y}px)`;
-                
-                // Find drop target
+                // Move the dragged element with touch
+                const touch = e.touches[0];
                 const elementBelow = document.elementFromPoint(touch.clientX, touch.clientY);
-                const dropTarget = elementBelow?.closest('.camera-card, .add-camera-card');
                 
-                if (dropTarget && dropTarget !== this) {
-                    // Highlight potential drop zone
-                    document.querySelectorAll('.camera-card, .add-camera-card').forEach(card => {
-                        card.style.opacity = card === dropTarget ? '1' : '0.7';
+                if (elementBelow && elementBelow.closest('.camera-card') && 
+                    elementBelow.closest('.camera-card') !== draggedElement) {
+                    const targetCard = elementBelow.closest('.camera-card');
+                    
+                    // Visual feedback for drop target
+                    document.querySelectorAll('.camera-card').forEach(c => {
+                        if (c !== draggedElement) {
+                            c.style.transform = 'scale(0.95)';
+                        }
                     });
+                    targetCard.style.transform = 'scale(0.9)';
                 }
             }
         }
 
         function handleTouchEnd(e) {
-            if (longPressTimer) {
-                clearTimeout(longPressTimer);
-                longPressTimer = null;
+            // Clear long press timeout
+            if (touchTimeout) {
+                clearTimeout(touchTimeout);
+                touchTimeout = null;
             }
             
-            if (isDragMode && this.classList.contains('dragging')) {
-                e.preventDefault();
-                
+            // Handle drop if dragging
+            if (isDraggingTouch && draggedElement) {
                 const touch = e.changedTouches[0];
                 const elementBelow = document.elementFromPoint(touch.clientX, touch.clientY);
-                const dropTarget = elementBelow?.closest('.camera-card, .add-camera-card');
                 
-                if (dropTarget && dropTarget !== this) {
-                    // Perform the drop
-                    const grid = document.getElementById('cameraGrid');
-                    const cards = Array.from(grid.children);
-                    const draggedIndex = cards.indexOf(this);
-                    const targetIndex = cards.indexOf(dropTarget);
-                    
-                    if (draggedIndex < targetIndex) {
-                        dropTarget.parentNode.insertBefore(this, dropTarget.nextSibling);
-                    } else {
-                        dropTarget.parentNode.insertBefore(this, dropTarget);
+                if (elementBelow && elementBelow.closest('.camera-card')) {
+                    const targetCard = elementBelow.closest('.camera-card');
+                    if (targetCard !== draggedElement) {
+                        swapElements(draggedElement, targetCard);
                     }
-                    
-                    saveCameraOrder();
                 }
                 
-                // Reset styles
-                this.style.transform = '';
-                exitDragMode();
+                endTouchDrag();
             }
         }
 
-        function enterDragMode(card) {
-            isDragMode = true;
-            const grid = document.getElementById('cameraGrid');
+        function handleTouchCancel(e) {
+            if (touchTimeout) {
+                clearTimeout(touchTimeout);
+                touchTimeout = null;
+            }
             
-            grid.classList.add('drag-active');
-            card.classList.add('drag-ready');
-            card.classList.add('dragging');
+            if (isDraggingTouch) {
+                endTouchDrag();
+            }
+        }
+
+        function startTouchDrag(card, e) {
+            isDraggingTouch = true;
+            draggedElement = card;
             
             // Add drag indicator
-            const indicator = document.createElement('div');
-            indicator.className = 'drag-indicator';
-            indicator.textContent = 'Drag to reorder';
-            card.appendChild(indicator);
+            if (!card.querySelector('.drag-indicator')) {
+                const indicator = document.createElement('div');
+                indicator.className = 'drag-indicator';
+                indicator.textContent = 'Hold to drag';
+                card.appendChild(indicator);
+            }
+            
+            // Visual feedback
+            card.classList.add('drag-ready');
+            
+            // Update indicator text after animation
+            setTimeout(() => {
+                if (isDraggingTouch) {
+                    card.classList.add('dragging');
+                    const indicator = card.querySelector('.drag-indicator');
+                    if (indicator) {
+                        indicator.textContent = 'Drag to reorder';
+                    }
+                }
+            }, 300); // Add dragging class after wiggle animation
+            
+            document.getElementById('cameraGrid').classList.add('drag-active');
             
             // Haptic feedback if available
-            if (navigator.vibrate) {
-                navigator.vibrate(50);
+            if (window.navigator.vibrate) {
+                window.navigator.vibrate(50);
             }
+            
+            // Prevent default touch behavior
+            e.preventDefault();
         }
 
-        function exitDragMode() {
-            isDragMode = false;
-            const grid = document.getElementById('cameraGrid');
+        function endTouchDrag() {
+            isDraggingTouch = false;
             
-            grid.classList.remove('drag-active');
-            
-            // Reset all cards
-            document.querySelectorAll('.camera-card').forEach(card => {
-                card.classList.remove('drag-ready', 'dragging');
-                card.style.opacity = '';
-                card.style.transform = '';
-                
-                // Remove drag indicator
-                const indicator = card.querySelector('.drag-indicator');
+            if (draggedElement) {
+                draggedElement.classList.remove('drag-ready', 'dragging');
+                const indicator = draggedElement.querySelector('.drag-indicator');
                 if (indicator) {
                     indicator.remove();
                 }
+            }
+            
+            // Reset all cards
+            document.querySelectorAll('.camera-card').forEach(card => {
+                card.style.transform = '';
+                card.classList.remove('drag-over');
             });
             
-            // Reset add-camera-card opacity
-            const addCard = document.querySelector('.add-camera-card');
-            if (addCard) {
-                addCard.style.opacity = '';
-            }
+            document.getElementById('cameraGrid').classList.remove('drag-active');
+            draggedElement = null;
         }
 
-        // Save camera order to localStorage
+        function swapElements(elem1, elem2) {
+            const parent = elem1.parentNode;
+            const elem1Index = Array.from(parent.children).indexOf(elem1);
+            const elem2Index = Array.from(parent.children).indexOf(elem2);
+            
+            if (elem1Index < elem2Index) {
+                parent.insertBefore(elem1, elem2.nextSibling);
+            } else {
+                parent.insertBefore(elem1, elem2);
+            }
+            
+            // Save the new order to localStorage
+            saveCameraOrder();
+        }
+
+        // Updated save camera configuration
         function saveCameraOrder() {
-            const grid = document.getElementById('cameraGrid');
-            const order = Array.from(grid.querySelectorAll('.camera-card')).map(card => ({
+            const cards = document.querySelectorAll('.camera-card');
+            const cameras = Array.from(cards).map(card => ({
                 id: card.dataset.cameraId,
                 project: card.dataset.project,
                 name: card.dataset.cameraName,
                 type: card.dataset.cameraType
             }));
-            localStorage.setItem('cameraOrder', JSON.stringify(order));
+            localStorage.setItem('activeCameras', JSON.stringify(cameras));
         }
 
-        // Load camera order from localStorage
-        function loadCameraOrder() {
-            const savedOrder = localStorage.getItem('cameraOrder');
-            if (!savedOrder) return;
-            
-            try {
-                const order = JSON.parse(savedOrder);
+        // Updated restore camera configuration
+        function restoreCameraOrder() {
+            const savedCameras = localStorage.getItem('activeCameras');
+            if (savedCameras) {
+                const cameras = JSON.parse(savedCameras);
                 const grid = document.getElementById('cameraGrid');
                 const addCard = grid.querySelector('.add-camera-card');
                 
-                // Remove existing camera cards (keep add-camera-card)
+                // Remove existing camera cards (keep add card)
                 grid.querySelectorAll('.camera-card').forEach(card => card.remove());
                 
-                // Recreate cards in saved order
-                order.forEach(cameraData => {
-                    // Find camera in projects data
-                    const project = Object.values(projectsData).find(p => 
-                        p.cameras.some(c => c.id === cameraData.id)
-                    );
-                    const camera = project?.cameras.find(c => c.id === cameraData.id);
+                // Add cameras from saved configuration
+                cameras.forEach(savedCamera => {
+                    // Find camera data
+                    let cameraData = null;
+                    for (const [projectKey, project] of Object.entries(projectsData)) {
+                        const camera = project.cameras.find(c => c.id === savedCamera.id);
+                        if (camera) {
+                            cameraData = camera;
+                            break;
+                        }
+                    }
                     
-                    if (camera) {
-                        const card = createCameraCard(camera);
-                        grid.insertBefore(card, addCard);
+                    if (cameraData) {
+                        const cameraCard = createCameraCard(cameraData);
+                        grid.insertBefore(cameraCard, addCard);
                     }
                 });
                 
                 // Re-initialize drag and drop
                 initializeDragAndDrop();
-            } catch (error) {
-                console.error('Failed to load camera order:', error);
+                
+                // Check if fit-to-screen should be applied
+                const savedFitToScreen = localStorage.getItem('fitToScreen');
+                if (savedFitToScreen === 'true') {
+                    adjustGridForFitToScreen();
+                }
             }
         }
 
-        // iOS video thumbnail fix
-        function setupIOSVideoThumbnails() {
-            // Check if iOS
-            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-            
-            if (isIOS) {
-                document.querySelectorAll('.camera-video').forEach(video => {
-                    // Create a temporary canvas to capture first frame
-                    video.addEventListener('loadeddata', function() {
-                        if (!this.hasAttribute('data-thumbnail-set')) {
-                            const canvas = document.createElement('canvas');
-                            canvas.width = this.videoWidth;
-                            canvas.height = this.videoHeight;
-                            const ctx = canvas.getContext('2d');
-                            ctx.drawImage(this, 0, 0, canvas.width, canvas.height);
-                            
-                            // Set as poster
-                            this.poster = canvas.toDataURL();
-                            this.setAttribute('data-thumbnail-set', 'true');
-                            
-                            // Pause immediately to show poster
-                            this.pause();
-                            this.currentTime = 0;
-                        }
-                    });
-                    
-                    // Trigger load of first frame
-                    video.load();
+        // Handle window resize
+        let resizeTimeout;
+        
+        window.addEventListener('resize', function() {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(function() {
+                // Close all dropdowns and remove backdrop on resize
+                document.querySelectorAll('.dropdown').forEach(d => {
+                    d.classList.remove('active');
                 });
-            }
-        }
+                const backdrop = document.querySelector('.dropdown-backdrop');
+                if (backdrop) {
+                    backdrop.remove();
+                }
+                
+                // Cancel any active touch drag
+                if (isDraggingTouch) {
+                    endTouchDrag();
+                }
+                
+                // Clear any touch timeout
+                if (touchTimeout) {
+                    clearTimeout(touchTimeout);
+                    touchTimeout = null;
+                }
+                
+                // Adjust grid if fit-to-screen is active
+                const fitToScreenToggle = document.getElementById('fitToScreenToggle');
+                if (fitToScreenToggle && fitToScreenToggle.classList.contains('active')) {
+                    adjustGridForFitToScreen();
+                }
+            }, 250);
+        });
 
-        // Initialize everything when DOM is loaded
+        // Initialize everything
         document.addEventListener('DOMContentLoaded', function() {
-            // Setup iOS video thumbnails
-            setupIOSVideoThumbnails();
-            
-            // Load saved preferences
-            const savedFitToScreen = localStorage.getItem('fitToScreen') === 'true';
-            const savedShowCameraNames = localStorage.getItem('showCameraNames') !== 'false';
-            const savedShowTimestamps = localStorage.getItem('showTimestamps') !== 'false';
-            const savedShowProjectNames = localStorage.getItem('showProjectNames') !== 'false';
-            
-            // Apply saved preferences
-            if (savedFitToScreen) {
-                document.getElementById('fitToScreenToggle').classList.add('active');
-                document.querySelector('.content-area').classList.add('fit-to-screen');
-                adjustGridForFitToScreen();
-            }
-            
-            if (!savedShowCameraNames) {
-                document.getElementById('showCameraNamesToggle').classList.remove('active');
-                document.body.classList.add('hide-camera-names');
-            }
-            
-            if (!savedShowTimestamps) {
-                document.getElementById('showTimestampsToggle').classList.remove('active');
-                document.body.classList.add('hide-timestamps');
-            }
-            
-            if (!savedShowProjectNames) {
-                document.getElementById('showProjectNamesToggle').classList.remove('active');
-                document.body.classList.add('hide-project-names');
-            }
-            
-            // Load saved camera layout
-            loadCameraOrder();
-            
             // Initialize drag and drop
             initializeDragAndDrop();
             
-            // Start timestamp updates
-            updateTimestamps();
-        });
-
-        // Add touch event prevention for iOS
-        document.addEventListener('touchstart', function(e) {
-            if (e.target.closest('.dropdown-menu')) {
-                e.stopPropagation();
+            // Restore camera configuration
+            restoreCameraOrder();
+            
+            // Restore fit-to-screen state
+            const savedFitToScreen = localStorage.getItem('fitToScreen');
+            if (savedFitToScreen === 'true') {
+                const fitToggle = document.getElementById('fitToScreenToggle');
+                if (fitToggle) {
+                    fitToggle.classList.add('active');
+                    document.querySelector('.content-area').classList.add('fit-to-screen');
+                    adjustGridForFitToScreen();
+                }
             }
-        }, { passive: false });
 
-        document.addEventListener('touchend', function(e) {
-            if (e.target.closest('.dropdown-menu')) {
-                e.stopPropagation();
+            // Restore toggle states
+            const showProjectNames = localStorage.getItem('showProjectNames');
+            if (showProjectNames === 'false') {
+                document.body.classList.add('hide-project-names');
+                const toggle = document.getElementById('showProjectNamesToggle');
+                if (toggle) toggle.classList.remove('active');
             }
-        }, { passive: false });
 
-        // Prevent context menu on long press for camera cards on mobile
-        document.addEventListener('contextmenu', function(e) {
-            if (e.target.closest('.camera-card') && window.innerWidth <= 768) {
-                e.preventDefault();
+            const showCameraNames = localStorage.getItem('showCameraNames');
+            if (showCameraNames === 'false') {
+                document.body.classList.add('hide-camera-names');
+                const toggle = document.getElementById('showCameraNamesToggle');
+                if (toggle) toggle.classList.remove('active');
             }
-        });
 
-        // Handle window resize
-        window.addEventListener('resize', function() {
-            // Exit drag mode on resize
-            if (isDragMode) {
-                exitDragMode();
+            const showTimestamps = localStorage.getItem('showTimestamps');
+            if (showTimestamps === 'false') {
+                document.body.classList.add('hide-timestamps');
+                const toggle = document.getElementById('showTimestampsToggle');
+                if (toggle) toggle.classList.remove('active');
             }
             
-            // Close dropdowns on resize
-            document.querySelectorAll('.dropdown.active').forEach(dropdown => {
-                dropdown.classList.remove('active');
+            // Update the initial video control buttons to show play state
+            document.querySelectorAll('.camera-video').forEach(video => {
+                const controlBtn = video.parentElement.querySelector('.video-controls button[data-action="startLiveView"]');
+                const fullscreenControlBtn = video.parentElement.querySelector('.fullscreen-controls button[data-action="startLiveView"]');
+                
+                [controlBtn, fullscreenControlBtn].forEach(btn => {
+                    if (btn) {
+                        const iconSize = btn.classList.contains('fullscreen-control-btn') ? '' : 'icon-sm';
+                        btn.innerHTML = `
+                            <svg class="icon ${iconSize}" viewBox="0 0 20 20">
+                                <polygon points="7,5 7,15 15,10" fill="currentColor" stroke="none" />
+                            </svg>
+                        `;
+                        btn.setAttribute('data-action', 'startLiveView');
+                        btn.setAttribute('title', 'Start Live View');
+                    }
+                });
+                
+                // Update status to indicate not live
+                const statusText = video.parentElement.querySelector('.camera-status span');
+                if (statusText && statusText.textContent === 'Live') {
+                    statusText.textContent = 'Video • Paused';
+                }
             });
-            const backdrop = document.querySelector('.dropdown-backdrop');
-            if (backdrop) {
-                backdrop.remove();
-            }
         });
 
-        // Prevent zoom on double tap for iOS
-        let lastTouchEnd = 0;
-        document.addEventListener('touchend', function(event) {
-            const now = (new Date()).getTime();
-            if (now - lastTouchEnd <= 300) {
-                event.preventDefault();
+        // Prevent scrolling while dragging
+        document.addEventListener('touchmove', function(e) {
+            if (isDraggingTouch) {
+                e.preventDefault();
             }
-            lastTouchEnd = now;
-        }, false);
+        }, { passive: false });
+
+        // Initialize on page load
+        initializeDragAndDrop();
+        restoreCameraOrder();
     </script>
 </body>
 </html>
