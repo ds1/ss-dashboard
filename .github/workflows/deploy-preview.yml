@@ -1,15 +1,15 @@
-name: Deploy Branch to Subdirectory
+name: Deploy Branch Preview
 
 on:
   push:
     branches:
-      - 'fix-*'  # Matches any branch starting with "fix-"
-      - 'feature-*'  # Matches any branch starting with "feature-"
-      - 'test-*'  # Matches any branch starting with "test-"
-      - 'prototype-*' #Matches any branch starting with "prototype-"
+      - 'fix-*'
+      - 'feature-*'
+      - 'test-*'
+  workflow_dispatch:
 
 jobs:
-  deploy:
+  deploy-preview:
     runs-on: ubuntu-latest
     
     steps:
@@ -26,10 +26,12 @@ jobs:
         mkdir -p deploy-dir/${{ steps.branch-name.outputs.branch }}
         cp -r * deploy-dir/${{ steps.branch-name.outputs.branch }}/ || true
         
-    - name: Deploy to GitHub Pages
+    - name: Deploy to preview site
       uses: peaceiris/actions-gh-pages@v3
       with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
+        personal_token: ${{ secrets.PREVIEW_DEPLOY_TOKEN }}
+        external_repository: ds1/preview-ss-dashboard
         publish_dir: ./deploy-dir
         destination_dir: ${{ steps.branch-name.outputs.branch }}
-        keep_files: true  # Important: keeps other branch deployments
+        publish_branch: main
+        keep_files: true

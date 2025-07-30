@@ -196,7 +196,7 @@ Configure image source for camera placeholders:
 const imageConfig = {
   source: 'local',           // 'local' or 'unsplash'
   localPath: './images/cameras/',
-  fallbackImage: 'placeholder.jpg'
+  fallbackImage: 'placeholder.jpg' // CSS chooses the version of the placeholder image to use depending on light or dark mode theme is in use
 };
 ```
 
