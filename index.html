@@ -138,6 +138,223 @@
             min-height: -webkit-fill-available;
         }
 
+        /* Search Bar Styles */
+        .search-container {
+            position: relative;
+            flex: 1;
+            max-width: 400px;
+            margin: 0 var(--spacing-4);
+        }
+
+        .search-input {
+            width: 100%;
+            height: 36px;
+            padding: var(--spacing-2) var(--spacing-10) var(--spacing-2) var(--spacing-4);
+            background-color: var(--input-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-family: var(--font-family);
+            font-size: 14px;
+            color: var(--text-primary);
+            transition: all 0.2s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--color-orange-500);
+            box-shadow: 0 0 0 3px rgba(247, 152, 55, 0.1);
+        }
+
+        .search-input::placeholder {
+            color: var(--text-tertiary);
+        }
+
+        .search-icon {
+            position: absolute;
+            right: var(--spacing-3);
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+            color: var(--text-tertiary);
+        }
+
+        .search-clear {
+            position: absolute;
+            right: var(--spacing-3);
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 20px;
+            background-color: var(--bg-tertiary);
+            border: none;
+            border-radius: 50%;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: var(--text-secondary);
+        }
+
+        .search-clear:hover {
+            background-color: var(--hover-bg);
+            color: var(--text-primary);
+        }
+
+        .search-container.has-value .search-icon {
+            display: none;
+        }
+
+        .search-container.has-value .search-clear {
+            display: flex;
+        }
+
+        /* Filters Dropdown Styles */
+        .filter-badge {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            min-width: 18px;
+            height: 18px;
+            background-color: var(--color-orange-500);
+            color: var(--color-orange-1000);
+            border-radius: 9px;
+            font-size: 11px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 5px;
+        }
+
+        .filter-group {
+            margin-bottom: var(--spacing-4);
+        }
+
+        .filter-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .filter-group-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: var(--spacing-2);
+        }
+
+        .filter-checkbox {
+            display: flex;
+            align-items: center;
+            padding: var(--spacing-2) 0;
+            cursor: pointer;
+            transition: color 0.2s ease;
+        }
+
+        .filter-checkbox:hover {
+            color: var(--color-orange-500);
+        }
+
+        .filter-checkbox input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            margin-right: var(--spacing-2);
+            accent-color: var(--color-orange-500);
+            cursor: pointer;
+        }
+
+        .filter-checkbox label {
+            cursor: pointer;
+            font-size: 14px;
+            user-select: none;
+            flex: 1;
+        }
+
+        .filter-count {
+            font-size: 12px;
+            color: var(--text-tertiary);
+            margin-left: var(--spacing-2);
+        }
+
+        .clear-filters-btn {
+            width: 100%;
+            padding: var(--spacing-2);
+            background-color: transparent;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-family: var(--font-family);
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-top: var(--spacing-3);
+        }
+
+        .clear-filters-btn:hover {
+            background-color: var(--hover-bg);
+            color: var(--text-primary);
+        }
+
+        /* No Results State */
+        .no-results {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: var(--spacing-10) var(--spacing-6);
+            color: var(--text-tertiary);
+        }
+
+        .no-results-icon {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto var(--spacing-4);
+            opacity: 0.3;
+        }
+
+        .no-results h3 {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: var(--spacing-2);
+        }
+
+        .no-results p {
+            font-size: 14px;
+            margin-bottom: var(--spacing-4);
+        }
+
+        /* Mobile Responsive Updates */
+        @media (max-width: 768px) {
+            .search-container {
+                display: none; /* Hidden on mobile by default */
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                max-width: none;
+                margin: 0;
+                padding: var(--spacing-3) var(--spacing-4);
+                background-color: var(--bg-secondary);
+                border-bottom: 1px solid var(--border-color);
+                z-index: 99;
+            }
+            
+            .search-container.mobile-active {
+                display: block;
+            }
+            
+            .btn-search-mobile {
+                display: flex !important;
+            }
+        }
+
+        @media (min-width: 769px) {
+            .btn-search-mobile {
+                display: none !important;
+            }
+        }
+
         /* Header */
         .header {
             background-color: var(--bg-secondary);
@@ -1674,19 +1891,117 @@
     </style>
 </head>
 <body data-theme="dark">
-    <!-- Header -->
     <header class="header">
         <div class="header-content">
             <a href="#" class="logo">DSDEV</a>
             
+            <!-- Search Bar -->
+            <div class="search-container" id="searchContainer">
+                <input 
+                    type="text" 
+                    class="search-input" 
+                    id="searchInput" 
+                    placeholder="Search cameras by name or project..."
+                    autocomplete="off"
+                >
+                <svg class="icon icon-sm search-icon" viewBox="0 0 20 20">
+                    <circle cx="11" cy="11" r="8" />
+                    <path d="M21 21L16.65 16.65" />
+                </svg>
+                <button class="search-clear" id="searchClear" aria-label="Clear search">
+                    <svg class="icon icon-sm" viewBox="0 0 20 20">
+                        <path d="M6 6L14 14M6 14L14 6" stroke-width="2.5" />
+                    </svg>
+                </button>
+            </div>
+            
             <!-- Header Controls -->
             <div class="header-controls">
+                <!-- Mobile Search Toggle -->
+                <button class="btn btn-icon btn-search-mobile" id="mobileSearchToggle" aria-label="Toggle search">
+                    <svg class="icon icon-sm" viewBox="0 0 20 20">
+                        <circle cx="11" cy="11" r="8" />
+                        <path d="M21 21L16.65 16.65" />
+                    </svg>
+                </button>
+                
                 <button class="btn btn-primary" id="streamToggle">
                     <svg class="icon icon-sm" viewBox="0 0 20 20" id="streamIcon">
                         <polygon points="7,5 7,15 15,10" fill="currentColor" stroke="none" />
                     </svg>
                     <span class="btn-text" id="streamText">Start All Streams</span>
                 </button>
+                
+                <!-- Filters Dropdown -->
+                <div class="dropdown" id="filtersDropdown">
+                    <button class="btn btn-secondary" data-dropdown="filtersDropdown">
+                        <svg class="icon icon-sm" viewBox="0 0 20 20">
+                            <path d="M3 5h14M5 12h10M7 19h6" />
+                        </svg>
+                        <span class="btn-text">Filters</span>
+                        <span class="filter-badge" id="filterBadge" style="display: none;">0</span>
+                    </button>
+                    <div class="dropdown-menu">
+                        <div class="dropdown-section">
+                            <div class="dropdown-label">Filter Cameras</div>
+                            
+                            <!-- Project Filter -->
+                            <div class="filter-group">
+                                <div class="filter-group-label">Projects</div>
+                                <div id="projectFilters">
+                                    <!-- Dynamically populated -->
+                                </div>
+                            </div>
+                            
+                            <!-- Status Filter -->
+                            <div class="filter-group">
+                                <div class="filter-group-label">Status</div>
+                                <div class="filter-checkbox">
+                                    <input type="checkbox" id="filterOnline" value="online" checked>
+                                    <label for="filterOnline">Online</label>
+                                    <span class="filter-count" id="countOnline">0</span>
+                                </div>
+                                <div class="filter-checkbox">
+                                    <input type="checkbox" id="filterOffline" value="offline" checked>
+                                    <label for="filterOffline">Offline</label>
+                                    <span class="filter-count" id="countOffline">0</span>
+                                </div>
+                            </div>
+                            
+                            <!-- Type Filter -->
+                            <div class="filter-group">
+                                <div class="filter-group-label">Type</div>
+                                <div class="filter-checkbox">
+                                    <input type="checkbox" id="filterVideo" value="video" checked>
+                                    <label for="filterVideo">Video</label>
+                                    <span class="filter-count" id="countVideo">0</span>
+                                </div>
+                                <div class="filter-checkbox">
+                                    <input type="checkbox" id="filterImage" value="image" checked>
+                                    <label for="filterImage">Image</label>
+                                    <span class="filter-count" id="countImage">0</span>
+                                </div>
+                            </div>
+                            
+                            <!-- Battery Level Filter -->
+                            <div class="filter-group">
+                                <div class="filter-group-label">Battery Level</div>
+                                <div class="filter-checkbox">
+                                    <input type="checkbox" id="filterBatteryGood" value="good" checked>
+                                    <label for="filterBatteryGood">Good (>30%)</label>
+                                    <span class="filter-count" id="countBatteryGood">0</span>
+                                </div>
+                                <div class="filter-checkbox">
+                                    <input type="checkbox" id="filterBatteryLow" value="low" checked>
+                                    <label for="filterBatteryLow">Low (<30%)</label>
+                                    <span class="filter-count" id="countBatteryLow">0</span>
+                                </div>
+                            </div>
+                            
+                            <button class="clear-filters-btn" id="clearFiltersBtn">Clear All Filters</button>
+                        </div>
+                    </div>
+                </div>
                 
                 <!-- Display Options Dropdown -->
                 <div class="dropdown" id="configDropdown">
@@ -2140,6 +2455,356 @@
          * 3. Swipe Actions: Horizontal swipe to reveal up/down arrows for reordering
          * 4. Modal Reorder: Open a dedicated reorder screen with larger touch targets
          */
+
+        // Search and Filter State
+        let searchTerm = '';
+        let activeFilters = {
+            projects: [],
+            status: ['online', 'offline'],
+            type: ['video', 'image'],
+            battery: ['good', 'low']
+        };
+
+        // Initialize Search
+        function initializeSearch() {
+            const searchInput = document.getElementById('searchInput');
+            const searchClear = document.getElementById('searchClear');
+            const searchContainer = document.getElementById('searchContainer');
+            const mobileSearchToggle = document.getElementById('mobileSearchToggle');
+            
+            // Search input handler
+            searchInput.addEventListener('input', function(e) {
+                searchTerm = e.target.value.toLowerCase();
+                searchContainer.classList.toggle('has-value', searchTerm.length > 0);
+                applyFilters();
+            });
+            
+            // Clear search
+            searchClear.addEventListener('click', function() {
+                searchInput.value = '';
+                searchTerm = '';
+                searchContainer.classList.remove('has-value');
+                applyFilters();
+                searchInput.focus();
+            });
+            
+            // Mobile search toggle
+            if (mobileSearchToggle) {
+                mobileSearchToggle.addEventListener('click', function() {
+                    searchContainer.classList.toggle('mobile-active');
+                    if (searchContainer.classList.contains('mobile-active')) {
+                        searchInput.focus();
+                    }
+                });
+            }
+            
+            // Close mobile search on escape
+            searchInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && window.innerWidth <= 768) {
+                    searchContainer.classList.remove('mobile-active');
+                    searchInput.blur();
+                }
+            });
+        }
+
+        // Initialize Filters
+        function initializeFilters() {
+            populateProjectFilters();
+            updateFilterCounts();
+            
+            // Status filters
+            document.getElementById('filterOnline').addEventListener('change', handleFilterChange);
+            document.getElementById('filterOffline').addEventListener('change', handleFilterChange);
+            
+            // Type filters
+            document.getElementById('filterVideo').addEventListener('change', handleFilterChange);
+            document.getElementById('filterImage').addEventListener('change', handleFilterChange);
+            
+            // Battery filters
+            document.getElementById('filterBatteryGood').addEventListener('change', handleFilterChange);
+            document.getElementById('filterBatteryLow').addEventListener('change', handleFilterChange);
+            
+            // Clear filters button
+            document.getElementById('clearFiltersBtn').addEventListener('click', clearAllFilters);
+        }
+
+        // Populate project filters dynamically
+        function populateProjectFilters() {
+            const projectFiltersContainer = document.getElementById('projectFilters');
+            const projects = getUniqueProjects();
+            
+            projectFiltersContainer.innerHTML = '';
+            projects.forEach(project => {
+                const checkbox = document.createElement('div');
+                checkbox.className = 'filter-checkbox';
+                checkbox.innerHTML = `
+                    <input type="checkbox" id="filterProject${project.id}" value="${project.id}" checked>
+                    <label for="filterProject${project.id}">${project.name}</label>
+                    <span class="filter-count" id="countProject${project.id}">0</span>
+                `;
+                
+                checkbox.querySelector('input').addEventListener('change', handleFilterChange);
+                projectFiltersContainer.appendChild(checkbox);
+            });
+            
+            // Initialize project filters in activeFilters
+            activeFilters.projects = projects.map(p => p.id);
+        }
+
+        // Get unique projects from camera cards
+        function getUniqueProjects() {
+            const projects = new Map();
+            document.querySelectorAll('.camera-card').forEach(card => {
+                const projectId = card.dataset.project;
+                if (projectId && projectsData[projectId]) {
+                    projects.set(projectId, {
+                        id: projectId,
+                        name: projectsData[projectId].name
+                    });
+                }
+            });
+            return Array.from(projects.values());
+        }
+
+        // Handle filter changes
+        function handleFilterChange(e) {
+            const filterType = e.target.id;
+            const value = e.target.value;
+            const isChecked = e.target.checked;
+            
+            if (filterType.startsWith('filterProject')) {
+                updateFilterArray(activeFilters.projects, value, isChecked);
+            } else if (filterType === 'filterOnline' || filterType === 'filterOffline') {
+                updateFilterArray(activeFilters.status, value, isChecked);
+            } else if (filterType === 'filterVideo' || filterType === 'filterImage') {
+                updateFilterArray(activeFilters.type, value, isChecked);
+            } else if (filterType === 'filterBatteryGood' || filterType === 'filterBatteryLow') {
+                updateFilterArray(activeFilters.battery, value, isChecked);
+            }
+            
+            applyFilters();
+            updateFilterBadge();
+        }
+
+        // Helper to update filter arrays
+        function updateFilterArray(array, value, add) {
+            if (add && !array.includes(value)) {
+                array.push(value);
+            } else if (!add) {
+                const index = array.indexOf(value);
+                if (index > -1) array.splice(index, 1);
+            }
+        }
+
+        // Apply all filters
+        function applyFilters() {
+            const cards = document.querySelectorAll('.camera-card');
+            let visibleCount = 0;
+            
+            cards.forEach(card => {
+                const shouldShow = matchesFilters(card);
+                card.style.display = shouldShow ? '' : 'none';
+                if (shouldShow) visibleCount++;
+            });
+            
+            // Show/hide no results message
+            showNoResultsMessage(visibleCount === 0);
+            updateFilterCounts();
+        }
+
+        // Check if card matches all filters
+        function matchesFilters(card) {
+            // Search filter
+            if (searchTerm) {
+                const cameraName = (card.dataset.cameraName || '').toLowerCase();
+                const projectName = getProjectName(card.dataset.project).toLowerCase();
+                if (!cameraName.includes(searchTerm) && !projectName.includes(searchTerm)) {
+                    return false;
+                }
+            }
+            
+            // Project filter
+            if (!activeFilters.projects.includes(card.dataset.project)) {
+                return false;
+            }
+            
+            // Status filter
+            const status = getCardStatus(card);
+            if (!activeFilters.status.includes(status)) {
+                return false;
+            }
+            
+            // Type filter
+            if (!activeFilters.type.includes(card.dataset.cameraType)) {
+                return false;
+            }
+            
+            // Battery filter
+            const batteryLevel = getCardBatteryLevel(card);
+            const batteryStatus = batteryLevel >= 30 ? 'good' : 'low';
+            if (!activeFilters.battery.includes(batteryStatus)) {
+                return false;
+            }
+            
+            return true;
+        }
+
+        // Helper functions
+        function getProjectName(projectId) {
+            return projectsData[projectId]?.name || '';
+        }
+
+        function getCardStatus(card) {
+            const statusIndicator = card.querySelector('.status-indicator');
+            return statusIndicator?.classList.contains('offline') ? 'offline' : 'online';
+        }
+
+        function getCardBatteryLevel(card) {
+            const batteryText = card.querySelector('.battery-indicator span')?.textContent || '0%';
+            return parseInt(batteryText.replace('%', '')) || 0;
+        }
+
+        // Update filter counts
+        function updateFilterCounts() {
+            const cards = document.querySelectorAll('.camera-card');
+            const counts = {
+                projects: {},
+                online: 0,
+                offline: 0,
+                video: 0,
+                image: 0,
+                batteryGood: 0,
+                batteryLow: 0
+            };
+            
+            cards.forEach(card => {
+                if (card.style.display !== 'none') {
+                    // Project counts
+                    const project = card.dataset.project;
+                    counts.projects[project] = (counts.projects[project] || 0) + 1;
+                    
+                    // Status counts
+                    const status = getCardStatus(card);
+                    counts[status]++;
+                    
+                    // Type counts
+                    counts[card.dataset.cameraType]++;
+                    
+                    // Battery counts
+                    const batteryLevel = getCardBatteryLevel(card);
+                    if (batteryLevel >= 30) {
+                        counts.batteryGood++;
+                    } else {
+                        counts.batteryLow++;
+                    }
+                }
+            });
+            
+            // Update UI
+            document.getElementById('countOnline').textContent = counts.online;
+            document.getElementById('countOffline').textContent = counts.offline;
+            document.getElementById('countVideo').textContent = counts.video;
+            document.getElementById('countImage').textContent = counts.image;
+            document.getElementById('countBatteryGood').textContent = counts.batteryGood;
+            document.getElementById('countBatteryLow').textContent = counts.batteryLow;
+            
+            // Update project counts
+            Object.keys(counts.projects).forEach(projectId => {
+                const countElement = document.getElementById(`countProject${projectId}`);
+                if (countElement) {
+                    countElement.textContent = counts.projects[projectId] || 0;
+                }
+            });
+        }
+
+        // Update filter badge
+        function updateFilterBadge() {
+            const badge = document.getElementById('filterBadge');
+            let activeCount = 0;
+            
+            // Count deselected filters
+            const totalProjects = document.querySelectorAll('#projectFilters input').length;
+            const totalFilters = totalProjects + 6; // projects + 2 status + 2 type + 2 battery
+            const checkedFilters = document.querySelectorAll('#filtersDropdown input:checked').length;
+            
+            activeCount = totalFilters - checkedFilters;
+            
+            if (activeCount > 0) {
+                badge.textContent = activeCount;
+                badge.style.display = 'flex';
+            } else {
+                badge.style.display = 'none';
+            }
+        }
+
+        // Clear all filters
+        function clearAllFilters() {
+            // Reset all checkboxes
+            document.querySelectorAll('#filtersDropdown input[type="checkbox"]').forEach(checkbox => {
+                checkbox.checked = true;
+            });
+            
+            // Reset active filters
+            activeFilters = {
+                projects: getUniqueProjects().map(p => p.id),
+                status: ['online', 'offline'],
+                type: ['video', 'image'],
+                battery: ['good', 'low']
+            };
+            
+            applyFilters();
+            updateFilterBadge();
+        }
+
+        // Show no results message
+        function showNoResultsMessage(show) {
+            const grid = document.getElementById('cameraGrid');
+            let noResults = grid.querySelector('.no-results');
+            
+            if (show && !noResults) {
+                noResults = document.createElement('div');
+                noResults.className = 'no-results';
+                noResults.innerHTML = `
+                    <svg class="icon no-results-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <circle cx="11" cy="11" r="8" />
+                        <path d="M21 21L16.65 16.65" />
+                        <path d="M8 8L14 14M8 14L14 8" />
+                    </svg>
+                    <h3>No cameras found</h3>
+                    <p>Try adjusting your search or filters</p>
+                    <button class="btn btn-secondary" onclick="clearSearchAndFilters()">Clear Search & Filters</button>
+                `;
+                grid.appendChild(noResults);
+            } else if (!show && noResults) {
+                noResults.remove();
+            }
+        }
+
+        // Clear search and filters
+        function clearSearchAndFilters() {
+            // Clear search
+            document.getElementById('searchInput').value = '';
+            searchTerm = '';
+            document.getElementById('searchContainer').classList.remove('has-value');
+            
+            // Clear filters
+            clearAllFilters();
+        }
+
+        // Update existing addSelectedCameras and removeCamera functions to reinitialize filters
+        const originalAddSelectedCameras = addSelectedCameras;
+        addSelectedCameras = function() {
+            originalAddSelectedCameras();
+            populateProjectFilters();
+            updateFilterCounts();
+        };
+
+        const originalRemoveCamera = removeCamera;
+        removeCamera = function(button) {
+            originalRemoveCamera(button);
+            populateProjectFilters();
+            updateFilterCounts();
+        };
 
         // Projects and Camera Data
         const projectsData = {
@@ -3448,6 +4113,13 @@
 
         // Initialize everything on DOM ready
         document.addEventListener('DOMContentLoaded', function() {
+            
+            // Initialize Search
+            initializeSearch();
+
+            // Initialize Filters
+            initializeFilters();
+
             // Setup dropdown event handlers AFTER DOM is ready
             setupDropdownEventHandlers();
             
