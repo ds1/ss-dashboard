@@ -1,6 +1,8 @@
 # DSDEV Dashboard
 
-A modern, responsive construction site monitoring dashboard for managing security camera feeds, alerts, and site activities. Built with vanilla JavaScript and a custom design system based on the DSDEV brand guidelines.
+A modern, responsive construction site monitoring dashboard for managing security camera feeds, alerts, and site activities. Built with vanilla JavaScript and a custom design system based on the DSDEV (SC2.0) brand guidelines.
+
+![DSDEV Dashboard](https://img.shields.io/badge/version-1.0.0-orange.svg)
 
 ## 🚀 Features
 
@@ -13,6 +15,16 @@ A modern, responsive construction site monitoring dashboard for managing securit
 - **Persistent Layout**: Camera arrangement saved to local storage
 - **External Camera View**: Open individual camera view pages in new tabs
 
+### Design & Accessibility
+- **Dark/Light Mode**: Toggle between themes with persistent preference
+- **Fully Responsive**: Optimized for desktop, tablet, and mobile (including iPhone 12)
+- **Touch-optimized**: Enhanced controls for mobile devices
+- **WCAG Compliant**: Proper contrast ratios and semantic markup
+
+## Roadmap
+
+![Planned Features]https://img.shields.io/badge/Coming%20Soon-blue
+
 ### Smart Search & Filtering
 - **Intelligent Autocomplete**: Search for objects, activities, and events
 - **Category-based Results**: Organized by People, Vehicles, Heavy Equipment, Materials, and Activities
@@ -22,12 +34,6 @@ A modern, responsive construction site monitoring dashboard for managing securit
 - **Real-time Alerts**: Motion detection, low battery warnings, equipment alerts
 - **Alert Panel**: Collapsible side panel with chronological alert feed
 - **Visual Indicators**: Badge counts and status indicators
-
-### Design & Accessibility
-- **Dark/Light Mode**: Toggle between themes with persistent preference
-- **Fully Responsive**: Optimized for desktop, tablet, and mobile (including iPhone 12)
-- **Touch-optimized**: Enhanced controls for mobile devices
-- **WCAG Compliant**: Proper contrast ratios and semantic markup
 
 ## 🛠️ Technology Stack
 
@@ -96,15 +102,6 @@ php -S localhost:8000
 - **Open Camera View Page**: Click the external link icon to open the camera in a dedicated view page (opens in new tab)
 - **Reorder**: Drag and drop camera cards to rearrange
 - **Remove**: Hover over a camera and click the × button
-
-### Search Functionality
-
-The search bar supports intelligent filtering for:
-- **People**: Person, Hard Hat, Safety Vest
-- **Vehicles**: Car, Pickup Truck, Truck
-- **Heavy Equipment**: Bulldozer, Crane, Excavator, etc.
-- **Materials**: Scaffolding, Rebar, Traffic Cone, etc.
-- **Activities**: Concrete Pour, Excavation, Crane Operation, etc.
 
 ### Keyboard Shortcuts
 

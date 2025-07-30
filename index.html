@@ -214,7 +214,7 @@
 
         .btn-primary {
             background-color: var(--color-orange-500);
-            color: var(--color-white);
+            color: var(--color-orange-1000);
         }
 
         .btn-primary:hover {
@@ -347,6 +347,18 @@
             transform: translateX(16px);
         }
 
+        /* Toggle visibility for project names, camera names, and timestamps */
+        body.hide-project-names .camera-details p:first-of-type {
+            display: none;
+        }
+        body.hide-camera-names .camera-details h3 {
+            display: none;
+        }
+
+        body.hide-timestamps .camera-details p:last-child {
+            display: none;
+        }
+
         /* Grid Layout Options */
         .grid-options {
             display: flex;
@@ -419,6 +431,27 @@
             overflow-y: auto;
             background-color: var(--bg-primary);
             -webkit-overflow-scrolling: touch;
+        }
+
+        /* Camera placeholder image */
+        .camera-placeholder {
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-tertiary);
+            background-size: cover;
+            background-position: center;
+        }
+
+        /* Dark theme placeholder */
+        [data-theme="dark"] .camera-placeholder {
+            background-image: url('./images/cameras/placeholder-dark.jpg');
+        }
+
+        /* Light theme placeholder */
+        [data-theme="light"] .camera-placeholder {
+            background-image: url('./images/cameras/placeholder-light.jpg');
         }
 
         /* Camera Grid */
@@ -531,6 +564,12 @@
             z-index: 1000;
             border-radius: 0;
             cursor: default;
+        }
+
+        /* Hide play button for image-only cameras */
+        .camera-card[data-camera-type="image"] .video-control-btn[data-action="startLiveView"],
+        .camera-card[data-camera-type="image"] .fullscreen-control-btn[data-action="startLiveView"] {
+            display: none;
         }
 
         .camera-feed {
@@ -668,13 +707,13 @@
             position: absolute;
             top: var(--spacing-2);
             left: var(--spacing-2);
-            width: 28px;
-            height: 28px;
-            background-color: rgba(240, 68, 56, 0.9);
+            width: 32px;
+            height: 32px;
+            background-color: rgba(0, 0, 0, 0.6);
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 50%;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -682,18 +721,21 @@
             transition: all 0.2s ease;
             color: var(--color-white);
             opacity: 0;
-            transform: scale(0.8);
             z-index: 5;
         }
 
         .camera-card:hover .camera-remove-btn {
             opacity: 1;
-            transform: scale(1);
         }
 
         .camera-remove-btn:hover {
-            background-color: var(--color-error-600);
-            transform: scale(1.1);
+            background-color: rgba(0, 0, 0, 0.8);
+            transform: scale(1.05);
+        }
+
+        /* Hide remove button in fullscreen mode to prevent confusion */
+        .camera-card.fullscreen .camera-remove-btn {
+            display: none;
         }
 
         /* Add Camera Button */
@@ -1007,6 +1049,14 @@
             font-weight: 600;
             margin-bottom: 4px;
             letter-spacing: -0.01em;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .camera-details h3 .status-indicator {
+            display: inline-block;
+            margin: 0;
         }
 
         .camera-details p {
@@ -1292,18 +1342,13 @@
             }
             
             /* Touch-optimized controls */
-            .camera-remove-btn,
-            .video-control-btn {
-                opacity: 0.8;
-                transform: scale(1);
-                width: 36px;
-                height: 36px;
+            .video-control-btn,
+            .camera-remove-btn {
+                opacity: 1;
             }
-            
-            .camera-card:hover .camera-remove-btn,
+
             .camera-card:hover .video-controls {
-                opacity: 0.8;
-                transform: scale(1);
+                opacity: 1;
             }
             
             /* Ensure dropdown sections are scrollable if needed */
@@ -1530,12 +1575,9 @@
             }
             
             /* Always show controls on touch devices */
-            .video-controls {
-                opacity: 1 !important;
-            }
-            
+            .video-controls,
             .camera-remove-btn {
-                opacity: 0.9 !important;
+                opacity: 1 !important;
             }
             
             /* Better touch feedback */
@@ -1700,14 +1742,20 @@
                         <div class="dropdown-section">
                             <div class="dropdown-label">Display Options</div>
                             <div class="dropdown-item">
+                                <span>Show Project Names</span>
+                                <div class="toggle-switch active" id="showProjectNamesToggle" onclick="toggleSwitch(this, 'projectNames')">
+                                    <div class="toggle-slider"></div>
+                                </div>
+                            </div>
+                            <div class="dropdown-item">
                                 <span>Show Camera Names</span>
-                                <div class="toggle-switch active" onclick="toggleSwitch(this)">
+                                <div class="toggle-switch active" id="showCameraNamesToggle" onclick="toggleSwitch(this, 'cameraNames')">
                                     <div class="toggle-slider"></div>
                                 </div>
                             </div>
                             <div class="dropdown-item">
                                 <span>Show Timestamps</span>
-                                <div class="toggle-switch active" onclick="toggleSwitch(this)">
+                                <div class="toggle-switch active" id="showTimestampsToggle" onclick="toggleSwitch(this, 'timestamps')">
                                     <div class="toggle-slider"></div>
                                 </div>
                             </div>
@@ -1737,11 +1785,11 @@
             <!-- Camera Grid -->
             <div class="camera-grid grid-2x2" id="cameraGrid">
                 <!-- Camera Card 1 - Online with Video -->
-                <div class="camera-card" draggable="true" data-camera-id="1" data-project="downtown-tower" data-camera-name="North Entrance">
+                <div class="camera-card" draggable="true" data-camera-id="1" data-project="downtown-tower" data-camera-name="North Entrance" data-camera-type="video">
                     <div class="camera-feed">
                         <!-- Remove Button -->
                         <button class="camera-remove-btn" data-action="removeCamera" title="Remove Camera">
-                            <svg class="icon icon-sm" viewBox="0 0 20 20" stroke-width="2.5">
+                            <svg class="icon icon-sm" viewBox="0 0 20 20" fill="none" stroke="currentColor">
                                 <path d="M6 6L14 14M6 14L14 6" />
                             </svg>
                         </button>
@@ -1770,7 +1818,7 @@
                                     <path d="M17 3H12M17 3V8" />
                                 </svg>
                             </button>
-                            <button class="video-control-btn" data-action="toggleFullscreen" title="Fullscreen">
+                            <button class="video-control-btn" data-action="toggleFullscreen" title="Enter Fullscreen">
                                 <svg class="icon icon-sm" viewBox="0 0 20 20">
                                     <path d="M3 6V3H6M14 3H17V6M17 14V17H14M6 17H3V14" />
                                 </svg>
@@ -1780,14 +1828,20 @@
                         <div class="camera-overlay">
                             <div class="camera-info">
                                 <div class="camera-details">
-                                    <h3>North Entrance</h3>
+                                    <h3>
+                                        <span class="status-indicator"></span>
+                                        North Entrance
+                                    </h3>
                                     <p>Downtown Tower Project</p>
                                     <p style="font-size: 12px; opacity: 0.7;">2024-01-15 14:32:18</p>
                                 </div>
                                 <div class="camera-status">
                                     <div class="status-row">
-                                        <div class="status-indicator"></div>
-                                        <span>Snapshot</span>
+                                        <svg class="icon icon-sm" viewBox="0 0 20 20" fill="none" stroke="currentColor">
+                                            <path d="M23 7L16 12L23 17V7Z"/>
+                                            <rect x="1" y="5" width="15" height="14" rx="2"/>
+                                        </svg>
+                                        <span>Video • Paused</span>
                                     </div>
                                     <div class="battery-indicator">
                                         <div class="battery-bar">
@@ -1817,17 +1871,17 @@
                 </div>
 
                 <!-- Camera Card 2 - Online with Static Image -->
-                <div class="camera-card" draggable="true" data-camera-id="2" data-project="downtown-tower" data-camera-name="Loading Dock">
+                <div class="camera-card" draggable="true" data-camera-id="2" data-project="downtown-tower" data-camera-name="Loading Dock" data-camera-type="image">
                     <div class="camera-feed">
                         <!-- Remove Button -->
                         <button class="camera-remove-btn" data-action="removeCamera" title="Remove Camera">
-                            <svg class="icon icon-sm" viewBox="0 0 20 20" stroke-width="2.5">
+                            <svg class="icon icon-sm" viewBox="0 0 20 20" fill="none" stroke="currentColor">
                                 <path d="M6 6L14 14M6 14L14 6" />
                             </svg>
                         </button>
                         
                         <!-- Static image for paused/snapshot view -->
-                        <img class="camera-media" src="https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?w=800&h=450&fit=crop" alt="Loading Dock - Construction Site View">
+                        <img class="camera-media" src="https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?w=800&h=450&fit=crop&q=80&fm=jpg" alt="Loading Dock - Construction Site View">
                         
                         <!-- Loading indicator -->
                         <div class="camera-loading">
@@ -1836,11 +1890,6 @@
                         
                         <!-- Video Controls -->
                         <div class="video-controls">
-                            <button class="video-control-btn" data-action="startLiveView" title="Start Live View">
-                                <svg class="icon icon-sm" viewBox="0 0 20 20">
-                                    <polygon points="7,5 7,15 15,10" fill="currentColor" stroke="none" />
-                                </svg>
-                            </button>
                             <button class="video-control-btn" data-action="openCameraView" title="Open Camera View Page">
                                 <svg class="icon icon-sm" viewBox="0 0 20 20">
                                     <path d="M11 3H3C2.44772 3 2 3.44772 2 4V16C2 16.5523 2.44772 17 3 17H15C15.5523 17 16 16.5523 16 16V8" />
@@ -1848,7 +1897,7 @@
                                     <path d="M17 3H12M17 3V8" />
                                 </svg>
                             </button>
-                            <button class="video-control-btn" data-action="toggleFullscreen" title="Fullscreen">
+                            <button class="video-control-btn" data-action="toggleFullscreen" title="Enter Fullscreen">
                                 <svg class="icon icon-sm" viewBox="0 0 20 20">
                                     <path d="M3 6V3H6M14 3H17V6M17 14V17H14M6 17H3V14" />
                                 </svg>
@@ -1858,14 +1907,21 @@
                         <div class="camera-overlay">
                             <div class="camera-info">
                                 <div class="camera-details">
-                                    <h3>Loading Dock</h3>
+                                    <h3>
+                                        <span class="status-indicator"></span>
+                                        Loading Dock
+                                    </h3>
                                     <p>Downtown Tower Project</p>
                                     <p style="font-size: 12px; opacity: 0.7;">2024-01-15 14:32:18</p>
                                 </div>
                                 <div class="camera-status">
                                     <div class="status-row">
-                                        <div class="status-indicator"></div>
-                                        <span>Snapshot</span>
+                                        <svg class="icon icon-sm" viewBox="0 0 20 20" fill="none" stroke="currentColor">
+                                            <rect x="3" y="3" width="14" height="14" rx="2"/>
+                                            <circle cx="10" cy="10" r="3"/>
+                                            <path d="M21 15L15.5 9.5L10 15"/>
+                                        </svg>
+                                        <span>Image</span>
                                     </div>
                                     <div class="battery-indicator">
                                         <div class="battery-bar">
@@ -1880,11 +1936,6 @@
                         
                         <!-- Fullscreen controls -->
                         <div class="fullscreen-controls">
-                            <button class="fullscreen-control-btn" data-action="startLiveView" title="Start Live View">
-                                <svg class="icon" viewBox="0 0 20 20">
-                                    <polygon points="7,5 7,15 15,10" fill="currentColor" stroke="none" />
-                                </svg>
-                            </button>
                             <button class="fullscreen-control-btn" data-action="exitFullscreen" title="Exit Fullscreen">
                                 <svg class="icon" viewBox="0 0 20 20">
                                     <path d="M6 3V6H3M3 14V17H6M14 17H17V14M17 6V3H14" />
@@ -1895,17 +1946,17 @@
                 </div>
 
                 <!-- Camera Card 3 - Offline -->
-                <div class="camera-card" draggable="true" data-camera-id="3" data-project="downtown-tower" data-camera-name="East Perimeter">
+                <div class="camera-card" draggable="true" data-camera-id="3" data-project="downtown-tower" data-camera-name="East Perimeter" data-camera-type="image">
                     <div class="camera-feed">
                         <!-- Remove Button -->
                         <button class="camera-remove-btn" data-action="removeCamera" title="Remove Camera">
-                            <svg class="icon icon-sm" viewBox="0 0 20 20" stroke-width="2.5">
+                            <svg class="icon icon-sm" viewBox="0 0 20 20" fill="none" stroke="currentColor">
                                 <path d="M6 6L14 14M6 14L14 6" />
                             </svg>
                         </button>
                         
                         <!-- Offline state with last known image -->
-                        <img class="camera-media" src="https://images.unsplash.com/photo-1541888946425-d81bb19240f5?w=800&h=450&fit=crop" alt="East Perimeter - Last Known Image" style="opacity: 0.5; filter: grayscale(100%);">
+                        <img class="camera-media" src="https://images.unsplash.com/photo-1541888946425-d81bb19240f5?w=800&h=450&fit=crop&q=80&fm=jpg" alt="East Perimeter - Last Known Image" style="opacity: 0.5; filter: grayscale(100%);">
                         
                         <div class="camera-offline">
                             <svg class="icon icon-lg" viewBox="0 0 24 24">
@@ -1918,13 +1969,20 @@
                         <div class="camera-overlay">
                             <div class="camera-info">
                                 <div class="camera-details">
-                                    <h3>East Perimeter</h3>
+                                    <h3>
+                                        <span class="status-indicator offline"></span>
+                                        East Perimeter
+                                    </h3>
                                     <p>Downtown Tower Project</p>
                                     <p style="font-size: 12px; opacity: 0.7;">Last seen: 13:45:32</p>
                                 </div>
                                 <div class="camera-status">
                                     <div class="status-row">
-                                        <div class="status-indicator offline"></div>
+                                        <svg class="icon icon-sm" viewBox="0 0 20 20" fill="none" stroke="currentColor">
+                                            <rect x="3" y="3" width="14" height="14" rx="2"/>
+                                            <circle cx="10" cy="10" r="3"/>
+                                            <path d="M21 15L15.5 9.5L10 15"/>
+                                        </svg>
                                         <span>Offline</span>
                                     </div>
                                     <div class="battery-indicator" style="color: var(--color-error-500);">
@@ -1941,11 +1999,11 @@
                 </div>
 
                 <!-- Camera Card 4 - Online with Video -->
-                <div class="camera-card" draggable="true" data-camera-id="4" data-project="riverside-complex" data-camera-name="Crane Platform">
+                <div class="camera-card" draggable="true" data-camera-id="4" data-project="riverside-complex" data-camera-name="Crane Platform" data-camera-type="video">
                     <div class="camera-feed">
                         <!-- Remove Button -->
                         <button class="camera-remove-btn" data-action="removeCamera" title="Remove Camera">
-                            <svg class="icon icon-sm" viewBox="0 0 20 20" stroke-width="2.5">
+                            <svg class="icon icon-sm" viewBox="0 0 20 20" fill="none" stroke="currentColor">
                                 <path d="M6 6L14 14M6 14L14 6" />
                             </svg>
                         </button>
@@ -1974,7 +2032,7 @@
                                     <path d="M17 3H12M17 3V8" />
                                 </svg>
                             </button>
-                            <button class="video-control-btn" data-action="toggleFullscreen" title="Fullscreen">
+                            <button class="video-control-btn" data-action="toggleFullscreen" title="Enter Fullscreen">
                                 <svg class="icon icon-sm" viewBox="0 0 20 20">
                                     <path d="M3 6V3H6M14 3H17V6M17 14V17H14M6 17H3V14" />
                                 </svg>
@@ -1984,14 +2042,20 @@
                         <div class="camera-overlay">
                             <div class="camera-info">
                                 <div class="camera-details">
-                                    <h3>Crane Platform</h3>
+                                    <h3>
+                                        <span class="status-indicator"></span>
+                                        Crane Platform
+                                    </h3>
                                     <p>Riverside Complex</p>
                                     <p style="font-size: 12px; opacity: 0.7;">2024-01-15 14:32:18</p>
                                 </div>
                                 <div class="camera-status">
                                     <div class="status-row">
-                                        <div class="status-indicator"></div>
-                                        <span>Snapshot</span>
+                                        <svg class="icon icon-sm" viewBox="0 0 20 20" fill="none" stroke="currentColor">
+                                            <path d="M23 7L16 12L23 17V7Z"/>
+                                            <rect x="1" y="5" width="15" height="14" rx="2"/>
+                                        </svg>
+                                        <span>Video • Paused</span>
                                     </div>
                                     <div class="battery-indicator">
                                         <div class="battery-bar">
@@ -2178,6 +2242,48 @@
             }
         };
 
+        // Pool of valid construction site images from Unsplash
+        const constructionImagePool = [
+            'photo-1504917595217-d4dc5ebe6122', // Construction site aerial view
+            'photo-1541888946425-d81bb19240f5', // Construction workers
+            'photo-1503387762-592deb58ef4e', // Building crane
+            'photo-1581094271901-8022df4466f9', // Construction materials
+            'photo-1590736969955-71cc94901144', // Construction site overview
+            'photo-1572981779307-38b8cabb2407', // Construction machinery
+            'photo-1604709177225-055f99402ea3', // Construction progress
+            'photo-1578662996442-48f60103fc96', // Building construction
+            'photo-1531834685032-c34bf0d84c77', // Construction framework
+            'photo-1574359411659-15573a27fd0c'  // Construction equipment
+        ];
+
+        // Configuration for image source
+        const imageConfig = {
+            source: 'local',
+            localPath: './images/cameras/',
+            fallbackImage: 'placeholder.jpg'
+        };
+
+        // Function to get image URL based on configuration
+        function getCameraImageUrl(cameraId, cameraName) {
+            if (imageConfig.source === 'local') {
+                // Use local image - you can customize the naming convention
+                // Option 1: Use camera ID (e.g., dt-001.jpg)
+                //return `${imageConfig.localPath}${cameraId}.jpg`;
+                
+                // Option 2: Use camera name (e.g., north-entrance.jpg)
+                // const safeName = cameraName.toLowerCase().replace(/\s+/g, '-');
+                // return `${imageConfig.localPath}${safeName}.jpg`;
+                
+                // Option 3: Use random numbered images (e.g., construction-01.jpg)
+                const randomNum = Math.floor(Math.random() * 10) + 1;
+                return `${imageConfig.localPath}construction-${randomNum.toString().padStart(2, '0')}.jpg`;
+            } else {
+                // Use Unsplash with a pool of valid construction images
+                const randomImage = constructionImagePool[Math.floor(Math.random() * constructionImagePool.length)];
+                return `https://images.unsplash.com/${randomImage}?w=800&h=450&fit=crop&q=80&fm=jpg`;
+            }
+        }
+
         let selectedCameras = [];
         let currentProject = 'downtown-tower';
 
@@ -2312,22 +2418,41 @@
             card.dataset.cameraId = camera.id;
             card.dataset.project = Object.keys(projectsData).find(key => projectsData[key] === project);
             card.dataset.cameraName = camera.name;
+            card.dataset.cameraType = camera.type;
             
             const mediaElement = camera.type === 'video' ? 
                 `<video class="camera-video" muted loop playsinline>
                     <source src="https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/360/Big_Buck_Bunny_360_10s_1MB.mp4" type="video/mp4">
                 </video>` :
-                `<img class="camera-media" src="https://images.unsplash.com/photo-${Math.floor(Math.random() * 1000000000)}?w=800&h=450&fit=crop" alt="${camera.name}">`;
+                `<img class="camera-media" src="${getCameraImageUrl(camera.id, camera.name)}" alt="${camera.name}">`;
             
             const statusIndicatorClass = camera.status === 'online' ? '' : 'offline';
-            const statusText = camera.status === 'online' ? 'Snapshot' : 'Offline';
+            const mediaIcon = camera.type === 'video' ? 
+                `<path d="M23 7L16 12L23 17V7Z"/><rect x="1" y="5" width="15" height="14" rx="2"/>` :
+                `<rect x="3" y="3" width="14" height="14" rx="2"/><circle cx="10" cy="10" r="3"/><path d="M21 15L15.5 9.5L10 15"/>`;
+            const statusText = camera.type === 'video' ? 'Video • Paused' : 'Image';
             const batteryColor = camera.battery < 30 ? 'var(--color-error-500)' : 'inherit';
             const batteryWidth = (camera.battery / 100) * 29; // 29px is inner width (32px - 3px for borders)
+            
+            // Only include play button for video cameras
+            const playButton = camera.type === 'video' ? 
+                `<button class="video-control-btn" data-action="startLiveView" title="Start Live View">
+                    <svg class="icon icon-sm" viewBox="0 0 20 20">
+                        <polygon points="7,5 7,15 15,10" fill="currentColor" stroke="none" />
+                    </svg>
+                </button>` : '';
+            
+            const fullscreenPlayButton = (camera.type === 'video' && camera.status === 'online') ? 
+                `<button class="fullscreen-control-btn" data-action="startLiveView" title="Start Live View">
+                    <svg class="icon" viewBox="0 0 20 20">
+                        <polygon points="7,5 7,15 15,10" fill="currentColor" stroke="none" />
+                    </svg>
+                </button>` : '';
             
             card.innerHTML = `
                 <div class="camera-feed">
                     <button class="camera-remove-btn" data-action="removeCamera" title="Remove Camera">
-                        <svg class="icon icon-sm" viewBox="0 0 20 20" stroke-width="2.5">
+                        <svg class="icon icon-sm" viewBox="0 0 20 20" fill="none" stroke="currentColor">
                             <path d="M6 6L14 14M6 14L14 6" />
                         </svg>
                     </button>
@@ -2339,11 +2464,7 @@
                     </div>
                     
                     <div class="video-controls">
-                        <button class="video-control-btn" data-action="startLiveView" title="Start Live View">
-                            <svg class="icon icon-sm" viewBox="0 0 20 20">
-                                <polygon points="7,5 7,15 15,10" fill="currentColor" stroke="none" />
-                            </svg>
-                        </button>
+                        ${playButton}
                         <button class="video-control-btn" data-action="openCameraView" title="Open Camera View Page">
                             <svg class="icon icon-sm" viewBox="0 0 20 20">
                                 <path d="M11 3H3C2.44772 3 2 3.44772 2 4V16C2 16.5523 2.44772 17 3 17H15C15.5523 17 16 16.5523 16 16V8" />
@@ -2351,7 +2472,7 @@
                                 <path d="M17 3H12M17 3V8" />
                             </svg>
                         </button>
-                        <button class="video-control-btn" data-action="toggleFullscreen" title="Fullscreen">
+                        <button class="video-control-btn" data-action="toggleFullscreen" title="Enter Fullscreen">
                             <svg class="icon icon-sm" viewBox="0 0 20 20">
                                 <path d="M3 6V3H6M14 3H17V6M17 14V17H14M6 17H3V14" />
                             </svg>
@@ -2361,14 +2482,19 @@
                     <div class="camera-overlay">
                         <div class="camera-info">
                             <div class="camera-details">
-                                <h3>${camera.name}</h3>
+                                <h3>
+                                    <span class="status-indicator ${statusIndicatorClass}"></span>
+                                    ${camera.name}
+                                </h3>
                                 <p>${project.name}</p>
                                 <p style="font-size: 12px; opacity: 0.7;">2024-01-15 14:32:18</p>
                             </div>
                             <div class="camera-status">
                                 <div class="status-row">
-                                    <div class="status-indicator ${statusIndicatorClass}"></div>
-                                    <span>${statusText}</span>
+                                    <svg class="icon icon-sm" viewBox="0 0 20 20" fill="none" stroke="currentColor">
+                                        ${mediaIcon}
+                                    </svg>
+                                    <span>${camera.status === 'online' ? statusText : 'Offline'}</span>
                                 </div>
                                 <div class="battery-indicator" style="color: ${batteryColor};">
                                     <div class="battery-bar" style="border-color: ${batteryColor};">
@@ -2382,13 +2508,7 @@
                     </div>
                     
                     <div class="fullscreen-controls">
-                        ${camera.status === 'online' ? 
-                            `<button class="fullscreen-control-btn" data-action="startLiveView" title="Start Live View">
-                                <svg class="icon" viewBox="0 0 20 20">
-                                    <polygon points="7,5 7,15 15,10" fill="currentColor" stroke="none" />
-                                </svg>
-                            </button>` : ''
-                        }
+                        ${fullscreenPlayButton}
                         <button class="fullscreen-control-btn" data-action="exitFullscreen" title="Exit Fullscreen">
                             <svg class="icon" viewBox="0 0 20 20">
                                 <path d="M6 3V6H3M3 14V17H6M14 17H17V14M17 6V3H14" />
@@ -2551,8 +2671,35 @@
         });
 
         // Toggle Switch
-        function toggleSwitch(element) {
+        function toggleSwitch(element, type) {
             element.classList.toggle('active');
+            const isActive = element.classList.contains('active');
+            
+            if (type === 'cameraNames') {
+                if (isActive) {
+                    document.body.classList.remove('hide-camera-names');
+                    localStorage.setItem('showCameraNames', 'true');
+                } else {
+                    document.body.classList.add('hide-camera-names');
+                    localStorage.setItem('showCameraNames', 'false');
+                }
+            } else if (type === 'timestamps') {
+                if (isActive) {
+                    document.body.classList.remove('hide-timestamps');
+                    localStorage.setItem('showTimestamps', 'true');
+                } else {
+                    document.body.classList.add('hide-timestamps');
+                    localStorage.setItem('showTimestamps', 'false');
+                }
+            } else if (type === 'projectNames') {
+                if (isActive) {
+                    document.body.classList.remove('hide-project-names');
+                    localStorage.setItem('showProjectNames', 'true');
+                } else {
+                    document.body.classList.add('hide-project-names');
+                    localStorage.setItem('showProjectNames', 'false');
+                }
+            }
         }
 
         // Grid Layout Change
@@ -2610,100 +2757,53 @@
         function startLiveView(button) {
             const feed = button.closest('.camera-feed');
             const video = feed.querySelector('.camera-video');
-            const img = feed.querySelector('.camera-media');
             const statusText = feed.querySelector('.camera-status span');
             
-            // Get both regular and fullscreen control buttons
-            const regularControlBtn = feed.querySelector('.video-controls button');
-            const fullscreenControlBtn = feed.querySelector('.fullscreen-controls button');
+            // Only start live view if there's already a video element
+            if (!video) {
+                // It's an image camera - do nothing
+                return;
+            }
             
-            if (video) {
-                // For video elements, just start playing
-                const loading = feed.querySelector('.camera-loading');
+            // Get both regular and fullscreen control buttons
+            const regularControlBtn = feed.querySelector('.video-controls button[data-action="startLiveView"]');
+            const fullscreenControlBtn = feed.querySelector('.fullscreen-controls button[data-action="startLiveView"]');
+            
+            // For video elements, just start playing
+            const loading = feed.querySelector('.camera-loading');
+            
+            // Check if video is already loaded
+            if (video.readyState >= 3) { // HAVE_FUTURE_DATA or higher
+                // Video is already loaded, start immediately
+                statusText.textContent = 'Video • Live';
                 
-                // Check if video is already loaded
-                if (video.readyState >= 3) { // HAVE_FUTURE_DATA or higher
-                    // Video is already loaded, start immediately
-                    statusText.textContent = 'Live';
-                    
-                    // Update both control buttons
-                    [regularControlBtn, fullscreenControlBtn].forEach(btn => {
-                        if (btn && btn.getAttribute('data-action') !== 'exitFullscreen' && btn.getAttribute('data-action') !== 'toggleFullscreen') {
-                            const iconSize = btn.classList.contains('fullscreen-control-btn') ? '' : 'icon-sm';
-                            btn.innerHTML = `
-                                <svg class="icon ${iconSize}" viewBox="0 0 20 20">
-                                    <rect x="6" y="5" width="3" height="10" fill="currentColor" stroke="none" />
-                                    <rect x="11" y="5" width="3" height="10" fill="currentColor" stroke="none" />
-                                </svg>
-                            `;
-                            btn.setAttribute('data-action', 'pauseLiveView');
-                            btn.setAttribute('title', 'Pause Live View');
-                        }
-                    });
-                    
-                    video.play();
-                } else {
-                    // Video not loaded yet, show loading spinner
-                    loading.classList.add('active');
-                    
-                    const handleVideoReady = function() {
-                        loading.classList.remove('active');
-                        statusText.textContent = 'Live';
-                        
-                        // Update both control buttons
-                        [regularControlBtn, fullscreenControlBtn].forEach(btn => {
-                            if (btn && btn.getAttribute('data-action') !== 'exitFullscreen' && btn.getAttribute('data-action') !== 'toggleFullscreen') {
-                                const iconSize = btn.classList.contains('fullscreen-control-btn') ? '' : 'icon-sm';
-                                btn.innerHTML = `
-                                    <svg class="icon ${iconSize}" viewBox="0 0 20 20">
-                                        <rect x="6" y="5" width="3" height="10" fill="currentColor" stroke="none" />
-                                        <rect x="11" y="5" width="3" height="10" fill="currentColor" stroke="none" />
-                                    </svg>
-                                `;
-                                btn.setAttribute('data-action', 'pauseLiveView');
-                                btn.setAttribute('title', 'Pause Live View');
-                            }
-                        });
-                        
-                        // Remove event listeners
-                        video.removeEventListener('loadeddata', handleVideoReady);
-                        video.removeEventListener('canplay', handleVideoReady);
-                    };
-                    
-                    video.addEventListener('loadeddata', handleVideoReady);
-                    video.addEventListener('canplay', handleVideoReady);
-                    video.play();
-                }
-            } else if (img) {
-                // For image elements, create video and replace
-                const loading = feed.querySelector('.camera-loading');
+                // Update both control buttons
+                [regularControlBtn, fullscreenControlBtn].forEach(btn => {
+                    if (btn) {
+                        const iconSize = btn.classList.contains('fullscreen-control-btn') ? '' : 'icon-sm';
+                        btn.innerHTML = `
+                            <svg class="icon ${iconSize}" viewBox="0 0 20 20">
+                                <rect x="6" y="5" width="3" height="10" fill="currentColor" stroke="none" />
+                                <rect x="11" y="5" width="3" height="10" fill="currentColor" stroke="none" />
+                            </svg>
+                        `;
+                        btn.setAttribute('data-action', 'pauseLiveView');
+                        btn.setAttribute('title', 'Pause Live View');
+                    }
+                });
+                
+                video.play();
+            } else {
+                // Video not loaded yet, show loading spinner
                 loading.classList.add('active');
                 
-                // Create video element
-                const newVideo = document.createElement('video');
-                newVideo.className = 'camera-video';
-                newVideo.muted = true;
-                newVideo.loop = true;
-                newVideo.playsInline = true;
-                
-                // Use a different video source for variety
-                newVideo.innerHTML = '<source src="https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/360/Big_Buck_Bunny_360_10s_1MB.mp4" type="video/mp4">';
-                
-                newVideo.onloadeddata = function() {
-                    // Replace image with video
-                    img.style.display = 'none';
-                    feed.insertBefore(newVideo, img);
+                const handleVideoReady = function() {
                     loading.classList.remove('active');
-                    
-                    // Update status
-                    statusText.textContent = 'Live';
+                    statusText.textContent = 'Video • Live';
                     
                     // Update both control buttons
-                    const regularControlBtn = feed.querySelector('.video-controls button');
-                    const fullscreenControlBtn = feed.querySelector('.fullscreen-controls button');
-                    
                     [regularControlBtn, fullscreenControlBtn].forEach(btn => {
-                        if (btn && btn.getAttribute('data-action') !== 'exitFullscreen' && btn.getAttribute('data-action') !== 'toggleFullscreen') {
+                        if (btn) {
                             const iconSize = btn.classList.contains('fullscreen-control-btn') ? '' : 'icon-sm';
                             btn.innerHTML = `
                                 <svg class="icon ${iconSize}" viewBox="0 0 20 20">
@@ -2715,37 +2815,36 @@
                             btn.setAttribute('title', 'Pause Live View');
                         }
                     });
+                    
+                    // Remove event listeners
+                    video.removeEventListener('loadeddata', handleVideoReady);
+                    video.removeEventListener('canplay', handleVideoReady);
                 };
                 
-                newVideo.play();
+                video.addEventListener('loadeddata', handleVideoReady);
+                video.addEventListener('canplay', handleVideoReady);
+                video.play();
             }
         }
 
         function pauseLiveView(button) {
             const feed = button.closest('.camera-feed');
             const video = feed.querySelector('.camera-video');
-            const img = feed.querySelector('.camera-media');
             const statusText = feed.querySelector('.camera-status span');
             
             if (video) {
                 video.pause();
                 
                 // Get both regular and fullscreen control buttons
-                const regularControlBtn = feed.querySelector('.video-controls button');
-                const fullscreenControlBtn = feed.querySelector('.fullscreen-controls button');
+                const regularControlBtn = feed.querySelector('.video-controls button[data-action="pauseLiveView"]');
+                const fullscreenControlBtn = feed.querySelector('.fullscreen-controls button[data-action="pauseLiveView"]');
                 
-                // If there's an image, show it and hide video
-                if (img) {
-                    video.remove();
-                    img.style.display = 'block';
-                    statusText.textContent = 'Snapshot';
-                } else {
-                    statusText.textContent = 'Paused';
-                }
+                // Update status to show paused
+                statusText.textContent = 'Video • Paused';
                 
                 // Update both control buttons
                 [regularControlBtn, fullscreenControlBtn].forEach(btn => {
-                    if (btn && btn.getAttribute('data-action') !== 'exitFullscreen' && btn.getAttribute('data-action') !== 'toggleFullscreen') {
+                    if (btn) {
                         const iconSize = btn.classList.contains('fullscreen-control-btn') ? '' : 'icon-sm';
                         btn.innerHTML = `
                             <svg class="icon ${iconSize}" viewBox="0 0 20 20">
@@ -2799,13 +2898,14 @@
                 
                 e.target.style.display = 'none';
                 
-                // Show error placeholder
+                // Show error placeholder with image icon for image cameras
                 const placeholder = document.createElement('div');
                 placeholder.className = 'camera-placeholder';
                 placeholder.innerHTML = `
                     <svg class="icon icon-lg" style="opacity: 0.15;" viewBox="0 0 24 24">
-                        <path d="M23 7L16 12L23 17V7Z" />
-                        <rect x="1" y="5" width="15" height="14" rx="2" />
+                        <rect x="3" y="3" width="18" height="18" rx="2" />
+                        <circle cx="8.5" cy="8.5" r="1.5" />
+                        <path d="M21 15L16 10L5 21" />
                     </svg>
                 `;
                 e.target.parentElement.appendChild(placeholder);
@@ -2908,11 +3008,11 @@
                 // Play all videos and update their control buttons
                 videos.forEach(video => {
                     video.play();
-                    const controlBtn = video.parentElement.querySelector('.video-controls button');
-                    const fullscreenControlBtn = video.parentElement.querySelector('.fullscreen-controls button');
+                    const controlBtn = video.parentElement.querySelector('.video-controls button[data-action="startLiveView"]');
+                    const fullscreenControlBtn = video.parentElement.querySelector('.fullscreen-controls button[data-action="startLiveView"]');
                     
                     [controlBtn, fullscreenControlBtn].forEach(btn => {
-                        if (btn && btn.getAttribute('data-action') !== 'exitFullscreen' && btn.getAttribute('data-action') !== 'toggleFullscreen') {
+                        if (btn) {
                             const iconSize = btn.classList.contains('fullscreen-control-btn') ? '' : 'icon-sm';
                             btn.innerHTML = `
                                 <svg class="icon ${iconSize}" viewBox="0 0 20 20">
@@ -2927,7 +3027,9 @@
                     
                     // Update status to Live
                     const statusText = video.parentElement.querySelector('.camera-status span');
-                    if (statusText) statusText.textContent = 'Live';
+                    if (statusText && statusText.textContent.includes('Video')) {
+                        statusText.textContent = 'Video • Live';
+                    }
                 });
             } else {
                 btnText.textContent = 'Start All Streams';
@@ -2937,11 +3039,11 @@
                 // Pause all videos and update their control buttons
                 videos.forEach(video => {
                     video.pause();
-                    const controlBtn = video.parentElement.querySelector('.video-controls button');
-                    const fullscreenControlBtn = video.parentElement.querySelector('.fullscreen-controls button');
+                    const controlBtn = video.parentElement.querySelector('.video-controls button[data-action="pauseLiveView"]');
+                    const fullscreenControlBtn = video.parentElement.querySelector('.fullscreen-controls button[data-action="pauseLiveView"]');
                     
                     [controlBtn, fullscreenControlBtn].forEach(btn => {
-                        if (btn && btn.getAttribute('data-action') !== 'exitFullscreen' && btn.getAttribute('data-action') !== 'toggleFullscreen') {
+                        if (btn) {
                             const iconSize = btn.classList.contains('fullscreen-control-btn') ? '' : 'icon-sm';
                             btn.innerHTML = `
                                 <svg class="icon ${iconSize}" viewBox="0 0 20 20">
@@ -2953,9 +3055,11 @@
                         }
                     });
                     
-                    // Update status to Snapshot
+                    // Update status to Paused
                     const statusText = video.parentElement.querySelector('.camera-status span');
-                    if (statusText) statusText.textContent = 'Snapshot';
+                    if (statusText && statusText.textContent.includes('Video')) {
+                        statusText.textContent = 'Video • Paused';
+                    }
                 });
             }
         }
@@ -3240,7 +3344,8 @@
             const cameras = Array.from(cards).map(card => ({
                 id: card.dataset.cameraId,
                 project: card.dataset.project,
-                name: card.dataset.cameraName
+                name: card.dataset.cameraName,
+                type: card.dataset.cameraType
             }));
             localStorage.setItem('activeCameras', JSON.stringify(cameras));
         }
@@ -3337,14 +3442,36 @@
                     adjustGridForFitToScreen();
                 }
             }
+
+            // Restore toggle states
+            const showProjectNames = localStorage.getItem('showProjectNames');
+            if (showProjectNames === 'false') {
+                document.body.classList.add('hide-project-names');
+                const toggle = document.getElementById('showProjectNamesToggle');
+                if (toggle) toggle.classList.remove('active');
+            }
+
+            const showCameraNames = localStorage.getItem('showCameraNames');
+            if (showCameraNames === 'false') {
+                document.body.classList.add('hide-camera-names');
+                const toggle = document.getElementById('showCameraNamesToggle');
+                if (toggle) toggle.classList.remove('active');
+            }
+
+            const showTimestamps = localStorage.getItem('showTimestamps');
+            if (showTimestamps === 'false') {
+                document.body.classList.add('hide-timestamps');
+                const toggle = document.getElementById('showTimestampsToggle');
+                if (toggle) toggle.classList.remove('active');
+            }
             
             // Update the initial video control buttons to show play state
             document.querySelectorAll('.camera-video').forEach(video => {
-                const controlBtn = video.parentElement.querySelector('.video-controls button');
-                const fullscreenControlBtn = video.parentElement.querySelector('.fullscreen-controls button');
+                const controlBtn = video.parentElement.querySelector('.video-controls button[data-action="startLiveView"]');
+                const fullscreenControlBtn = video.parentElement.querySelector('.fullscreen-controls button[data-action="startLiveView"]');
                 
                 [controlBtn, fullscreenControlBtn].forEach(btn => {
-                    if (btn && btn.getAttribute('data-action') !== 'toggleFullscreen' && btn.getAttribute('data-action') !== 'exitFullscreen') {
+                    if (btn) {
                         const iconSize = btn.classList.contains('fullscreen-control-btn') ? '' : 'icon-sm';
                         btn.innerHTML = `
                             <svg class="icon ${iconSize}" viewBox="0 0 20 20">
@@ -3359,7 +3486,7 @@
                 // Update status to indicate not live
                 const statusText = video.parentElement.querySelector('.camera-status span');
                 if (statusText && statusText.textContent === 'Live') {
-                    statusText.textContent = 'Snapshot';
+                    statusText.textContent = 'Video • Paused';
                 }
             });
         });
