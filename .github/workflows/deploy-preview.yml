@@ -7,9 +7,6 @@ on:
       - 'feature-*'
       - 'test-*'
   workflow_dispatch:
-      - 'fix-*'  # Matches any branch starting with "fix-"
-      - 'feature-*'  # Matches any branch starting with "feature-"
-      - 'test-*'  # Matches any branch starting with "test-"
 
 jobs:
   deploy-preview:
