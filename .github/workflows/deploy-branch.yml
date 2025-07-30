@@ -1,0 +1,34 @@
+name: Deploy Branch to Subdirectory
+
+on:
+  push:
+    branches:
+      - 'fix-*'  # Matches any branch starting with "fix-"
+      - 'feature-*'  # Matches any branch starting with "feature-"
+      - 'test-*'  # Matches any branch starting with "test-"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        ref: ${{ github.ref }}
+        
+    - name: Get branch name
+      id: branch-name
+      run: echo "branch=${GITHUB_REF#refs/heads/}" >> $GITHUB_OUTPUT
+      
+    - name: Setup deployment directory
+      run: |
+        mkdir -p deploy-dir/${{ steps.branch-name.outputs.branch }}
+        cp -r * deploy-dir/${{ steps.branch-name.outputs.branch }}/ || true
+        
+    - name: Deploy to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./deploy-dir
+        destination_dir: ${{ steps.branch-name.outputs.branch }}
+        keep_files: true  # Important: keeps other branch deployments
