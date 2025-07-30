@@ -23,8 +23,8 @@ jobs:
       
     - name: Setup deployment directory
       run: |
-        mkdir -p deploy-dir/${{ steps.branch-name.outputs.branch }}
-        cp -r * deploy-dir/${{ steps.branch-name.outputs.branch }}/ || true
+        mkdir -p deploy-dir
+        cp -r * deploy-dir/ || true
         
     - name: Deploy to preview site
       uses: peaceiris/actions-gh-pages@v3
