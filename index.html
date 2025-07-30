@@ -1705,7 +1705,7 @@
             
             <!-- Header Controls -->
             <div class="header-controls">
-                <button class="btn btn-primary" id="streamToggle" onclick="toggleStreaming()">
+                <button class="btn btn-primary" id="streamToggle">
                     <svg class="icon icon-sm" viewBox="0 0 20 20" id="streamIcon">
                         <polygon points="7,5 7,15 15,10" fill="currentColor" stroke="none" />
                     </svg>
@@ -1714,7 +1714,7 @@
                 
                 <!-- Display Options Dropdown -->
                 <div class="dropdown" id="configDropdown">
-                    <button class="btn btn-secondary" onclick="toggleDropdown('configDropdown')">
+                    <button class="btn btn-secondary" data-dropdown="configDropdown">
                         <svg class="icon icon-sm" viewBox="0 0 20 20">
                             <path d="M4 6h2v2H4zM10 6h6M4 12h2v2H4zM10 12h6M4 18h2v2H4zM10 18h6" />
                         </svg>
@@ -1746,31 +1746,31 @@
                             <div class="dropdown-label">Display Options</div>
                             <div class="dropdown-item">
                                 <span>Show Project Names</span>
-                                <div class="toggle-switch active" id="showProjectNamesToggle" onclick="toggleSwitch(this, 'projectNames')">
+                                <div class="toggle-switch active" id="showProjectNamesToggle">
                                     <div class="toggle-slider"></div>
                                 </div>
                             </div>
                             <div class="dropdown-item">
                                 <span>Show Camera Names</span>
-                                <div class="toggle-switch active" id="showCameraNamesToggle" onclick="toggleSwitch(this, 'cameraNames')">
+                                <div class="toggle-switch active" id="showCameraNamesToggle">
                                     <div class="toggle-slider"></div>
                                 </div>
                             </div>
                             <div class="dropdown-item">
                                 <span>Show Timestamps</span>
-                                <div class="toggle-switch active" id="showTimestampsToggle" onclick="toggleSwitch(this, 'timestamps')">
+                                <div class="toggle-switch active" id="showTimestampsToggle">
                                     <div class="toggle-slider"></div>
                                 </div>
                             </div>
                             <div class="dropdown-item">
                                 <span>Fit to Screen</span>
-                                <div class="toggle-switch" id="fitToScreenToggle" onclick="toggleFitToScreen(this)">
+                                <div class="toggle-switch" id="fitToScreenToggle">
                                     <div class="toggle-slider"></div>
                                 </div>
                             </div>
                             <div class="dropdown-item">
                                 <span>Dark Mode</span>
-                                <div class="toggle-switch active" id="darkModeToggle" onclick="toggleDarkMode(this)">
+                                <div class="toggle-switch active" id="darkModeToggle">
                                     <div class="toggle-slider"></div>
                                 </div>
                             </div>
@@ -2088,7 +2088,7 @@
                 </div>
 
                 <!-- Add Camera Card -->
-                <div class="add-camera-card" onclick="openCameraSelection()">
+                <div class="add-camera-card" data-action="openCameraSelection">
                     <div class="add-camera-icon">
                         <svg class="icon" viewBox="0 0 20 20" stroke-width="2">
                             <path d="M10 5V15M5 10H15" />
@@ -2105,7 +2105,7 @@
         <div class="camera-selection-modal">
             <div class="modal-header">
                 <h2 class="modal-title">Add Camera Feed</h2>
-                <button class="modal-close" onclick="closeCameraSelection()">
+                <button class="modal-close" data-action="closeCameraSelection">
                     <svg class="icon icon-sm" viewBox="0 0 20 20">
                         <path d="M6 6L14 14M6 14L14 6" />
                     </svg>
@@ -2144,8 +2144,8 @@
             </div>
             
             <div class="modal-footer">
-                <button class="btn btn-secondary" onclick="closeCameraSelection()">Cancel</button>
-                <button class="btn btn-primary" onclick="addSelectedCameras()" id="addCamerasBtn" disabled>Add Selected</button>
+                <button class="btn btn-secondary" data-action="closeCameraSelection">Cancel</button>
+                <button class="btn btn-primary" data-action="addSelectedCameras" id="addCamerasBtn" disabled>Add Selected</button>
             </div>
         </div>
     </div>
@@ -2536,28 +2536,6 @@
             }
         }
 
-        // Project Selection
-        document.querySelectorAll('.project-item').forEach(item => {
-            item.addEventListener('click', function() {
-                // Update active state
-                document.querySelectorAll('.project-item').forEach(p => p.classList.remove('active'));
-                this.classList.add('active');
-                
-                // Update current project and populate cameras
-                currentProject = this.dataset.project;
-                selectedCameras = [];
-                populateCamerasGrid(currentProject);
-                updateAddButton();
-            });
-        });
-
-        // Close modal when clicking outside
-        document.getElementById('cameraSelectionModal').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeCameraSelection();
-            }
-        });
-
         // Theme Toggle
         function toggleDarkMode(element) {
             const body = document.body;
@@ -2626,7 +2604,98 @@
             if (radio) radio.checked = true;
         }
 
-        // Toggle Dropdown
+        // Setup dropdown event handlers
+        function setupDropdownEventHandlers() {
+            // Use event delegation for better mobile support
+            document.addEventListener('click', function(e) {
+                // Handle dropdown toggle button clicks
+                if (e.target.closest('.btn-secondary[data-dropdown]')) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const dropdown = e.target.closest('.dropdown');
+                    toggleDropdown(dropdown.id);
+                    return;
+                }
+                
+                // Handle clicks inside dropdown menu - prevent closing
+                if (e.target.closest('.dropdown-menu')) {
+                    e.stopPropagation();
+                    return;
+                }
+                
+                // Handle clicks on dropdown backdrop (mobile)
+                if (e.target.classList.contains('dropdown-backdrop')) {
+                    document.querySelectorAll('.dropdown').forEach(d => {
+                        d.classList.remove('active');
+                    });
+                    e.target.remove();
+                    return;
+                }
+                
+                // Close dropdowns when clicking outside
+                if (!e.target.closest('.dropdown')) {
+                    document.querySelectorAll('.dropdown').forEach(d => {
+                        d.classList.remove('active');
+                    });
+                    const backdrop = document.querySelector('.dropdown-backdrop');
+                    if (backdrop) {
+                        backdrop.remove();
+                    }
+                }
+            });
+            
+            // Prevent touch events from closing dropdown
+            document.addEventListener('touchstart', function(e) {
+                if (e.target.closest('.dropdown-menu')) {
+                    e.stopPropagation();
+                }
+            }, { passive: false });
+            
+            // Handle grid layout changes
+            document.addEventListener('change', function(e) {
+                if (e.target.matches('input[name="gridLayout"]')) {
+                    e.stopPropagation();
+                    const grid = document.getElementById('cameraGrid');
+                    grid.className = 'camera-grid ' + e.target.value;
+                    
+                    const fitToScreenToggle = document.getElementById('fitToScreenToggle');
+                    if (fitToScreenToggle && fitToScreenToggle.classList.contains('active')) {
+                        adjustGridForFitToScreen();
+                    }
+                }
+            });
+            
+            // Handle toggle switches with event delegation
+            document.addEventListener('click', function(e) {
+                const toggleSwitch = e.target.closest('.toggle-switch');
+                if (toggleSwitch) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    // Toggle the active state
+                    toggleSwitch.classList.toggle('active');
+                    
+                    // Determine which toggle was clicked and handle it
+                    if (toggleSwitch.id === 'showProjectNamesToggle') {
+                        handleToggleSwitch(toggleSwitch, 'projectNames');
+                    } else if (toggleSwitch.id === 'showCameraNamesToggle') {
+                        handleToggleSwitch(toggleSwitch, 'cameraNames');
+                    } else if (toggleSwitch.id === 'showTimestampsToggle') {
+                        handleToggleSwitch(toggleSwitch, 'timestamps');
+                    } else if (toggleSwitch.id === 'fitToScreenToggle') {
+                        // fitToScreen has its own toggle logic
+                        toggleSwitch.classList.remove('active'); // Remove the toggle we just added
+                        toggleFitToScreen(toggleSwitch);
+                    } else if (toggleSwitch.id === 'darkModeToggle') {
+                        // darkMode has its own toggle logic
+                        toggleSwitch.classList.remove('active'); // Remove the toggle we just added
+                        toggleDarkMode(toggleSwitch);
+                    }
+                }
+            });
+        }
+
+        // Toggle Dropdown function
         function toggleDropdown(dropdownId) {
             const dropdown = document.getElementById(dropdownId);
             const isOpen = dropdown.classList.contains('active');
@@ -2650,41 +2719,13 @@
                 if (window.innerWidth <= 768) {
                     const backdrop = document.createElement('div');
                     backdrop.className = 'dropdown-backdrop';
-                    backdrop.addEventListener('click', function(e) {
-                        // Only close if clicking on the backdrop itself, not the dropdown menu
-                        if (e.target === backdrop) {
-                            dropdown.classList.remove('active');
-                            this.remove();
-                        }
-                    });
                     document.body.appendChild(backdrop);
                 }
             }
         }
 
-        // Close dropdowns when clicking outside
-        document.addEventListener('click', function(e) {
-            // Don't close if clicking inside the dropdown menu
-            if (!e.target.closest('.dropdown') && !e.target.closest('.dropdown-menu')) {
-                document.querySelectorAll('.dropdown').forEach(d => {
-                    d.classList.remove('active');
-                });
-                // Remove backdrop if exists
-                const backdrop = document.querySelector('.dropdown-backdrop');
-                if (backdrop) {
-                    backdrop.remove();
-                }
-            }
-        });
-
-        // Toggle Switch
-        function toggleSwitch(element, type) {
-            // Prevent dropdown from closing
-            if (event) {
-                event.stopPropagation();
-            }
-            
-            element.classList.toggle('active');
+        // Handle toggle switch changes
+        function handleToggleSwitch(element, type) {
             const isActive = element.classList.contains('active');
             
             if (type === 'cameraNames') {
@@ -2713,46 +2754,6 @@
                 }
             }
         }
-
-        // Grid Layout Change
-        document.querySelectorAll('input[name="gridLayout"]').forEach(radio => {
-            radio.addEventListener('change', function(e) {
-                e.stopPropagation();
-                const grid = document.getElementById('cameraGrid');
-                grid.className = 'camera-grid ' + this.value;
-                
-                // If fit-to-screen is active, adjust the grid rows
-                const fitToScreenToggle = document.getElementById('fitToScreenToggle');
-                if (fitToScreenToggle && fitToScreenToggle.classList.contains('active')) {
-                    adjustGridForFitToScreen();
-                }
-            });
-        });
-        
-        // Prevent dropdown from closing when interacting with controls
-        document.querySelectorAll('.dropdown-menu').forEach(menu => {
-            menu.addEventListener('click', function(e) {
-                e.stopPropagation();
-            });
-        });
-
-        // Prevent all touch/click events inside dropdown from bubbling up
-        document.querySelectorAll('.dropdown-menu').forEach(menu => {
-            ['click', 'touchstart', 'touchend', 'touchmove'].forEach(eventType => {
-                menu.addEventListener(eventType, function(e) {
-                    e.stopPropagation();
-                }, { passive: false });
-            });
-        });
-
-        // Also prevent the toggle switches and radio buttons from closing dropdown
-        document.querySelectorAll('.toggle-switch, .grid-option input, .grid-option label').forEach(element => {
-            ['click', 'touchstart', 'touchend'].forEach(eventType => {
-                element.addEventListener(eventType, function(e) {
-                    e.stopPropagation();
-                }, { passive: false });
-            });
-        });
 
         // Streaming Toggle
         let isStreaming = false;
@@ -2883,108 +2884,91 @@
             }
         }
         
-        document.addEventListener('loadeddata', function(e) {
-            if (e.target.classList.contains('camera-video')) {
-                const loading = e.target.parentElement.querySelector('.camera-loading');
-                if (loading && loading.classList.contains('active')) {
-                    loading.classList.remove('active');
-                }
-            }
-        }, true);
-        
-        document.addEventListener('error', function(e) {
-            if (e.target.classList.contains('camera-video')) {
-                const loading = e.target.parentElement.querySelector('.camera-loading');
-                if (loading && loading.classList.contains('active')) {
-                    loading.classList.remove('active');
-                }
-                
-                // Show error state
-                const placeholder = document.createElement('div');
-                placeholder.className = 'camera-placeholder';
-                placeholder.innerHTML = `
-                    <div style="text-align: center; color: var(--color-error-500);">
-                        <svg class="icon icon-lg" viewBox="0 0 24 24" style="margin-bottom: var(--spacing-2);">
-                            <circle cx="12" cy="12" r="10" />
-                            <path d="M12 8V12M12 16H12.01" />
-                        </svg>
-                        <p>Failed to load video</p>
-                    </div>
-                `;
-                e.target.style.display = 'none';
-                e.target.parentElement.appendChild(placeholder);
-            } else if (e.target.classList.contains('camera-media')) {
-                const loading = e.target.parentElement.querySelector('.camera-loading');
-                if (loading && loading.classList.contains('active')) {
-                    loading.classList.remove('active');
-                }
-                
-                e.target.style.display = 'none';
-                
-                // Show error placeholder with image icon for image cameras
-                const placeholder = document.createElement('div');
-                placeholder.className = 'camera-placeholder';
-                placeholder.innerHTML = `
-                    <svg class="icon icon-lg" style="opacity: 0.15;" viewBox="0 0 24 24">
-                        <rect x="3" y="3" width="18" height="18" rx="2" />
-                        <circle cx="8.5" cy="8.5" r="1.5" />
-                        <path d="M21 15L16 10L5 21" />
-                    </svg>
-                `;
-                e.target.parentElement.appendChild(placeholder);
-            }
-        }, true);
-        
-        document.addEventListener('load', function(e) {
-            if (e.target.classList.contains('camera-media')) {
-                const loading = e.target.parentElement.querySelector('.camera-loading');
-                if (loading && loading.classList.contains('active')) {
-                    loading.classList.remove('active');
-                }
-            }
-        }, true);
-
-        // Event delegation for video controls
+        // Event delegation for all button actions
         document.addEventListener('click', function(e) {
-            // Handle fullscreen toggle
-            if (e.target.closest('[data-action="toggleFullscreen"]')) {
-                e.preventDefault();
-                toggleFullscreen(e.target);
-            }
+            // Get the action from the closest element with data-action
+            const actionElement = e.target.closest('[data-action]');
+            if (!actionElement) return;
             
-            // Handle exit fullscreen
-            if (e.target.closest('[data-action="exitFullscreen"]')) {
-                e.preventDefault();
-                exitFullscreen(e.target);
-            }
+            const action = actionElement.getAttribute('data-action');
             
-            // Handle start live view
-            if (e.target.closest('[data-action="startLiveView"]')) {
-                e.preventDefault();
-                startLiveView(e.target);
+            switch(action) {
+                case 'toggleFullscreen':
+                    e.preventDefault();
+                    toggleFullscreen(actionElement);
+                    break;
+                    
+                case 'exitFullscreen':
+                    e.preventDefault();
+                    exitFullscreen(actionElement);
+                    break;
+                    
+                case 'startLiveView':
+                    e.preventDefault();
+                    startLiveView(actionElement);
+                    break;
+                    
+                case 'pauseLiveView':
+                    e.preventDefault();
+                    pauseLiveView(actionElement);
+                    break;
+                    
+                case 'removeCamera':
+                    e.preventDefault();
+                    removeCamera(actionElement);
+                    break;
+                    
+                case 'openCameraView':
+                    e.preventDefault();
+                    const cameraCard = actionElement.closest('.camera-card');
+                    const cameraId = cameraCard.dataset.cameraId;
+                    window.open(`/camera/${cameraId}`, '_blank');
+                    break;
+                    
+                case 'openCameraSelection':
+                    e.preventDefault();
+                    openCameraSelection();
+                    break;
+                    
+                case 'closeCameraSelection':
+                    e.preventDefault();
+                    closeCameraSelection();
+                    break;
+                    
+                case 'addSelectedCameras':
+                    e.preventDefault();
+                    addSelectedCameras();
+                    break;
             }
-            
-            // Handle pause live view
-            if (e.target.closest('[data-action="pauseLiveView"]')) {
-                e.preventDefault();
-                pauseLiveView(e.target);
+        });
+        
+        // Handle streaming toggle separately
+        document.getElementById('streamToggle').addEventListener('click', function(e) {
+            e.preventDefault();
+            toggleStreaming();
+        });
+
+        // Project Selection
+        document.addEventListener('click', function(e) {
+            if (e.target.closest('.project-item')) {
+                const projectItem = e.target.closest('.project-item');
+                
+                // Update active state
+                document.querySelectorAll('.project-item').forEach(p => p.classList.remove('active'));
+                projectItem.classList.add('active');
+                
+                // Update current project and populate cameras
+                currentProject = projectItem.dataset.project;
+                selectedCameras = [];
+                populateCamerasGrid(currentProject);
+                updateAddButton();
             }
-            
-            // Handle remove camera
-            if (e.target.closest('[data-action="removeCamera"]')) {
-                e.preventDefault();
-                removeCamera(e.target);
-            }
-            
-            // Handle open camera view
-            if (e.target.closest('[data-action="openCameraView"]')) {
-                e.preventDefault();
-                const button = e.target.closest('[data-action="openCameraView"]');
-                const cameraCard = button.closest('.camera-card');
-                const cameraId = cameraCard.dataset.cameraId;
-                const cameraName = cameraCard.dataset.cameraName;
-                // Open URL in new tab - you can customize the URL pattern as needed
-                window.open(`/camera/${cameraId}`, '_blank');
+        });
+
+        // Close modal when clicking outside
+        document.getElementById('cameraSelectionModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeCameraSelection();
             }
         });
         
@@ -3458,8 +3442,73 @@
             }, 250);
         });
 
-        // Initialize everything
+        // Video event listeners
+        document.addEventListener('loadeddata', function(e) {
+            if (e.target.classList.contains('camera-video')) {
+                const loading = e.target.parentElement.querySelector('.camera-loading');
+                if (loading && loading.classList.contains('active')) {
+                    loading.classList.remove('active');
+                }
+            }
+        }, true);
+        
+        document.addEventListener('error', function(e) {
+            if (e.target.classList.contains('camera-video')) {
+                const loading = e.target.parentElement.querySelector('.camera-loading');
+                if (loading && loading.classList.contains('active')) {
+                    loading.classList.remove('active');
+                }
+                
+                // Show error state
+                const placeholder = document.createElement('div');
+                placeholder.className = 'camera-placeholder';
+                placeholder.innerHTML = `
+                    <div style="text-align: center; color: var(--color-error-500);">
+                        <svg class="icon icon-lg" viewBox="0 0 24 24" style="margin-bottom: var(--spacing-2);">
+                            <circle cx="12" cy="12" r="10" />
+                            <path d="M12 8V12M12 16H12.01" />
+                        </svg>
+                        <p>Failed to load video</p>
+                    </div>
+                `;
+                e.target.style.display = 'none';
+                e.target.parentElement.appendChild(placeholder);
+            } else if (e.target.classList.contains('camera-media')) {
+                const loading = e.target.parentElement.querySelector('.camera-loading');
+                if (loading && loading.classList.contains('active')) {
+                    loading.classList.remove('active');
+                }
+                
+                e.target.style.display = 'none';
+                
+                // Show error placeholder with image icon for image cameras
+                const placeholder = document.createElement('div');
+                placeholder.className = 'camera-placeholder';
+                placeholder.innerHTML = `
+                    <svg class="icon icon-lg" style="opacity: 0.15;" viewBox="0 0 24 24">
+                        <rect x="3" y="3" width="18" height="18" rx="2" />
+                        <circle cx="8.5" cy="8.5" r="1.5" />
+                        <path d="M21 15L16 10L5 21" />
+                    </svg>
+                `;
+                e.target.parentElement.appendChild(placeholder);
+            }
+        }, true);
+        
+        document.addEventListener('load', function(e) {
+            if (e.target.classList.contains('camera-media')) {
+                const loading = e.target.parentElement.querySelector('.camera-loading');
+                if (loading && loading.classList.contains('active')) {
+                    loading.classList.remove('active');
+                }
+            }
+        }, true);
+
+        // Initialize everything on DOM ready
         document.addEventListener('DOMContentLoaded', function() {
+            // Setup dropdown event handlers AFTER DOM is ready
+            setupDropdownEventHandlers();
+            
             // Initialize drag and drop
             initializeDragAndDrop();
             
@@ -3531,10 +3580,6 @@
                 e.preventDefault();
             }
         }, { passive: false });
-
-        // Initialize on page load
-        initializeDragAndDrop();
-        restoreCameraOrder();
     </script>
 </body>
 </html>
