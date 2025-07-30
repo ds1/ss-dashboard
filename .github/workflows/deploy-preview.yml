@@ -1,0 +1,36 @@
+name: Deploy Branch Preview
+
+on:
+  push:
+    branches:
+      - 'fix-*'
+      - 'feature-*'
+      - 'test-*'
+  workflow_dispatch:
+
+jobs:
+  deploy-preview:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        ref: ${{ github.ref }}
+        
+    - name: Get branch name
+      id: branch-name
+      run: echo "branch=${GITHUB_REF#refs/heads/}" >> $GITHUB_OUTPUT
+      
+    - name: Setup deployment directory
+      run: |
+        mkdir -p deploy-dir/${{ steps.branch-name.outputs.branch }}
+        cp -r * deploy-dir/${{ steps.branch-name.outputs.branch }}/ || true
+        
+    - name: Deploy to preview site
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        personal_token: ${{ secrets.PREVIEW_DEPLOY_TOKEN }}
+        external_repository: [your-username]/preview-site
+        publish_dir: ./deploy-dir
+        destination_dir: ${{ steps.branch-name.outputs.branch }}
+        keep_files: true

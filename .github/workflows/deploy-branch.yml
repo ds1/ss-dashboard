@@ -6,7 +6,6 @@ on:
       - 'fix-*'  # Matches any branch starting with "fix-"
       - 'feature-*'  # Matches any branch starting with "feature-"
       - 'test-*'  # Matches any branch starting with "test-"
-      - 'prototype-*' #Matches any branch starting with "prototype-"
 
 jobs:
   deploy:
