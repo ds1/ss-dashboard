@@ -1,3 +1,48 @@
+<<<<<<< HEAD
+name: Deploy Branch Preview
+
+on:
+  push:
+    branches:
+<<<<<<<< HEAD:.github/workflows/deploy-preview.yml
+      - 'fix-*'
+      - 'feature-*'
+      - 'test-*'
+  workflow_dispatch:
+========
+      - 'fix-*'  # Matches any branch starting with "fix-"
+      - 'feature-*'  # Matches any branch starting with "feature-"
+      - 'test-*'  # Matches any branch starting with "test-"
+>>>>>>>> a4b3752f68b6bfcdc4cd67434a63a3c2445572c6:.github/workflows/deploy-branch.yml
+
+jobs:
+  deploy-preview:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        ref: ${{ github.ref }}
+        
+    - name: Get branch name
+      id: branch-name
+      run: echo "branch=${GITHUB_REF#refs/heads/}" >> $GITHUB_OUTPUT
+      
+    - name: Setup deployment directory
+      run: |
+        mkdir -p deploy-dir/${{ steps.branch-name.outputs.branch }}
+        cp -r * deploy-dir/${{ steps.branch-name.outputs.branch }}/ || true
+        
+    - name: Deploy to preview site
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        personal_token: ${{ secrets.PREVIEW_DEPLOY_TOKEN }}
+        external_repository: ds1/preview-ss-dashboard
+        publish_dir: ./deploy-dir
+        destination_dir: ${{ steps.branch-name.outputs.branch }}
+        publish_branch: main
+        keep_files: true
+=======
 name: Deploy Branch Preview
 
 on:
@@ -33,5 +78,5 @@ jobs:
         external_repository: ds1/preview-ss-dashboard
         publish_dir: ./deploy-dir
         destination_dir: ${{ steps.branch-name.outputs.branch }}
-        publish_branch: main
         keep_files: true
+>>>>>>> a4b3752f68b6bfcdc4cd67434a63a3c2445572c6
