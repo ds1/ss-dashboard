@@ -631,10 +631,13 @@
             width: 48px;
             height: 48px;
             display: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
         }
 
         .camera-loading.active {
             display: block;
+            opacity: 1;
         }
 
         .loading-spinner {
@@ -1795,7 +1798,7 @@
                         </button>
                         
                         <!-- Video for live feed -->
-                        <video class="camera-video" muted loop playsinline>
+                        <video class="camera-video" muted loop playsinline preload="metadata">
                             <source src="https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/360/Big_Buck_Bunny_360_10s_1MB.mp4" type="video/mp4">
                         </video>
                         
@@ -2009,7 +2012,7 @@
                         </button>
                         
                         <!-- Different video for variety -->
-                        <video class="camera-video" muted loop playsinline>
+                        <video class="camera-video" muted loop playsinline preload="metadata">
                             <source src="https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/360/Big_Buck_Bunny_360_10s_2MB.mp4" type="video/mp4">
                         </video>
                         
@@ -2421,7 +2424,7 @@
             card.dataset.cameraType = camera.type;
             
             const mediaElement = camera.type === 'video' ? 
-                `<video class="camera-video" muted loop playsinline>
+                `<video class="camera-video" muted loop playsinline preload="metadata">
                     <source src="https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/360/Big_Buck_Bunny_360_10s_1MB.mp4" type="video/mp4">
                 </video>` :
                 `<img class="camera-media" src="${getCameraImageUrl(camera.id, camera.name)}" alt="${camera.name}">`;
@@ -2647,9 +2650,12 @@
                 if (window.innerWidth <= 768) {
                     const backdrop = document.createElement('div');
                     backdrop.className = 'dropdown-backdrop';
-                    backdrop.addEventListener('click', function() {
-                        dropdown.classList.remove('active');
-                        this.remove();
+                    backdrop.addEventListener('click', function(e) {
+                        // Only close if clicking on the backdrop itself, not the dropdown menu
+                        if (e.target === backdrop) {
+                            dropdown.classList.remove('active');
+                            this.remove();
+                        }
                     });
                     document.body.appendChild(backdrop);
                 }
@@ -2658,7 +2664,8 @@
 
         // Close dropdowns when clicking outside
         document.addEventListener('click', function(e) {
-            if (!e.target.closest('.dropdown')) {
+            // Don't close if clicking inside the dropdown menu
+            if (!e.target.closest('.dropdown') && !e.target.closest('.dropdown-menu')) {
                 document.querySelectorAll('.dropdown').forEach(d => {
                     d.classList.remove('active');
                 });
@@ -2704,7 +2711,8 @@
 
         // Grid Layout Change
         document.querySelectorAll('input[name="gridLayout"]').forEach(radio => {
-            radio.addEventListener('change', function() {
+            radio.addEventListener('change', function(e) {
+                e.stopPropagation();
                 const grid = document.getElementById('cameraGrid');
                 grid.className = 'camera-grid ' + this.value;
                 
@@ -2713,6 +2721,13 @@
                 if (fitToScreenToggle && fitToScreenToggle.classList.contains('active')) {
                     adjustGridForFitToScreen();
                 }
+            });
+        });
+
+        // Prevent dropdown from closing when interacting with controls
+        document.querySelectorAll('.dropdown-menu').forEach(menu => {
+            menu.addEventListener('click', function(e) {
+                e.stopPropagation();
             });
         });
 
@@ -2772,9 +2787,12 @@
             // For video elements, just start playing
             const loading = feed.querySelector('.camera-loading');
             
-            // Check if video is already loaded
-            if (video.readyState >= 3) { // HAVE_FUTURE_DATA or higher
-                // Video is already loaded, start immediately
+            // Show loading spinner
+            if (loading) loading.classList.add('active');
+            
+            // Set up load handlers
+            const handleVideoReady = function() {
+                if (loading) loading.classList.remove('active');
                 statusText.textContent = 'Video • Live';
                 
                 // Update both control buttons
@@ -2792,39 +2810,23 @@
                     }
                 });
                 
-                video.play();
-            } else {
-                // Video not loaded yet, show loading spinner
-                loading.classList.add('active');
-                
-                const handleVideoReady = function() {
-                    loading.classList.remove('active');
-                    statusText.textContent = 'Video • Live';
-                    
-                    // Update both control buttons
-                    [regularControlBtn, fullscreenControlBtn].forEach(btn => {
-                        if (btn) {
-                            const iconSize = btn.classList.contains('fullscreen-control-btn') ? '' : 'icon-sm';
-                            btn.innerHTML = `
-                                <svg class="icon ${iconSize}" viewBox="0 0 20 20">
-                                    <rect x="6" y="5" width="3" height="10" fill="currentColor" stroke="none" />
-                                    <rect x="11" y="5" width="3" height="10" fill="currentColor" stroke="none" />
-                                </svg>
-                            `;
-                            btn.setAttribute('data-action', 'pauseLiveView');
-                            btn.setAttribute('title', 'Pause Live View');
-                        }
-                    });
-                    
-                    // Remove event listeners
-                    video.removeEventListener('loadeddata', handleVideoReady);
-                    video.removeEventListener('canplay', handleVideoReady);
-                };
-                
-                video.addEventListener('loadeddata', handleVideoReady);
-                video.addEventListener('canplay', handleVideoReady);
-                video.play();
-            }
+                // Remove event listeners
+                video.removeEventListener('loadeddata', handleVideoReady);
+                video.removeEventListener('canplay', handleVideoReady);
+                video.removeEventListener('playing', handleVideoReady);
+            };
+            
+            // Add event listeners
+            video.addEventListener('loadeddata', handleVideoReady);
+            video.addEventListener('canplay', handleVideoReady);
+            video.addEventListener('playing', handleVideoReady);
+            
+            // Start playing
+            video.play().catch(err => {
+                // Hide loading spinner on error
+                if (loading) loading.classList.remove('active');
+                console.error('Failed to play video:', err);
+            });
         }
 
         function pauseLiveView(button) {
@@ -2857,14 +2859,6 @@
                 });
             }
         }
-
-        // Handle video and image loading states with event delegation
-        document.addEventListener('loadstart', function(e) {
-            if (e.target.classList.contains('camera-video')) {
-                const loading = e.target.parentElement.querySelector('.camera-loading');
-                if (loading) loading.classList.add('active');
-            }
-        }, true);
         
         document.addEventListener('loadeddata', function(e) {
             if (e.target.classList.contains('camera-video')) {
@@ -3007,7 +3001,16 @@
                 
                 // Play all videos and update their control buttons
                 videos.forEach(video => {
-                    video.play();
+                    const loading = video.parentElement.querySelector('.camera-loading');
+                    if (loading) loading.classList.add('active');
+
+                    video.play().then(() => {
+                        if (loading) loading.classList.remove('active');
+                    }).catch(err => {
+                        if (loading) loading.classList.remove('active');
+                        console.error('Failed to play video:', err);
+                    });
+
                     const controlBtn = video.parentElement.querySelector('.video-controls button[data-action="startLiveView"]');
                     const fullscreenControlBtn = video.parentElement.querySelector('.fullscreen-controls button[data-action="startLiveView"]');
                     
