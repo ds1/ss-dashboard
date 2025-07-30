@@ -2,9 +2,6 @@
 
 A modern, responsive construction site monitoring dashboard for managing security camera feeds, alerts, and site activities. Built with vanilla JavaScript and a custom design system based on the DSDEV brand guidelines.
 
-![DSDEV Dashboard](https://img.shields.io/badge/version-1.0.0-orange.svg)
-![License](https://img.shields.io/badge/license-MIT-blue.svg)
-
 ## 🚀 Features
 
 ### Camera Management
