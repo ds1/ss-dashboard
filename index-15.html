@@ -393,11 +393,11 @@
             user-select: none;
         }
 
-        /* Dropdown Backdrop - Narrow Viewports Only */
+        /* Dropdown Backdrop - Mobile Only */
         .dropdown-backdrop {
             display: none;
         }
-
+        
         @media (max-width: 768px) {
             .dropdown-backdrop {
                 display: block;
@@ -409,13 +409,6 @@
                 background-color: rgba(0, 0, 0, 0.3);
                 z-index: 149;
                 animation: fadeIn 0.2s ease;
-                pointer-events: auto;
-            }
-            
-            /* Ensure dropdown is above backdrop and clickable */
-            .dropdown-menu {
-                z-index: 300 !important; /* Increased z-index */
-                pointer-events: auto !important;
             }
         }
         
@@ -1328,7 +1321,7 @@
                 box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
             }
             
-            /* Dropdown adjustments for narrow viewports (mobile and desktop) */
+            /* Mobile Dropdown */
             .dropdown-menu {
                 position: fixed;
                 left: var(--spacing-2);
@@ -2632,8 +2625,6 @@
                 
                 // Handle clicks on dropdown backdrop (mobile)
                 if (e.target.classList.contains('dropdown-backdrop')) {
-                    e.preventDefault();
-                    e.stopPropagation();
                     document.querySelectorAll('.dropdown').forEach(d => {
                         d.classList.remove('active');
                     });
@@ -2641,8 +2632,8 @@
                     return;
                 }
                 
-                // Close dropdowns when clicking outside (but not on backdrop, which is handled above)
-                if (!e.target.closest('.dropdown') && !e.target.classList.contains('dropdown-backdrop')) {
+                // Close dropdowns when clicking outside
+                if (!e.target.closest('.dropdown')) {
                     document.querySelectorAll('.dropdown').forEach(d => {
                         d.classList.remove('active');
                     });
@@ -2724,8 +2715,7 @@
             if (!isOpen) {
                 dropdown.classList.add('active');
                 
-                // Add backdrop on narrow viewports (not just mobile devices)
-                // This provides better UX on small screens regardless of input method
+                // Add backdrop on mobile
                 if (window.innerWidth <= 768) {
                     const backdrop = document.createElement('div');
                     backdrop.className = 'dropdown-backdrop';
