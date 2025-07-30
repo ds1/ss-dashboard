@@ -393,37 +393,6 @@
             user-select: none;
         }
 
-        /* Dropdown Backdrop - Narrow Viewports Only */
-        .dropdown-backdrop {
-            display: none;
-        }
-
-        @media (max-width: 768px) {
-            .dropdown-backdrop {
-                display: block;
-                position: fixed;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                background-color: rgba(0, 0, 0, 0.3);
-                z-index: 149;
-                animation: fadeIn 0.2s ease;
-                pointer-events: auto;
-            }
-            
-            /* Ensure dropdown is above backdrop and clickable */
-            .dropdown-menu {
-                z-index: 300 !important; /* Increased z-index */
-                pointer-events: auto !important;
-            }
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
         /* Main Layout */
         .main-container {
             display: flex;
@@ -2630,26 +2599,11 @@
                     return;
                 }
                 
-                // Handle clicks on dropdown backdrop (mobile)
-                if (e.target.classList.contains('dropdown-backdrop')) {
-                    e.preventDefault();
-                    e.stopPropagation();
+                // Close dropdowns when clicking outside
+                if (!e.target.closest('.dropdown')) {
                     document.querySelectorAll('.dropdown').forEach(d => {
                         d.classList.remove('active');
                     });
-                    e.target.remove();
-                    return;
-                }
-                
-                // Close dropdowns when clicking outside (but not on backdrop, which is handled above)
-                if (!e.target.closest('.dropdown') && !e.target.classList.contains('dropdown-backdrop')) {
-                    document.querySelectorAll('.dropdown').forEach(d => {
-                        d.classList.remove('active');
-                    });
-                    const backdrop = document.querySelector('.dropdown-backdrop');
-                    if (backdrop) {
-                        backdrop.remove();
-                    }
                 }
             });
             
@@ -2714,23 +2668,9 @@
                 d.classList.remove('active');
             });
             
-            // Remove any existing backdrop
-            const existingBackdrop = document.querySelector('.dropdown-backdrop');
-            if (existingBackdrop) {
-                existingBackdrop.remove();
-            }
-            
             // Open clicked dropdown if it was closed
             if (!isOpen) {
                 dropdown.classList.add('active');
-                
-                // Add backdrop on narrow viewports (not just mobile devices)
-                // This provides better UX on small screens regardless of input method
-                if (window.innerWidth <= 768) {
-                    const backdrop = document.createElement('div');
-                    backdrop.className = 'dropdown-backdrop';
-                    document.body.appendChild(backdrop);
-                }
             }
         }
 
@@ -2997,10 +2937,6 @@
                 document.querySelectorAll('.dropdown').forEach(d => {
                     d.classList.remove('active');
                 });
-                const backdrop = document.querySelector('.dropdown-backdrop');
-                if (backdrop) {
-                    backdrop.remove();
-                }
                 
                 // Close modal
                 const modal = document.getElementById('cameraSelectionModal');
@@ -3428,10 +3364,6 @@
                 document.querySelectorAll('.dropdown').forEach(d => {
                     d.classList.remove('active');
                 });
-                const backdrop = document.querySelector('.dropdown-backdrop');
-                if (backdrop) {
-                    backdrop.remove();
-                }
                 
                 // Cancel any active touch drag
                 if (isDraggingTouch) {
