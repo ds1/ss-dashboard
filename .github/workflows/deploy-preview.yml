@@ -1,19 +1,12 @@
-<<<<<<< HEAD
 name: Deploy Branch Preview
 
 on:
   push:
     branches:
-<<<<<<<< HEAD:.github/workflows/deploy-preview.yml
       - 'fix-*'
       - 'feature-*'
       - 'test-*'
   workflow_dispatch:
-========
-      - 'fix-*'  # Matches any branch starting with "fix-"
-      - 'feature-*'  # Matches any branch starting with "feature-"
-      - 'test-*'  # Matches any branch starting with "test-"
->>>>>>>> a4b3752f68b6bfcdc4cd67434a63a3c2445572c6:.github/workflows/deploy-branch.yml
 
 jobs:
   deploy-preview:
