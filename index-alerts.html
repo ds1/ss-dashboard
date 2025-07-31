@@ -1900,7 +1900,7 @@
                 </div>
 
                 <!-- Alerts Toggle -->
-                <button class="btn btn-secondary" id="alertsToggle" onclick="toggleAlertsPanel()">
+                <button class="btn btn-secondary" id="alertsToggle">
                     <svg class="icon icon-sm" viewBox="0 0 20 20">
                         <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 003 13.414V14a1 1 0 001 1h12a1 1 0 001-1v-.586a1 1 0 00-.293-.707L16 12V8a6 6 0 00-6-6zM12 18a2 2 0 11-4 0" />
                     </svg>
@@ -2230,7 +2230,7 @@
         </main>
 
         <!-- Alerts Panel -->
-        <aside class="alerts-panel" id="alertsPanel">
+        <aside class="alerts-panel collapsed" id="alertsPanel">
             <div class="alerts-header">
                 <h2 class="alerts-title">Recent Alerts</h2>
             </div>
@@ -2794,7 +2794,7 @@
             // Remove all grid classes
             grid.classList.remove('grid-1x1', 'grid-2x2', 'grid-3x3', 'grid-4x4');
             
-            // Apply optimal grid based on camera count
+            // Adjust grid based on camera count
             if (cameraCount <= 1) {
                 grid.classList.add('grid-1x1');
             } else if (cameraCount <= 4) {
@@ -2804,147 +2804,126 @@
             } else {
                 grid.classList.add('grid-4x4');
             }
-            
-            // Update the radio button to match
-            const gridClass = Array.from(grid.classList).find(c => c.startsWith('grid-'));
-            const radio = document.querySelector(`input[value="${gridClass}"]`);
-            if (radio) radio.checked = true;
         }
 
-        // Setup dropdown event handlers
-        function setupDropdownEventHandlers() {
-            // Use event delegation for better mobile support
-            document.addEventListener('click', function(e) {
-                // Handle dropdown toggle button clicks
-                if (e.target.closest('.btn-secondary[data-dropdown]')) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    const dropdown = e.target.closest('.dropdown');
-                    toggleDropdown(dropdown.id);
-                    return;
-                }
-                
-                // Handle clicks inside dropdown menu - prevent closing
-                if (e.target.closest('.dropdown-menu')) {
-                    e.stopPropagation();
-                    return;
-                }
-                
-                // Close dropdowns when clicking outside
-                if (!e.target.closest('.dropdown')) {
-                    document.querySelectorAll('.dropdown').forEach(d => {
-                        d.classList.remove('active');
-                    });
-                }
-            });
-            
-            // Prevent touch events from closing dropdown
-            document.addEventListener('touchstart', function(e) {
-                if (e.target.closest('.dropdown-menu')) {
-                    e.stopPropagation();
-                }
-            }, { passive: false });
-            
-            // Handle grid layout changes
-            document.addEventListener('change', function(e) {
-                if (e.target.matches('input[name="gridLayout"]')) {
-                    e.stopPropagation();
-                    const grid = document.getElementById('cameraGrid');
-                    grid.className = 'camera-grid ' + e.target.value;
-                    
-                    const fitToScreenToggle = document.getElementById('fitToScreenToggle');
-                    if (fitToScreenToggle && fitToScreenToggle.classList.contains('active')) {
-                        adjustGridForFitToScreen();
-                    }
-                }
-            });
-            
-            // Handle toggle switches with event delegation
-            document.addEventListener('click', function(e) {
-                const toggleSwitch = e.target.closest('.toggle-switch');
-                if (toggleSwitch) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    
-                    // Toggle the active state
-                    toggleSwitch.classList.toggle('active');
-                    
-                    // Determine which toggle was clicked and handle it
-                    if (toggleSwitch.id === 'showProjectNamesToggle') {
-                        handleToggleSwitch(toggleSwitch, 'projectNames');
-                    } else if (toggleSwitch.id === 'showCameraNamesToggle') {
-                        handleToggleSwitch(toggleSwitch, 'cameraNames');
-                    } else if (toggleSwitch.id === 'showTimestampsToggle') {
-                        handleToggleSwitch(toggleSwitch, 'timestamps');
-                    } else if (toggleSwitch.id === 'fitToScreenToggle') {
-                        // fitToScreen has its own toggle logic
-                        toggleSwitch.classList.remove('active'); // Remove the toggle we just added
-                        toggleFitToScreen(toggleSwitch);
-                    } else if (toggleSwitch.id === 'darkModeToggle') {
-                        // darkMode has its own toggle logic
-                        toggleSwitch.classList.remove('active'); // Remove the toggle we just added
-                        toggleDarkMode(toggleSwitch);
-                    }
-                }
-            });
+        // Load saved fit-to-screen state
+        const savedFitToScreen = localStorage.getItem('fitToScreen');
+        if (savedFitToScreen === 'true') {
+            const fitToggle = document.getElementById('fitToScreenToggle');
+            if (fitToggle) {
+                fitToggle.classList.add('active');
+                document.querySelector('.content-area').classList.add('fit-to-screen');
+            }
         }
 
-        // Toggle Dropdown function
+        // Load saved grid layout
+        const savedGridLayout = localStorage.getItem('gridLayout');
+        if (savedGridLayout) {
+            const radio = document.querySelector(`input[value="${savedGridLayout}"]`);
+            if (radio) {
+                radio.checked = true;
+                document.getElementById('cameraGrid').className = `camera-grid ${savedGridLayout}`;
+            }
+        }
+
+        // Toggle Dropdown
         function toggleDropdown(dropdownId) {
             const dropdown = document.getElementById(dropdownId);
-            const isOpen = dropdown.classList.contains('active');
+            const isActive = dropdown.classList.contains('active');
             
             // Close all dropdowns
-            document.querySelectorAll('.dropdown').forEach(d => {
-                d.classList.remove('active');
-            });
+            document.querySelectorAll('.dropdown').forEach(d => d.classList.remove('active'));
             
-            // Open clicked dropdown if it was closed
-            if (!isOpen) {
+            // Toggle current dropdown
+            if (!isActive) {
                 dropdown.classList.add('active');
             }
         }
 
-        // Handle toggle switch changes
-        function handleToggleSwitch(element, type) {
-            const isActive = element.classList.contains('active');
-            
-            if (type === 'cameraNames') {
-                if (isActive) {
-                    document.body.classList.remove('hide-camera-names');
-                    localStorage.setItem('showCameraNames', 'true');
-                } else {
-                    document.body.classList.add('hide-camera-names');
-                    localStorage.setItem('showCameraNames', 'false');
-                }
-            } else if (type === 'timestamps') {
-                if (isActive) {
-                    document.body.classList.remove('hide-timestamps');
-                    localStorage.setItem('showTimestamps', 'true');
-                } else {
-                    document.body.classList.add('hide-timestamps');
-                    localStorage.setItem('showTimestamps', 'false');
-                }
-            } else if (type === 'projectNames') {
-                if (isActive) {
-                    document.body.classList.remove('hide-project-names');
-                    localStorage.setItem('showProjectNames', 'true');
-                } else {
-                    document.body.classList.add('hide-project-names');
-                    localStorage.setItem('showProjectNames', 'false');
-                }
+        // Display Options Toggle Functions
+        function initializeDisplayToggles() {
+            // Show Project Names Toggle
+            const projectNamesToggle = document.getElementById('showProjectNamesToggle');
+            projectNamesToggle.addEventListener('click', function() {
+                this.classList.toggle('active');
+                const showProjectNames = this.classList.contains('active');
+                document.querySelectorAll('.camera-project').forEach(el => {
+                    el.style.display = showProjectNames ? 'block' : 'none';
+                });
+                localStorage.setItem('showProjectNames', showProjectNames);
+            });
+
+            // Show Camera Names Toggle
+            const cameraNamesToggle = document.getElementById('showCameraNamesToggle');
+            cameraNamesToggle.addEventListener('click', function() {
+                this.classList.toggle('active');
+                const showCameraNames = this.classList.contains('active');
+                document.querySelectorAll('.camera-name').forEach(el => {
+                    el.style.display = showCameraNames ? 'block' : 'none';
+                });
+                localStorage.setItem('showCameraNames', showCameraNames);
+            });
+
+            // Show Timestamps Toggle
+            const timestampsToggle = document.getElementById('showTimestampsToggle');
+            timestampsToggle.addEventListener('click', function() {
+                this.classList.toggle('active');
+                const showTimestamps = this.classList.contains('active');
+                document.querySelectorAll('.camera-timestamp').forEach(el => {
+                    el.style.display = showTimestamps ? 'block' : 'none';
+                });
+                localStorage.setItem('showTimestamps', showTimestamps);
+            });
+
+            // Fit to Screen Toggle
+            const fitToScreenToggle = document.getElementById('fitToScreenToggle');
+            fitToScreenToggle.addEventListener('click', function() {
+                toggleFitToScreen(this);
+            });
+
+            // Dark Mode Toggle
+            const darkModeToggle = document.getElementById('darkModeToggle');
+            darkModeToggle.addEventListener('click', function() {
+                toggleDarkMode(this);
+            });
+
+            // Load saved display preferences
+            const savedShowProjectNames = localStorage.getItem('showProjectNames');
+            if (savedShowProjectNames === 'false') {
+                projectNamesToggle.classList.remove('active');
+                document.querySelectorAll('.camera-project').forEach(el => {
+                    el.style.display = 'none';
+                });
+            }
+
+            const savedShowCameraNames = localStorage.getItem('showCameraNames');
+            if (savedShowCameraNames === 'false') {
+                cameraNamesToggle.classList.remove('active');
+                document.querySelectorAll('.camera-name').forEach(el => {
+                    el.style.display = 'none';
+                });
+            }
+
+            const savedShowTimestamps = localStorage.getItem('showTimestamps');
+            if (savedShowTimestamps === 'false') {
+                timestampsToggle.classList.remove('active');
+                document.querySelectorAll('.camera-timestamp').forEach(el => {
+                    el.style.display = 'none';
+                });
             }
         }
-
-        // Streaming Toggle
-        let isStreaming = false;
 
         // Update timestamps
         function updateTimestamps() {
             const now = new Date();
-            const timeString = now.toISOString().replace('T', ' ').substr(0, 19);
+            const timeString = now.toLocaleTimeString('en-US', { 
+                hour: '2-digit', 
+                minute: '2-digit', 
+                second: '2-digit' 
+            });
             
-            document.querySelectorAll('.camera-details p:last-child').forEach(timestamp => {
+            document.querySelectorAll('.camera-timestamp').forEach(timestamp => {
+                // Only update if not showing 'Last seen' (for offline cameras)
                 if (!timestamp.textContent.includes('Last seen')) {
                     timestamp.textContent = timeString;
                 }
@@ -2973,65 +2952,80 @@
             card.setAttribute('draggable', 'true');
         }
 
-        // Updated startLiveView function
         function startLiveView(button) {
             const feed = button.closest('.camera-feed');
             const video = feed.querySelector('.camera-video');
+            const img = feed.querySelector('.camera-media');
             const statusText = feed.querySelector('.camera-status span');
             
-            // Only start live view if there's already a video element
-            if (!video) {
-                // It's an image camera - do nothing
-                return;
-            }
-            
             // Get both regular and fullscreen control buttons
-            const regularControlBtn = feed.querySelector('.video-controls button[data-action="startLiveView"]');
-            const fullscreenControlBtn = feed.querySelector('.fullscreen-controls button[data-action="startLiveView"]');
+            const regularControlBtn = feed.querySelector('.video-controls button');
+            const fullscreenControlBtn = feed.querySelector('.fullscreen-controls button');
             
-            // For video elements, just start playing
-            const loading = feed.querySelector('.camera-loading');
-            
-            // Show loading spinner
-            if (loading) loading.classList.add('active');
-            
-            // Set up load handlers
-            const handleVideoReady = function() {
-                if (loading) loading.classList.remove('active');
-                statusText.textContent = 'Video • Live';
+            if (video) {
+                // For video elements, just start playing
+                const loading = feed.querySelector('.camera-loading');
                 
-                // Update both control buttons
-                [regularControlBtn, fullscreenControlBtn].forEach(btn => {
-                    if (btn) {
-                        const iconSize = btn.classList.contains('fullscreen-control-btn') ? '' : 'icon-sm';
-                        btn.innerHTML = `
-                            <svg class="icon ${iconSize}" viewBox="0 0 20 20">
-                                <rect x="6" y="5" width="3" height="10" fill="currentColor" stroke="none" />
-                                <rect x="11" y="5" width="3" height="10" fill="currentColor" stroke="none" />
-                            </svg>
-                        `;
-                        btn.setAttribute('data-action', 'pauseLiveView');
-                        btn.setAttribute('title', 'Pause Live View');
-                    }
-                });
+                // Check if video is already loaded
+                if (video.readyState >= 3) { // HAVE_FUTURE_DATA or higher
+                    // Video is already loaded, start immediately
+                    statusText.textContent = 'Live';
+                    
+                    // Update both control buttons
+                    [regularControlBtn, fullscreenControlBtn].forEach(btn => {
+                        if (btn && btn.getAttribute('data-action') !== 'exitFullscreen' && btn.getAttribute('data-action') !== 'toggleFullscreen') {
+                            const iconSize = btn.classList.contains('fullscreen-control-btn') ? '' : 'icon-sm';
+                            btn.innerHTML = `
+                                <svg class="icon ${iconSize}" viewBox="0 0 20 20">
+                                    <rect x="6" y="5" width="3" height="10" fill="currentColor" stroke="none" />
+                                    <rect x="11" y="5" width="3" height="10" fill="currentColor" stroke="none" />
+                                </svg>
+                            `;
+                            btn.setAttribute('data-action', 'pauseLiveView');
+                            btn.setAttribute('title', 'Pause Live View');
+                        }
+                    });
+                    
+                    video.play();
+                } else {
+                    // Video not loaded yet, show loading spinner
+                    loading.classList.add('active');
+                    
+                    const handleVideoReady = function() {
+                        loading.classList.remove('active');
+                        statusText.textContent = 'Live';
+                        
+                        // Update both control buttons
+                        [regularControlBtn, fullscreenControlBtn].forEach(btn => {
+                            if (btn && btn.getAttribute('data-action') !== 'exitFullscreen' && btn.getAttribute('data-action') !== 'toggleFullscreen') {
+                                const iconSize = btn.classList.contains('fullscreen-control-btn') ? '' : 'icon-sm';
+                                btn.innerHTML = `
+                                    <svg class="icon ${iconSize}" viewBox="0 0 20 20">
+                                        <rect x="6" y="5" width="3" height="10" fill="currentColor" stroke="none" />
+                                        <rect x="11" y="5" width="3" height="10" fill="currentColor" stroke="none" />
+                                    </svg>
+                                `;
+                                btn.setAttribute('data-action', 'pauseLiveView');
+                                btn.setAttribute('title', 'Pause Live View');
+                            }
+                        });
+                        
+                        video.removeEventListener('canplay', handleVideoReady);
+                    };
+                    
+                    video.addEventListener('canplay', handleVideoReady, { once: true });
+                    video.play();
+                }
+            } else if (img) {
+                // For static images, simulate loading
+                const loading = feed.querySelector('.camera-loading');
+                loading.classList.add('active');
                 
-                // Remove event listeners
-                video.removeEventListener('loadeddata', handleVideoReady);
-                video.removeEventListener('canplay', handleVideoReady);
-                video.removeEventListener('playing', handleVideoReady);
-            };
-            
-            // Add event listeners
-            video.addEventListener('loadeddata', handleVideoReady);
-            video.addEventListener('canplay', handleVideoReady);
-            video.addEventListener('playing', handleVideoReady);
-            
-            // Start playing
-            video.play().catch(err => {
-                // Hide loading spinner on error
-                if (loading) loading.classList.remove('active');
-                console.error('Failed to play video:', err);
-            });
+                setTimeout(() => {
+                    loading.classList.remove('active');
+                    statusText.textContent = 'Live • Image updated';
+                }, 500);
+            }
         }
 
         function pauseLiveView(button) {
@@ -3041,17 +3035,14 @@
             
             if (video) {
                 video.pause();
-                
-                // Get both regular and fullscreen control buttons
-                const regularControlBtn = feed.querySelector('.video-controls button[data-action="pauseLiveView"]');
-                const fullscreenControlBtn = feed.querySelector('.fullscreen-controls button[data-action="pauseLiveView"]');
-                
-                // Update status to show paused
                 statusText.textContent = 'Video • Paused';
                 
                 // Update both control buttons
+                const regularControlBtn = feed.querySelector('.video-controls button');
+                const fullscreenControlBtn = feed.querySelector('.fullscreen-controls button');
+                
                 [regularControlBtn, fullscreenControlBtn].forEach(btn => {
-                    if (btn) {
+                    if (btn && btn.getAttribute('data-action') !== 'exitFullscreen' && btn.getAttribute('data-action') !== 'toggleFullscreen') {
                         const iconSize = btn.classList.contains('fullscreen-control-btn') ? '' : 'icon-sm';
                         btn.innerHTML = `
                             <svg class="icon ${iconSize}" viewBox="0 0 20 20">
@@ -3065,253 +3056,321 @@
             }
         }
 
-        // Toggle Alerts Panel
-        function toggleAlertsPanel() {
-            const panel = document.getElementById('alertsPanel');
-            const toggle = document.getElementById('alertsToggle');
-            panel.classList.toggle('collapsed');
+        function removeCamera(button) {
+            const card = button.closest('.camera-card');
+            const cameraId = card.dataset.cameraId;
             
-            // Fix the active state logic
-            if (panel.classList.contains('collapsed')) {
-                toggle.classList.remove('active');
-            } else {
-                toggle.classList.add('active');
+            // Remove from active cameras
+            const index = activeCameras.indexOf(cameraId);
+            if (index > -1) {
+                activeCameras.splice(index, 1);
+            }
+            
+            // Remove the card with animation
+            card.style.transform = 'scale(0.8)';
+            card.style.opacity = '0';
+            setTimeout(() => {
+                card.remove();
+                saveCameraOrder();
+            }, 300);
+        }
+
+        // Camera Selection Modal Functions
+        const activeCameras = [];
+
+        function openCameraSelection() {
+            const modal = document.getElementById('cameraSelectionModal');
+            modal.classList.add('active');
+            selectedCameras = [];
+            
+            // Load first project by default
+            const firstProject = document.querySelector('.project-item');
+            if (firstProject) {
+                loadProjectCameras(firstProject.dataset.project);
             }
         }
-        
-        // Event delegation for all button actions
+
+        function closeCameraSelection() {
+            const modal = document.getElementById('cameraSelectionModal');
+            modal.classList.remove('active');
+            selectedCameras = [];
+        }
+
+        // Add event listeners for action buttons using data-action attributes
         document.addEventListener('click', function(e) {
-            // Get the action from the closest element with data-action
-            const actionElement = e.target.closest('[data-action]');
-            if (!actionElement) return;
+            const action = e.target.closest('[data-action]')?.dataset.action;
             
-            const action = actionElement.getAttribute('data-action');
+            if (action) {
+                switch(action) {
+                    case 'openCameraSelection':
+                        openCameraSelection();
+                        break;
+                    case 'closeCameraSelection':
+                        closeCameraSelection();
+                        break;
+                    case 'toggleFullscreen':
+                        toggleFullscreen(e.target);
+                        break;
+                    case 'exitFullscreen':
+                        exitFullscreen(e.target);
+                        break;
+                    case 'startLiveView':
+                        startLiveView(e.target);
+                        break;
+                    case 'pauseLiveView':
+                        pauseLiveView(e.target);
+                        break;
+                    case 'removeCamera':
+                        removeCamera(e.target);
+                        break;
+                    case 'openCameraView':
+                        const cameraCard = e.target.closest('.camera-card');
+                        const cameraId = cameraCard.dataset.cameraId;
+                        window.open(`/camera/${cameraId}`, '_blank');
+                        break;
+                    case 'addSelectedCameras':
+                        addSelectedCameras();
+                        break;
+                }
+            }
             
-            switch(action) {
-                case 'toggleFullscreen':
-                    e.preventDefault();
-                    toggleFullscreen(actionElement);
-                    break;
-                    
-                case 'exitFullscreen':
-                    e.preventDefault();
-                    exitFullscreen(actionElement);
-                    break;
-                    
-                case 'startLiveView':
-                    e.preventDefault();
-                    startLiveView(actionElement);
-                    break;
-                    
-                case 'pauseLiveView':
-                    e.preventDefault();
-                    pauseLiveView(actionElement);
-                    break;
-                    
-                case 'removeCamera':
-                    e.preventDefault();
-                    removeCamera(actionElement);
-                    break;
-                    
-                case 'openCameraView':
-                    e.preventDefault();
-                    const cameraCard = actionElement.closest('.camera-card');
-                    const cameraId = cameraCard.dataset.cameraId;
-                    window.open(`/camera/${cameraId}`, '_blank');
-                    break;
-                    
-                case 'openCameraSelection':
-                    e.preventDefault();
-                    openCameraSelection();
-                    break;
-                    
-                case 'closeCameraSelection':
-                    e.preventDefault();
-                    closeCameraSelection();
-                    break;
-                    
-                case 'addSelectedCameras':
-                    e.preventDefault();
-                    addSelectedCameras();
-                    break;
+            // Handle alerts toggle button click
+            if (e.target.closest('#alertsToggle')) {
+                e.preventDefault();
+                toggleAlertsPanel();
             }
         });
-        
-        // Handle streaming toggle separately
-        document.getElementById('streamToggle').addEventListener('click', function(e) {
-            e.preventDefault();
-            toggleStreaming();
-        });
 
-        // Handle alerts toggle separately
-        document.getElementById('alertsToggle').addEventListener('click', function(e) {
-            e.preventDefault();
-            toggleAlertsPanel();
-        });
-
-        // Project Selection
+        // Project selection
         document.addEventListener('click', function(e) {
-            if (e.target.closest('.project-item')) {
-                const projectItem = e.target.closest('.project-item');
+            const projectItem = e.target.closest('.project-item');
+            if (projectItem) {
+                // Remove active class from all projects
+                document.querySelectorAll('.project-item').forEach(item => {
+                    item.classList.remove('active');
+                });
                 
-                // Update active state
-                document.querySelectorAll('.project-item').forEach(p => p.classList.remove('active'));
+                // Add active class to clicked project
                 projectItem.classList.add('active');
                 
-                // Update current project and populate cameras
-                currentProject = projectItem.dataset.project;
-                selectedCameras = [];
-                populateCamerasGrid(currentProject);
-                updateAddButton();
+                // Load cameras for selected project
+                loadProjectCameras(projectItem.dataset.project);
             }
         });
 
-        // Close modal when clicking outside
-        document.getElementById('cameraSelectionModal').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeCameraSelection();
-            }
-        });
-        
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                // Close fullscreen
-                const fullscreenCard = document.querySelector('.camera-card.fullscreen');
-                if (fullscreenCard) {
-                    fullscreenCard.classList.remove('fullscreen');
-                    document.body.style.overflow = '';
-                    // Re-enable drag functionality
-                    fullscreenCard.setAttribute('draggable', 'true');
+        // projectsData is already defined earlier in the code after the image configuration
+        function loadProjectCameras(projectId) {
+            const project = projectsData[projectId];
+            const grid = document.getElementById('availableCamerasGrid');
+            grid.innerHTML = '';
+            
+            project.cameras.forEach(camera => {
+                const isAdded = activeCameras.includes(camera.id);
+                const isDisabled = camera.status === 'maintenance' || isAdded;
+                
+                const cameraOption = document.createElement('div');
+                cameraOption.className = `camera-option ${isAdded ? 'disabled' : ''} ${isDisabled ? 'disabled' : ''}`;
+                cameraOption.dataset.cameraId = camera.id;
+                
+                if (!isAdded && !isDisabled) {
+                    cameraOption.addEventListener('click', () => toggleCameraSelection(camera));
                 }
                 
-                // Close dropdowns
-                document.querySelectorAll('.dropdown').forEach(d => {
-                    d.classList.remove('active');
-                });
+                cameraOption.innerHTML = `
+                    <div class="camera-option-icon">
+                        <svg class="icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2">
+                            ${camera.type === 'video' ? 
+                                '<path d="M23 7L16 12L23 17V7Z"/><rect x="1" y="5" width="15" height="14" rx="2"/>' :
+                                '<rect x="3" y="3" width="14" height="14" rx="2"/><circle cx="10" cy="10" r="3"/><path d="M21 15L15.5 9.5L10 15"/>'
+                            }
+                        </svg>
+                    </div>
+                    <div class="camera-option-name">${camera.name}</div>
+                    <div class="camera-option-status">
+                        ${isAdded ? 'Already added' : camera.status === 'online' ? 'Online' : camera.status.charAt(0).toUpperCase() + camera.status.slice(1)}
+                        ${camera.status === 'online' ? ` • ${camera.battery}%` : ''}
+                    </div>
+                `;
                 
-                // Close modal
-                const modal = document.getElementById('cameraSelectionModal');
-                if (modal.classList.contains('active')) {
-                    closeCameraSelection();
-                }
-            }
-        });
+                grid.appendChild(cameraOption);
+            });
+        }
 
-        // Updated streaming toggle to handle videos without autoplay
-        function toggleStreaming() {
-            const btn = document.getElementById('streamToggle');
-            const btnText = document.getElementById('streamText');
-            const btnIcon = document.getElementById('streamIcon');
-            const videos = document.querySelectorAll('.camera-video');
+        function toggleCameraSelection(camera) {
+            const index = selectedCameras.findIndex(c => c.id === camera.id);
+            const cameraOption = document.querySelector(`[data-camera-id="${camera.id}"]`);
             
-            isStreaming = !isStreaming;
-            
-            if (isStreaming) {
-                btnText.textContent = 'Stop All Streams';
-                btnIcon.innerHTML = '<rect x="5" y="5" width="10" height="10" fill="currentColor" stroke="none" rx="2" />';
-                btn.classList.add('streaming');
-                
-                // Play all videos and update their control buttons
-                videos.forEach(video => {
-                    const loading = video.parentElement.querySelector('.camera-loading');
-                    if (loading) loading.classList.add('active');
-
-                    video.play().then(() => {
-                        if (loading) loading.classList.remove('active');
-                    }).catch(err => {
-                        if (loading) loading.classList.remove('active');
-                        console.error('Failed to play video:', err);
-                    });
-
-                    const controlBtn = video.parentElement.querySelector('.video-controls button[data-action="startLiveView"]');
-                    const fullscreenControlBtn = video.parentElement.querySelector('.fullscreen-controls button[data-action="startLiveView"]');
-                    
-                    [controlBtn, fullscreenControlBtn].forEach(btn => {
-                        if (btn) {
-                            const iconSize = btn.classList.contains('fullscreen-control-btn') ? '' : 'icon-sm';
-                            btn.innerHTML = `
-                                <svg class="icon ${iconSize}" viewBox="0 0 20 20">
-                                    <rect x="6" y="5" width="3" height="10" fill="currentColor" stroke="none" />
-                                    <rect x="11" y="5" width="3" height="10" fill="currentColor" stroke="none" />
-                                </svg>
-                            `;
-                            btn.setAttribute('data-action', 'pauseLiveView');
-                            btn.setAttribute('title', 'Pause Live View');
-                        }
-                    });
-                    
-                    // Update status to Live
-                    const statusText = video.parentElement.querySelector('.camera-status span');
-                    if (statusText && statusText.textContent.includes('Video')) {
-                        statusText.textContent = 'Video • Live';
-                    }
-                });
+            if (index > -1) {
+                selectedCameras.splice(index, 1);
+                cameraOption.classList.remove('selected');
             } else {
-                btnText.textContent = 'Start All Streams';
-                btnIcon.innerHTML = '<polygon points="7,5 7,15 15,10" fill="currentColor" stroke="none" />';
-                btn.classList.remove('streaming');
+                selectedCameras.push(camera);
+                cameraOption.classList.add('selected');
+            }
+            
+            updateAddButton();
+        }
+
+        function updateAddButton() {
+            const addBtn = document.getElementById('addCamerasBtn');
+            addBtn.disabled = selectedCameras.length === 0;
+            addBtn.textContent = selectedCameras.length === 0 ? 'Add Selected' : 
+                                selectedCameras.length === 1 ? 'Add 1 Camera' : 
+                                `Add ${selectedCameras.length} Cameras`;
+        }
+
+        function addSelectedCameras() {
+            const grid = document.getElementById('cameraGrid');
+            const addCard = document.querySelector('.add-camera-card');
+            
+            selectedCameras.forEach(camera => {
+                // Create new camera card
+                const card = createCameraCard(camera);
+                grid.insertBefore(card, addCard);
                 
-                // Pause all videos and update their control buttons
-                videos.forEach(video => {
-                    video.pause();
-                    const controlBtn = video.parentElement.querySelector('.video-controls button[data-action="pauseLiveView"]');
-                    const fullscreenControlBtn = video.parentElement.querySelector('.fullscreen-controls button[data-action="pauseLiveView"]');
-                    
-                    [controlBtn, fullscreenControlBtn].forEach(btn => {
-                        if (btn) {
-                            const iconSize = btn.classList.contains('fullscreen-control-btn') ? '' : 'icon-sm';
-                            btn.innerHTML = `
-                                <svg class="icon ${iconSize}" viewBox="0 0 20 20">
+                // Add to active cameras
+                activeCameras.push(camera.id);
+            });
+            
+            // Save camera order
+            saveCameraOrder();
+            
+            // Close modal
+            closeCameraSelection();
+            
+            // Update fit-to-screen grid if active
+            if (document.querySelector('.content-area').classList.contains('fit-to-screen')) {
+                adjustGridForFitToScreen();
+            }
+        }
+
+        function createCameraCard(camera) {
+            const card = document.createElement('div');
+            card.className = 'camera-card';
+            card.draggable = true;
+            card.dataset.cameraId = camera.id;
+            card.dataset.cameraName = camera.name;
+            card.dataset.projectName = getProjectNameByCameraId(camera.id);
+            
+            const isOffline = camera.status === 'offline';
+            const lowBattery = camera.battery < 30;
+            
+            card.innerHTML = `
+                <button class="camera-remove-btn" data-action="removeCamera" title="Remove Camera">
+                    <svg class="icon icon-sm" viewBox="0 0 20 20">
+                        <path d="M6 6L14 14M6 14L14 6" />
+                    </svg>
+                </button>
+                <div class="camera-feed ${isOffline ? 'offline' : ''}">
+                    <div class="camera-loading">
+                        <div class="loading-spinner"></div>
+                    </div>
+                    ${camera.type === 'video' ? `
+                        <video class="camera-video" muted playsinline>
+                            <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4">
+                        </video>
+                    ` : `
+                        <img class="camera-media" src="https://images.unsplash.com/photo-1541888946425-d81bb19240f5?w=800&q=80" alt="${camera.name}" loading="lazy">
+                    `}
+                    ${camera.type === 'video' ? `
+                        <div class="video-controls">
+                            <button class="video-control-btn" data-action="startLiveView" title="Start Live View">
+                                <svg class="icon icon-sm" viewBox="0 0 20 20">
                                     <polygon points="7,5 7,15 15,10" fill="currentColor" stroke="none" />
                                 </svg>
-                            `;
-                            btn.setAttribute('data-action', 'startLiveView');
-                            btn.setAttribute('title', 'Start Live View');
-                        }
-                    });
-                    
-                    // Update status to Paused
-                    const statusText = video.parentElement.querySelector('.camera-status span');
-                    if (statusText && statusText.textContent.includes('Video')) {
-                        statusText.textContent = 'Video • Paused';
-                    }
-                });
-            }
+                            </button>
+                        </div>
+                    ` : ''}
+                    <div class="camera-overlay">
+                        <div class="camera-info">
+                            <div class="camera-header">
+                                <div>
+                                    <div class="camera-project">${getProjectNameByCameraId(camera.id)}</div>
+                                    <div class="camera-name">${camera.name}</div>
+                                    <div class="camera-timestamp">${isOffline ? 'Last seen 3 hours ago' : new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}</div>
+                                </div>
+                                <div class="camera-actions">
+                                    <button class="btn-icon" data-action="openCameraView" title="Open Camera View Page">
+                                        <svg class="icon icon-sm" viewBox="0 0 20 20">
+                                            <path d="M11 3C10.4477 3 10 3.44772 10 4C10 4.55228 10.4477 5 11 5H13.5858L7.29289 11.2929C6.90237 11.6834 6.90237 12.3166 7.29289 12.7071C7.68342 13.0976 8.31658 13.0976 8.70711 12.7071L15 6.41421V9C15 9.55228 15.4477 10 16 10C16.5523 10 17 9.55228 17 9V4C17 3.44772 16.5523 3 16 3H11Z"/>
+                                            <path d="M5 7C5 5.89543 5.89543 5 7 5H8C8.55228 5 9 4.55228 9 4C9 3.44772 8.55228 3 8 3H7C4.79086 3 3 4.79086 3 7V15C3 17.2091 4.79086 19 7 19H15C17.2091 19 19 17.2091 19 15V14C19 13.4477 18.5523 13 18 13C17.4477 13 17 13.4477 17 14V15C17 16.1046 16.1046 17 15 17H7C5.89543 17 5 16.1046 5 15V7Z"/>
+                                        </svg>
+                                    </button>
+                                    <button class="btn-icon" data-action="toggleFullscreen" title="Enter Fullscreen">
+                                        <svg class="icon icon-sm" viewBox="0 0 20 20">
+                                            <path d="M3 5C3 3.89543 3.89543 3 5 3H7C7.55228 3 8 3.44772 8 4C8 4.55228 7.55228 5 7 5H5V7C5 7.55228 4.55228 8 4 8C3.44772 8 3 7.55228 3 7V5Z"/>
+                                            <path d="M3 15C3 16.1046 3.89543 17 5 17H7C7.55228 17 8 17.4477 8 18C8 18.5523 7.55228 19 7 19H5C3.89543 19 3 18.1046 3 17V15C3 14.4477 3.44772 14 4 14C4.55228 14 5 14.4477 5 15V17"/>
+                                            <path d="M15 3C16.1046 3 17 3.89543 17 5V7C17 7.55228 17.5523 8 18 8C18.5523 8 19 7.55228 19 7V5C19 3.89543 18.1046 3 17 3H15C14.4477 3 14 3.44772 14 4C14 4.55228 14.4477 5 15 5H17"/>
+                                            <path d="M17 15C17 16.1046 16.1046 17 15 17H13C12.4477 17 12 17.4477 12 18C12 18.5523 12.4477 19 13 19H15C16.1046 19 17 18.1046 17 17V15C17 14.4477 17.5523 14 18 14C18.5523 14 19 14.4477 19 15V17"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="camera-status">
+                                <div class="status-row">
+                                    <svg class="icon icon-sm" viewBox="0 0 20 20" fill="none" stroke="currentColor">
+                                        ${camera.type === 'video' ? 
+                                            '<path d="M23 7L16 12L23 17V7Z"/><rect x="1" y="5" width="15" height="14" rx="2"/>' :
+                                            '<rect x="3" y="3" width="14" height="14" rx="2"/><circle cx="10" cy="10" r="3"/><path d="M21 15L15.5 9.5L10 15"/>'
+                                        }
+                                    </svg>
+                                    <span>${camera.type === 'video' ? 'Video • Paused' : 'Image • Static'}</span>
+                                </div>
+                                <div class="battery-indicator ${lowBattery ? 'low' : ''}">
+                                    <div class="battery-bar">
+                                        <div class="battery-level" style="width: ${camera.battery * 0.28}px;"></div>
+                                        <div class="battery-cap"></div>
+                                    </div>
+                                    <span>${camera.battery}%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Fullscreen controls -->
+                    <div class="fullscreen-controls">
+                        ${camera.type === 'video' ? `
+                            <button class="fullscreen-control-btn" data-action="startLiveView" title="Start Live View">
+                                <svg class="icon" viewBox="0 0 20 20">
+                                    <polygon points="7,5 7,15 15,10" fill="currentColor" stroke="none" />
+                                </svg>
+                            </button>
+                        ` : ''}
+                        <button class="fullscreen-control-btn" data-action="exitFullscreen" title="Exit Fullscreen">
+                            <svg class="icon" viewBox="0 0 20 20">
+                                <path d="M6 3V6H3M3 14V17H6M14 17H17V14M17 6V3H14" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            return card;
         }
 
-        // Updated Drag and Drop for Camera Cards
+        function getProjectNameByCameraId(cameraId) {
+            for (const [projectId, project] of Object.entries(projectsData)) {
+                const camera = project.cameras.find(c => c.id === cameraId);
+                if (camera) {
+                    return project.name;
+                }
+            }
+            return 'Unknown Project';
+        }
+
+        // Drag and Drop Functions
         let draggedElement = null;
-        let touchTimeout = null;
-        let touchStartX = 0;
-        let touchStartY = 0;
-        let isDraggingTouch = false;
 
         function initializeDragAndDrop() {
-            // Remove existing event listeners to avoid duplicates
-            document.querySelectorAll('.camera-card').forEach(card => {
-                // Clone the node to remove all event listeners
-                const newCard = card.cloneNode(true);
-                card.parentNode.replaceChild(newCard, card);
-            });
-            
-            // Add event listeners to all camera cards
-            document.querySelectorAll('.camera-card').forEach(card => {
-                // Desktop drag events
-                card.addEventListener('dragstart', handleDragStart);
-                card.addEventListener('dragend', handleDragEnd);
-                card.addEventListener('dragover', handleDragOver);
-                card.addEventListener('dragleave', handleDragLeave);
-                card.addEventListener('drop', handleDrop);
-                
-                // Mobile touch events
-                card.addEventListener('touchstart', handleTouchStart, { passive: false });
-                card.addEventListener('touchmove', handleTouchMove, { passive: false });
-                card.addEventListener('touchend', handleTouchEnd);
-                card.addEventListener('touchcancel', handleTouchCancel);
+            const cards = document.querySelectorAll('.camera-card');
+            cards.forEach(card => {
+                card.addEventListener('dragstart', handleDragStart, false);
+                card.addEventListener('dragend', handleDragEnd, false);
+                card.addEventListener('dragover', handleDragOver, false);
+                card.addEventListener('dragleave', handleDragLeave, false);
+                card.addEventListener('drop', handleDrop, false);
             });
         }
 
-        // Desktop drag handlers
         function handleDragStart(e) {
             // Don't allow dragging in fullscreen mode
             if (this.classList.contains('fullscreen')) {
@@ -3323,7 +3382,8 @@
             const target = e.target;
             if (target.closest('.camera-remove-btn') || 
                 target.closest('.video-control-btn') || 
-                target.closest('.fullscreen-control-btn')) {
+                target.closest('.fullscreen-control-btn') ||
+                target.closest('.btn-icon')) {
                 e.preventDefault();
                 return;
             }
@@ -3367,237 +3427,74 @@
             this.classList.remove('drag-over');
             
             if (draggedElement !== this) {
-                swapElements(draggedElement, this);
+                const parent = this.parentNode;
+                const draggedIndex = Array.from(parent.children).indexOf(draggedElement);
+                const targetIndex = Array.from(parent.children).indexOf(this);
+                
+                if (draggedIndex < targetIndex) {
+                    parent.insertBefore(draggedElement, this.nextSibling);
+                } else {
+                    parent.insertBefore(draggedElement, this);
+                }
+                
+                // Save the new order to localStorage
+                saveCameraOrder();
             }
             
             return false;
         }
 
-        // Mobile touch handlers
-        function handleTouchStart(e) {
-            const card = this;
+        function saveCameraOrder() {
+            const grid = document.getElementById('cameraGrid');
+            const cameraOrder = [];
+            const cards = grid.querySelectorAll('.camera-card');
             
-            // Don't allow dragging in fullscreen mode
-            if (card.classList.contains('fullscreen')) {
-                return;
-            }
-            
-            // Don't start drag if touching a control button
-            const target = e.target;
-            if (target.closest('.camera-remove-btn') || 
-                target.closest('.video-control-btn') || 
-                target.closest('.fullscreen-control-btn')) {
-                return;
-            }
-            
-            // Store initial touch position
-            touchStartX = e.touches[0].clientX;
-            touchStartY = e.touches[0].clientY;
-            
-            // Clear any existing timeout
-            if (touchTimeout) {
-                clearTimeout(touchTimeout);
-            }
-            
-            // Set up long press detection
-            touchTimeout = setTimeout(() => {
-                // Check if user hasn't moved too much (allow small movements)
-                if (!isDraggingTouch) {
-                    startTouchDrag(card, e);
-                }
-            }, 500); // 500ms long press
-        }
-
-        function handleTouchMove(e) {
-            const card = this;
-            
-            // Calculate movement distance
-            const moveX = Math.abs(e.touches[0].clientX - touchStartX);
-            const moveY = Math.abs(e.touches[0].clientY - touchStartY);
-            
-            // If user moves more than 10px, cancel long press
-            if ((moveX > 10 || moveY > 10) && !isDraggingTouch) {
-                if (touchTimeout) {
-                    clearTimeout(touchTimeout);
-                    touchTimeout = null;
-                }
-            }
-            
-            // Handle active dragging
-            if (isDraggingTouch && draggedElement) {
-                e.preventDefault(); // Prevent scrolling while dragging
-                
-                // Move the dragged element with touch
-                const touch = e.touches[0];
-                const elementBelow = document.elementFromPoint(touch.clientX, touch.clientY);
-                
-                if (elementBelow && elementBelow.closest('.camera-card') && 
-                    elementBelow.closest('.camera-card') !== draggedElement) {
-                    const targetCard = elementBelow.closest('.camera-card');
-                    
-                    // Visual feedback for drop target
-                    document.querySelectorAll('.camera-card').forEach(c => {
-                        if (c !== draggedElement) {
-                            c.style.transform = 'scale(0.95)';
-                        }
-                    });
-                    targetCard.style.transform = 'scale(0.9)';
-                }
-            }
-        }
-
-        function handleTouchEnd(e) {
-            // Clear long press timeout
-            if (touchTimeout) {
-                clearTimeout(touchTimeout);
-                touchTimeout = null;
-            }
-            
-            // Handle drop if dragging
-            if (isDraggingTouch && draggedElement) {
-                const touch = e.changedTouches[0];
-                const elementBelow = document.elementFromPoint(touch.clientX, touch.clientY);
-                
-                if (elementBelow && elementBelow.closest('.camera-card')) {
-                    const targetCard = elementBelow.closest('.camera-card');
-                    if (targetCard !== draggedElement) {
-                        swapElements(draggedElement, targetCard);
-                    }
-                }
-                
-                endTouchDrag();
-            }
-        }
-
-        function handleTouchCancel(e) {
-            if (touchTimeout) {
-                clearTimeout(touchTimeout);
-                touchTimeout = null;
-            }
-            
-            if (isDraggingTouch) {
-                endTouchDrag();
-            }
-        }
-
-        function startTouchDrag(card, e) {
-            isDraggingTouch = true;
-            draggedElement = card;
-            
-            // Add drag indicator
-            if (!card.querySelector('.drag-indicator')) {
-                const indicator = document.createElement('div');
-                indicator.className = 'drag-indicator';
-                indicator.textContent = 'Hold to drag';
-                card.appendChild(indicator);
-            }
-            
-            // Visual feedback
-            card.classList.add('drag-ready');
-            
-            // Update indicator text after animation
-            setTimeout(() => {
-                if (isDraggingTouch) {
-                    card.classList.add('dragging');
-                    const indicator = card.querySelector('.drag-indicator');
-                    if (indicator) {
-                        indicator.textContent = 'Drag to reorder';
-                    }
-                }
-            }, 300); // Add dragging class after wiggle animation
-            
-            document.getElementById('cameraGrid').classList.add('drag-active');
-            
-            // Haptic feedback if available
-            if (window.navigator.vibrate) {
-                window.navigator.vibrate(50);
-            }
-            
-            // Prevent default touch behavior
-            e.preventDefault();
-        }
-
-        function endTouchDrag() {
-            isDraggingTouch = false;
-            
-            if (draggedElement) {
-                draggedElement.classList.remove('drag-ready', 'dragging');
-                const indicator = draggedElement.querySelector('.drag-indicator');
-                if (indicator) {
-                    indicator.remove();
-                }
-            }
-            
-            // Reset all cards
-            document.querySelectorAll('.camera-card').forEach(card => {
-                card.style.transform = '';
-                card.classList.remove('drag-over');
+            cards.forEach(card => {
+                cameraOrder.push({
+                    id: card.dataset.cameraId,
+                    name: card.dataset.cameraName,
+                    projectName: card.dataset.projectName
+                });
             });
             
-            document.getElementById('cameraGrid').classList.remove('drag-active');
-            draggedElement = null;
+            localStorage.setItem('cameraOrder', JSON.stringify(cameraOrder));
+            localStorage.setItem('activeCameras', JSON.stringify(activeCameras));
         }
 
-        function swapElements(elem1, elem2) {
-            const parent = elem1.parentNode;
-            const elem1Index = Array.from(parent.children).indexOf(elem1);
-            const elem2Index = Array.from(parent.children).indexOf(elem2);
-            
-            if (elem1Index < elem2Index) {
-                parent.insertBefore(elem1, elem2.nextSibling);
-            } else {
-                parent.insertBefore(elem1, elem2);
-            }
-            
-            // Save the new order to localStorage
-            saveCameraOrder();
-        }
-
-        // Updated save camera configuration
-        function saveCameraOrder() {
-            const cards = document.querySelectorAll('.camera-card');
-            const cameras = Array.from(cards).map(card => ({
-                id: card.dataset.cameraId,
-                project: card.dataset.project,
-                name: card.dataset.cameraName,
-                type: card.dataset.cameraType
-            }));
-            localStorage.setItem('activeCameras', JSON.stringify(cameras));
-        }
-
-        // Updated restore camera configuration
         function restoreCameraOrder() {
-            const savedCameras = localStorage.getItem('activeCameras');
-            if (savedCameras) {
-                const cameras = JSON.parse(savedCameras);
+            const savedOrder = localStorage.getItem('cameraOrder');
+            const savedActiveCameras = localStorage.getItem('activeCameras');
+            
+            if (savedOrder && savedActiveCameras) {
+                const cameraOrder = JSON.parse(savedOrder);
+                const savedActive = JSON.parse(savedActiveCameras);
+                
+                // Clear current grid except add button
                 const grid = document.getElementById('cameraGrid');
-                const addCard = grid.querySelector('.add-camera-card');
+                const addCard = document.querySelector('.add-camera-card');
+                grid.innerHTML = '';
+                grid.appendChild(addCard);
                 
-                // Remove existing camera cards (keep add card)
-                grid.querySelectorAll('.camera-card').forEach(card => card.remove());
-                
-                // Add cameras from saved configuration
-                cameras.forEach(savedCamera => {
-                    // Find camera data
-                    let cameraData = null;
-                    for (const [projectKey, project] of Object.entries(projectsData)) {
-                        const camera = project.cameras.find(c => c.id === savedCamera.id);
-                        if (camera) {
-                            cameraData = camera;
-                            break;
-                        }
+                // Restore cameras in saved order
+                cameraOrder.forEach(cameraData => {
+                    // Find camera in projects data
+                    let camera = null;
+                    for (const project of Object.values(projectsData)) {
+                        camera = project.cameras.find(c => c.id === cameraData.id);
+                        if (camera) break;
                     }
                     
-                    if (cameraData) {
-                        const cameraCard = createCameraCard(cameraData);
-                        grid.insertBefore(cameraCard, addCard);
+                    if (camera) {
+                        const card = createCameraCard(camera);
+                        grid.insertBefore(card, addCard);
+                        activeCameras.push(camera.id);
                     }
                 });
                 
-                // Re-initialize drag and drop
+                // Initialize drag and drop for restored cards
                 initializeDragAndDrop();
                 
-                // Check if fit-to-screen should be applied
+                // Adjust grid if fit-to-screen is active
                 const savedFitToScreen = localStorage.getItem('fitToScreen');
                 if (savedFitToScreen === 'true') {
                     adjustGridForFitToScreen();
@@ -3605,46 +3502,84 @@
             }
         }
 
-        // Handle window resize
-        let resizeTimeout;
-        
-        window.addEventListener('resize', function() {
-            clearTimeout(resizeTimeout);
-            resizeTimeout = setTimeout(function() {
-                // Close all dropdowns and remove backdrop on resize
-                document.querySelectorAll('.dropdown').forEach(d => {
-                    d.classList.remove('active');
+        // Streaming toggle
+        let isStreaming = false;
+
+        function toggleStreaming() {
+            const btn = document.getElementById('streamToggle');
+            const btnText = document.getElementById('streamText');
+            const btnIcon = document.getElementById('streamIcon');
+            const videos = document.querySelectorAll('.camera-video');
+            
+            isStreaming = !isStreaming;
+            
+            if (isStreaming) {
+                btnText.textContent = 'Stop All Streams';
+                btnIcon.innerHTML = '<rect x="5" y="5" width="10" height="10" fill="currentColor" stroke="none" rx="2" />';
+                btn.classList.add('streaming');
+                
+                // Play all videos and update their control buttons
+                videos.forEach(video => {
+                    video.play();
+                    const controlBtn = video.parentElement.querySelector('.video-controls button');
+                    const fullscreenControlBtn = video.parentElement.querySelector('.fullscreen-controls button');
+                    
+                    [controlBtn, fullscreenControlBtn].forEach(btn => {
+                        if (btn && btn.getAttribute('data-action') !== 'exitFullscreen' && btn.getAttribute('data-action') !== 'toggleFullscreen') {
+                            const iconSize = btn.classList.contains('fullscreen-control-btn') ? '' : 'icon-sm';
+                            btn.innerHTML = `
+                                <svg class="icon ${iconSize}" viewBox="0 0 20 20">
+                                    <rect x="6" y="5" width="3" height="10" fill="currentColor" stroke="none" />
+                                    <rect x="11" y="5" width="3" height="10" fill="currentColor" stroke="none" />
+                                </svg>
+                            `;
+                            btn.setAttribute('data-action', 'pauseLiveView');
+                            btn.setAttribute('title', 'Pause Live View');
+                        }
+                    });
                 });
                 
-                // Cancel any active touch drag
-                if (isDraggingTouch) {
-                    endTouchDrag();
-                }
+                // Update status text for all online cameras
+                document.querySelectorAll('.camera-card:not(.offline) .camera-status span').forEach(status => {
+                    if (status.textContent.includes('Video')) {
+                        status.textContent = 'Live';
+                    }
+                });
+            } else {
+                btnText.textContent = 'Start All Streams';
+                btnIcon.innerHTML = '<polygon points="7,5 7,15 15,10" fill="currentColor" stroke="none" />';
+                btn.classList.remove('streaming');
                 
-                // Clear any touch timeout
-                if (touchTimeout) {
-                    clearTimeout(touchTimeout);
-                    touchTimeout = null;
-                }
+                // Pause all videos and update their control buttons
+                videos.forEach(video => {
+                    video.pause();
+                    const controlBtn = video.parentElement.querySelector('.video-controls button');
+                    const fullscreenControlBtn = video.parentElement.querySelector('.fullscreen-controls button');
+                    
+                    [controlBtn, fullscreenControlBtn].forEach(btn => {
+                        if (btn && btn.getAttribute('data-action') !== 'exitFullscreen' && btn.getAttribute('data-action') !== 'toggleFullscreen') {
+                            const iconSize = btn.classList.contains('fullscreen-control-btn') ? '' : 'icon-sm';
+                            btn.innerHTML = `
+                                <svg class="icon ${iconSize}" viewBox="0 0 20 20">
+                                    <polygon points="7,5 7,15 15,10" fill="currentColor" stroke="none" />
+                                </svg>
+                            `;
+                            btn.setAttribute('data-action', 'startLiveView');
+                            btn.setAttribute('title', 'Start Live View');
+                        }
+                    });
+                });
                 
-                // Adjust grid if fit-to-screen is active
-                const fitToScreenToggle = document.getElementById('fitToScreenToggle');
-                if (fitToScreenToggle && fitToScreenToggle.classList.contains('active')) {
-                    adjustGridForFitToScreen();
-                }
-            }, 250);
-        });
-
-        // Video event listeners
-        document.addEventListener('loadeddata', function(e) {
-            if (e.target.classList.contains('camera-video')) {
-                const loading = e.target.parentElement.querySelector('.camera-loading');
-                if (loading && loading.classList.contains('active')) {
-                    loading.classList.remove('active');
-                }
+                // Update status text
+                document.querySelectorAll('.camera-card:not(.offline) .camera-status span').forEach(status => {
+                    if (status.textContent === 'Live') {
+                        status.textContent = 'Video • Paused';
+                    }
+                });
             }
-        }, true);
-        
+        }
+
+        // Video error handling
         document.addEventListener('error', function(e) {
             if (e.target.classList.contains('camera-video')) {
                 const loading = e.target.parentElement.querySelector('.camera-loading');
@@ -3699,8 +3634,11 @@
 
         // Initialize everything on DOM ready
         document.addEventListener('DOMContentLoaded', function() {
-            // Setup dropdown event handlers AFTER DOM is ready
+            // Setup event handlers first
             setupDropdownEventHandlers();
+            
+            // Initialize display toggles
+            initializeDisplayToggles();
             
             // Initialize drag and drop
             initializeDragAndDrop();
@@ -3718,43 +3656,30 @@
                     adjustGridForFitToScreen();
                 }
             }
-
-            // Restore toggle states
-            const showProjectNames = localStorage.getItem('showProjectNames');
-            if (showProjectNames === 'false') {
-                document.body.classList.add('hide-project-names');
-                const toggle = document.getElementById('showProjectNamesToggle');
-                if (toggle) toggle.classList.remove('active');
-            }
-
-            const showCameraNames = localStorage.getItem('showCameraNames');
-            if (showCameraNames === 'false') {
-                document.body.classList.add('hide-camera-names');
-                const toggle = document.getElementById('showCameraNamesToggle');
-                if (toggle) toggle.classList.remove('active');
-            }
-
-            const showTimestamps = localStorage.getItem('showTimestamps');
-            if (showTimestamps === 'false') {
-                document.body.classList.add('hide-timestamps');
-                const toggle = document.getElementById('showTimestampsToggle');
-                if (toggle) toggle.classList.remove('active');
-            }
             
             // Set initial alerts button state
             const alertsPanel = document.getElementById('alertsPanel');
             const alertsToggle = document.getElementById('alertsToggle');
+            
+            // Ensure panel starts collapsed
             if (!alertsPanel.classList.contains('collapsed')) {
+                alertsPanel.classList.add('collapsed');
+            }
+            
+            // Set button state based on panel state
+            if (alertsPanel.classList.contains('collapsed')) {
+                alertsToggle.classList.remove('active');
+            } else {
                 alertsToggle.classList.add('active');
             }
             
             // Update the initial video control buttons to show play state
             document.querySelectorAll('.camera-video').forEach(video => {
-                const controlBtn = video.parentElement.querySelector('.video-controls button[data-action="startLiveView"]');
-                const fullscreenControlBtn = video.parentElement.querySelector('.fullscreen-controls button[data-action="startLiveView"]');
+                const controlBtn = video.parentElement.querySelector('.video-controls button');
+                const fullscreenControlBtn = video.parentElement.querySelector('.fullscreen-controls button');
                 
                 [controlBtn, fullscreenControlBtn].forEach(btn => {
-                    if (btn) {
+                    if (btn && btn.getAttribute('data-action') !== 'toggleFullscreen' && btn.getAttribute('data-action') !== 'exitFullscreen') {
                         const iconSize = btn.classList.contains('fullscreen-control-btn') ? '' : 'icon-sm';
                         btn.innerHTML = `
                             <svg class="icon ${iconSize}" viewBox="0 0 20 20">
@@ -3765,27 +3690,30 @@
                         btn.setAttribute('title', 'Start Live View');
                     }
                 });
-                
-                // Update status to indicate not live
-                const statusText = video.parentElement.querySelector('.camera-status span');
-                if (statusText && statusText.textContent === 'Live') {
-                    statusText.textContent = 'Video • Paused';
-                }
             });
-            
-            // Collapse alerts panel on mobile by default
-            if (window.innerWidth <= 768) {
-                alertsPanel.classList.add('collapsed');
-                alertsToggle.classList.remove('active');
-            }
         });
 
-        // Prevent scrolling while dragging
-        document.addEventListener('touchmove', function(e) {
-            if (isDraggingTouch) {
-                e.preventDefault();
+        // Close modals and fullscreen on escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                // Close camera selection modal
+                const modal = document.getElementById('cameraSelectionModal');
+                if (modal.classList.contains('active')) {
+                    closeCameraSelection();
+                }
+                
+                // Exit fullscreen
+                const fullscreenCard = document.querySelector('.camera-card.fullscreen');
+                if (fullscreenCard) {
+                    fullscreenCard.classList.remove('fullscreen');
+                    document.body.style.overflow = '';
+                    fullscreenCard.setAttribute('draggable', 'true');
+                }
+                
+                // Close dropdowns
+                document.querySelectorAll('.dropdown').forEach(d => d.classList.remove('active'));
             }
-        }, { passive: false });
+        });
     </script>
 </body>
 </html>
