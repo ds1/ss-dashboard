@@ -2584,6 +2584,32 @@
         function setupDropdownEventHandlers() {
             // Use event delegation for better mobile support
             document.addEventListener('click', function(e) {
+                // Handle toggle switches first
+                const toggleSwitch = e.target.closest('.toggle-switch');
+                if (toggleSwitch) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    // Determine which toggle was clicked and handle it
+                    if (toggleSwitch.id === 'showProjectNamesToggle') {
+                        toggleSwitch.classList.toggle('active');
+                        handleToggleSwitch(toggleSwitch, 'projectNames');
+                    } else if (toggleSwitch.id === 'showCameraNamesToggle') {
+                        toggleSwitch.classList.toggle('active');
+                        handleToggleSwitch(toggleSwitch, 'cameraNames');
+                    } else if (toggleSwitch.id === 'showTimestampsToggle') {
+                        toggleSwitch.classList.toggle('active');
+                        handleToggleSwitch(toggleSwitch, 'timestamps');
+                    } else if (toggleSwitch.id === 'fitToScreenToggle') {
+                        // fitToScreen manages its own active state
+                        toggleFitToScreen(toggleSwitch);
+                    } else if (toggleSwitch.id === 'darkModeToggle') {
+                        // darkMode manages its own active state
+                        toggleDarkMode(toggleSwitch);
+                    }
+                    return;
+                }
+                
                 // Handle dropdown toggle button clicks
                 if (e.target.closest('.btn-secondary[data-dropdown]')) {
                     e.preventDefault();
@@ -2595,6 +2621,11 @@
                 
                 // Handle clicks inside dropdown menu - prevent closing
                 if (e.target.closest('.dropdown-menu')) {
+                    // Allow radio buttons and labels to work normally
+                    if (e.target.matches('input[type="radio"]') || e.target.matches('label')) {
+                        // Let the event continue for radio buttons and labels
+                        return;
+                    }
                     e.stopPropagation();
                     return;
                 }
@@ -2624,35 +2655,6 @@
                     const fitToScreenToggle = document.getElementById('fitToScreenToggle');
                     if (fitToScreenToggle && fitToScreenToggle.classList.contains('active')) {
                         adjustGridForFitToScreen();
-                    }
-                }
-            });
-            
-            // Handle toggle switches with event delegation
-            document.addEventListener('click', function(e) {
-                const toggleSwitch = e.target.closest('.toggle-switch');
-                if (toggleSwitch) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    
-                    // Toggle the active state
-                    toggleSwitch.classList.toggle('active');
-                    
-                    // Determine which toggle was clicked and handle it
-                    if (toggleSwitch.id === 'showProjectNamesToggle') {
-                        handleToggleSwitch(toggleSwitch, 'projectNames');
-                    } else if (toggleSwitch.id === 'showCameraNamesToggle') {
-                        handleToggleSwitch(toggleSwitch, 'cameraNames');
-                    } else if (toggleSwitch.id === 'showTimestampsToggle') {
-                        handleToggleSwitch(toggleSwitch, 'timestamps');
-                    } else if (toggleSwitch.id === 'fitToScreenToggle') {
-                        // fitToScreen has its own toggle logic
-                        toggleSwitch.classList.remove('active'); // Remove the toggle we just added
-                        toggleFitToScreen(toggleSwitch);
-                    } else if (toggleSwitch.id === 'darkModeToggle') {
-                        // darkMode has its own toggle logic
-                        toggleSwitch.classList.remove('active'); // Remove the toggle we just added
-                        toggleDarkMode(toggleSwitch);
                     }
                 }
             });
