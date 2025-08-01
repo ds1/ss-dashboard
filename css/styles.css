@@ -495,11 +495,6 @@ body.hide-timestamps .camera-details p:last-child {
     object-fit: contain;
 }
 
-.content-area.fit-to-screen .add-camera-card {
-    min-height: 0;
-    height: 100%;
-}
-
 .content-area.fit-to-screen .camera-card {
     height: 100%;
     display: flex;
@@ -699,45 +694,6 @@ body.hide-timestamps .camera-details p:last-child {
 /* Hide remove button in fullscreen mode to prevent confusion */
 .camera-card.fullscreen .camera-remove-btn {
     display: none;
-}
-
-/* Add Camera Button */
-.add-camera-card {
-    background-color: var(--card-bg);
-    border: 2px dashed var(--border-color);
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    gap: var(--spacing-3);
-    cursor: pointer;
-    transition: all 0.3s ease;
-    min-height: 200px;
-    color: var(--text-tertiary);
-}
-
-.add-camera-card:hover {
-    border-color: var(--color-orange-500);
-    background-color: var(--hover-bg);
-    color: var(--color-orange-500);
-    transform: translateY(-2px);
-}
-
-.add-camera-icon {
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    background-color: var(--bg-tertiary);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s ease;
-}
-
-.add-camera-card:hover .add-camera-icon {
-    background-color: rgba(247, 152, 55, 0.1);
-    transform: scale(1.1);
 }
 
 /* Camera Selection Modal */
@@ -1390,10 +1346,6 @@ body.hide-timestamps .camera-details p:last-child {
         gap: var(--spacing-3);
     }
     
-    .add-camera-card {
-        min-height: 160px;
-    }
-    
     /* Fullscreen mobile optimizations */
     .camera-card.fullscreen .fullscreen-controls {
         top: env(safe-area-inset-top, var(--spacing-3));
@@ -1587,11 +1539,6 @@ body.hide-timestamps .camera-details p:last-child {
     display: none;
 }
 
-.camera-grid.drag-active .add-camera-card {
-    opacity: 0.3;
-    pointer-events: none;
-}
-
 @keyframes wiggle {
     0%, 100% { transform: rotate(0deg) scale(1.05); }
     25% { transform: rotate(-1deg) scale(1.05); }
@@ -1654,4 +1601,55 @@ body.hide-timestamps .camera-details p:last-child {
     .main-container {
         min-height: -webkit-fill-available;
     }
+}
+
+/* Empty State */
+.empty-state {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: var(--spacing-10);
+    color: var(--text-tertiary);
+    min-height: 400px;
+}
+
+.empty-state.active {
+    display: flex;
+}
+
+.empty-state .icon {
+    width: 64px;
+    height: 64px;
+    stroke-width: 1.5;
+    opacity: 0.3;
+    margin-bottom: var(--spacing-4);
+}
+
+.empty-state h3 {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: var(--spacing-2);
+}
+
+.empty-state p {
+    font-size: 16px;
+    max-width: 400px;
+}
+
+/* Hide camera grid when empty */
+.camera-grid:empty {
+    display: none;
+}
+
+/* Show camera grid when it has children */
+.camera-grid:not(:empty) {
+    display: grid;
+}
+
+/* Hide empty state when cameras exist */
+.camera-grid:not(:empty) ~ .empty-state {
+    display: none !important;
 }

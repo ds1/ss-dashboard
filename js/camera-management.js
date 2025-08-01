@@ -39,8 +39,8 @@ function populateCamerasGrid(projectId) {
     
     if (!project) return;
     
-    // Get currently added camera IDs
-    const addedCameraIds = Array.from(document.querySelectorAll('.camera-card')).map(card => 
+    // Get currently added camera IDs from the main camera grid
+    const addedCameraIds = Array.from(document.querySelectorAll('#cameraGrid .camera-card')).map(card => 
         card.dataset.cameraId
     );
     
@@ -103,12 +103,15 @@ function updateAddButton() {
 
 function addSelectedCameras() {
     const grid = document.getElementById('cameraGrid');
-    const addCard = grid.querySelector('.add-camera-card');
+    const emptyState = document.getElementById('emptyState');
     
     selectedCameras.forEach(camera => {
         const cameraCard = createCameraCard(camera);
-        grid.insertBefore(cameraCard, addCard);
+        grid.appendChild(cameraCard);
     });
+    
+    // Hide empty state since we now have cameras
+    emptyState.classList.remove('active');
     
     // Re-initialize drag and drop for new cards
     initializeDragAndDrop();
@@ -240,8 +243,16 @@ function createCameraCard(camera) {
 
 function removeCamera(button) {
     const card = button.closest('.camera-card');
+    const grid = document.getElementById('cameraGrid');
+    const emptyState = document.getElementById('emptyState');
+    
     card.remove();
     saveCameraOrder();
+    
+    // Show empty state if no cameras left
+    if (grid.children.length === 0) {
+        emptyState.classList.add('active');
+    }
     
     // Adjust grid if fit-to-screen is active
     const fitToScreenToggle = document.getElementById('fitToScreenToggle');
@@ -376,12 +387,13 @@ function saveCameraOrder() {
 // Updated restore camera configuration
 function restoreCameraOrder() {
     const savedCameras = localStorage.getItem('activeCameras');
+    const emptyState = document.getElementById('emptyState');
+    
     if (savedCameras) {
         const cameras = JSON.parse(savedCameras);
         const grid = document.getElementById('cameraGrid');
-        const addCard = grid.querySelector('.add-camera-card');
         
-        // Remove existing camera cards (keep add card)
+        // Remove existing camera cards
         grid.querySelectorAll('.camera-card').forEach(card => card.remove());
         
         // Add cameras from saved configuration
@@ -398,9 +410,16 @@ function restoreCameraOrder() {
             
             if (cameraData) {
                 const cameraCard = createCameraCard(cameraData);
-                grid.insertBefore(cameraCard, addCard);
+                grid.appendChild(cameraCard);
             }
         });
+        
+        // Hide empty state if we have cameras
+        if (grid.children.length > 0) {
+            emptyState.classList.remove('active');
+        } else {
+            emptyState.classList.add('active');
+        }
         
         // Re-initialize drag and drop
         initializeDragAndDrop();
@@ -410,5 +429,8 @@ function restoreCameraOrder() {
         if (savedFitToScreen === 'true') {
             adjustGridForFitToScreen();
         }
+    } else {
+        // No saved cameras, show empty state
+        emptyState.classList.add('active');
     }
 }

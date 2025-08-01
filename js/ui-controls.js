@@ -35,10 +35,12 @@ function toggleFitToScreen(element) {
     }
 }
 
-// Adjust grid layout for fit-to-screen mode
 function adjustGridForFitToScreen() {
     const grid = document.getElementById('cameraGrid');
-    const cameraCount = grid.querySelectorAll('.camera-card, .add-camera-card').length;
+    const cameraCount = grid.querySelectorAll('.camera-card').length;
+    
+    // Don't do anything if there are no cameras
+    if (cameraCount === 0) return;
     
     // Remove all grid classes
     grid.classList.remove('grid-1x1', 'grid-2x2', 'grid-3x3', 'grid-4x4');
